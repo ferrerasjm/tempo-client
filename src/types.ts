@@ -13,13 +13,14 @@ export interface FocusSession {
   plannedMinutes: number; completedMinutes: number; breakMinutes: number;
   status: 'planned' | 'active' | 'paused' | 'completed' | 'cancelled'; startedAt: string | null; endedAt: string | null; focusScore: number | null;
   drink?: string | null; drinkName?: string; drinkSize?: string; sessionLabel?: string;
+  tempoCreditsEarned?: number; rewardBreakEndsAt?: string | null; rewardBreaks?: { order: string; menuItem: string; name: string; startedAt: string; endsAt: string }[];
   pausedAt?: string | null; pausedMilliseconds?: number; elapsedSeconds?: number; serverTime?: string;
 }
 export interface MenuItem { _id: string; name: string; category: 'drink' | 'snack'; priceCredits: number; available: boolean }
 export interface Selection { menuItem: string; quantity: number }
 export interface OrderItem extends Selection { name: string; unitPriceCredits: number }
-export interface OrderPreview { user: string; items: OrderItem[]; subtotalCredits: number; discountCredits: number; totalCredits: number; focusDiscountApplied?: boolean }
-export interface Order extends OrderPreview { _id: string; status: 'placed' | 'fulfilled' | 'cancelled'; createdAt: string }
+export interface OrderPreview { user: string; items: OrderItem[]; subtotalCredits: number; discountCredits: number; totalCredits: number; focusDiscountApplied?: boolean; availableCredits?: number; canAfford?: boolean }
+export interface Order extends OrderPreview { _id: string; status: 'placed' | 'fulfilled' | 'cancelled'; createdAt: string; creditsCharged?: boolean }
 export interface Statistics {
   totalFocusMinutes: number; averageSessionMinutes: number; completedSessions: number; completedTasks: number;
   currentStreak: number; longestStreak: number;
@@ -27,3 +28,6 @@ export interface Statistics {
   favoriteCafeArea: { name: string; totalMinutes: number } | null;
   mostOrderedDrink: { name: string; quantity: number } | null;
 }
+
+export interface RewardItem { order: string; menuItem: string; name: string; category?: 'drink' | 'snack'; quantity: number }
+export interface TempoRewards { balance: number; earnedCredits: number; spentCredits: number; breakMinutes: number; items: RewardItem[]; missions: { key: string; title: string; credits: number; completed: number }[] }

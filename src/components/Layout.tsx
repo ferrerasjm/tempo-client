@@ -22,7 +22,7 @@ export function Layout() {
     <Modal open={menuOpen} title="Around the cafe" onClose={() => setMenuOpen(false)}>
       <nav className="explore-nav" aria-label="Main navigation">
         <div><p className="eyebrow">Settle in</p><NavLink to="/study/drink">Prepare a session</NavLink><NavLink to="/cafe">Cafe lobby</NavLink><NavLink to="/focus">Smart focus recommendation</NavLink><NavLink to="/tasks">Study board</NavLink><NavLink to="/spaces">Find a space</NavLink></div>
-        <div><p className="eyebrow">Take a little break</p><NavLink to="/menu">Drink & snack menu</NavLink><NavLink to="/reservations">Your reservations</NavLink><NavLink to="/orders">Your orders</NavLink></div>
+        <div><p className="eyebrow">Take a little break</p><NavLink to="/menu">Reward shop</NavLink><NavLink to="/reservations">Your reservations</NavLink><NavLink to="/orders">Your orders</NavLink></div>
         <div><p className="eyebrow">Your notebook</p><NavLink to="/analytics">Productivity Analytics</NavLink><NavLink to="/history">Focus history</NavLink></div>
       </nav>
       <Link className="text-link profile-link" to="/welcome">{user?.displayName} · Change profile</Link>

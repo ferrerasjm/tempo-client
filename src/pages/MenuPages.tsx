@@ -9,9 +9,11 @@ import { EmptyState, Feedback, LoadState, PageHeading, Status } from '../compone
 import { MenuArtwork } from '../components/MenuArtwork';
 
 export function MenuPage() {
-  const state = useApi(cafeApi.menu); const { basket, setQuantity } = useCafe();
+  const state = useApi(cafeApi.menu); const { user, basket, setQuantity } = useCafe();
+  const rewards = useApi(() => cafeApi.rewards(user!._id), [user!._id]);
   const count = basket.reduce((total, item) => total + item.quantity, 0);
-  return <section className="page counter-page centered"><PageHeading eyebrow="At the counter" title="What would you like?" description="A little something to keep you company. Virtual credits only." />
+  return <section className="page counter-page centered"><PageHeading eyebrow="At the counter" title="What would you like?" description="Spend earned Tempo Credits on table rewards. Each item unlocks one short break." />
+    <LoadState {...rewards} retry={rewards.reload}>{rewards.data && <div className="tempo-missions"><p><strong>{rewards.data.balance} Tempo Credits</strong></p><details><summary>How to earn credits</summary>{rewards.data.missions.map(mission => <p key={mission.key}>{mission.title} / +{mission.credits} credits / {mission.completed} earned</p>)}<p>Stop and save the full timer to earn its reward. Task rewards are awarded once per task.</p></details></div>}</LoadState>
     <LoadState {...state} retry={state.reload}>{!state.data?.length ? <EmptyState title="The menu isn’t ready yet." /> : <div className="menu-grid">{state.data.map(item => {
       const quantity = basket.find(entry => entry.menuItem === item._id)?.quantity || 0;
       return <article className={`menu-item ${quantity ? 'selected' : ''}`} key={item._id}>
@@ -32,12 +34,12 @@ export function CheckoutPage() {
     setBusy(true); setError('');
     try {
       const order = await cafeApi.placeOrder(user!._id, basket);
-      clearBasket(); notify('Your order is placed. Enjoy your little break.'); navigate(`/orders/${order._id}`);
+      clearBasket(); notify('Reward order placed. Your items are ready on the focus table.'); navigate(`/orders/${order._id}`);
     } catch (reason) { setError(errorMessage(reason)); state.reload(); }
     finally { setBusy(false); }
   }
   return <section className="page narrow"><PageHeading eyebrow="Before we make your order" title="A little treat, sorted." description="Prices and any focus discount are checked by the cafe when you order." /><Link className="text-link" to="/menu">← Change your selection</Link><LoadState {...state} retry={state.reload}>
-    {!basket.length ? <EmptyState title="Your tray is empty." to="/menu" label="Visit the counter" /> : state.data && <div className="receipt"><p className="eyebrow">cafe tempo · your order</p><div className="receipt-items">{state.data.items.map(item => <div key={item.menuItem}><span>{item.name} × {item.quantity}</span><strong>{item.unitPriceCredits * item.quantity} cr</strong></div>)}</div><dl className="summary-list"><div><dt>Subtotal</dt><dd>{state.data.subtotalCredits} credits</dd></div><div><dt>Focus discount</dt><dd>−{state.data.discountCredits} credits</dd></div><div className="total"><dt>Total</dt><dd>{state.data.totalCredits} credits</dd></div></dl><p className="note">{state.data.focusDiscountApplied ? 'Your completed focus session today earned 10% off.' : 'Complete a focus session today to earn 10% off.'} Virtual credits only; no payment required.</p><Feedback error={error} /><button className="button w-full" disabled={busy} onClick={place}>{busy ? 'Placing your order…' : 'Place order'}</button></div>}
+    {!basket.length ? <EmptyState title="Your tray is empty." to="/menu" label="Visit the counter" /> : state.data && <div className="receipt"><p className="eyebrow">cafe tempo · your order</p><div className="receipt-items">{state.data.items.map(item => <div key={item.menuItem}><span>{item.name} × {item.quantity}</span><strong>{item.unitPriceCredits * item.quantity} cr</strong></div>)}</div><dl className="summary-list"><div><dt>Subtotal</dt><dd>{state.data.subtotalCredits} credits</dd></div><div><dt>Focus discount</dt><dd>−{state.data.discountCredits} credits</dd></div><div className="total"><dt>Total</dt><dd>{state.data.totalCredits} Tempo Credits</dd></div><div><dt>Your balance</dt><dd>{state.data.availableCredits} Tempo Credits</dd></div></dl><p className="note">{state.data.focusDiscountApplied ? 'Your completed focus session today earned 10% off.' : 'Complete a focus session today to earn 10% off.'} Purchased items appear on your focus table. Each item is used for one break.</p><Feedback error={error} />{!state.data.canAfford && <p className="note">Not enough Tempo Credits. Finish a full focus timer or complete its task to earn more.</p>}<button className="button w-full" disabled={busy || !state.data.canAfford} onClick={place}>{busy ? 'Placing your order…' : 'Place order'}</button></div>}
   </LoadState></section>;
 }
 
@@ -47,11 +49,11 @@ export function OrderPage() {
   async function cancel() {
     if (!window.confirm('Cancel this order?')) return;
     setBusy(true); setError('');
-    try { await cafeApi.cancelOrder(id); notify('Order cancelled.'); state.reload(); }
+    try { await cafeApi.cancelOrder(id); notify('Order cancelled. Unused Tempo Credits are refunded.'); state.reload(); }
     catch (reason) { setError(errorMessage(reason)); }
     finally { setBusy(false); }
   }
-  return <section className="page narrow"><PageHeading eyebrow="From the cafe counter" title="Your order." /><LoadState {...state} retry={state.reload}>{state.data && (state.data.user !== user!._id ? <EmptyState title="This order belongs to another profile." to="/orders" label="Your orders" /> : <div className="receipt"><div className="flex items-center justify-between gap-3"><Status value={state.data.status} /><small>{dateTime(state.data.createdAt)}</small></div><div className="receipt-items">{state.data.items.map(item => <div key={item.menuItem}><span>{item.name} × {item.quantity}</span><strong>{item.unitPriceCredits * item.quantity} cr</strong></div>)}</div><dl className="summary-list"><div><dt>Subtotal</dt><dd>{state.data.subtotalCredits} cr</dd></div><div><dt>Discount</dt><dd>−{state.data.discountCredits} cr</dd></div><div className="total"><dt>Total</dt><dd>{state.data.totalCredits} credits</dd></div></dl><Feedback error={error} /><div className="form-actions"><Link className="button" to="/cafe">Back to the cafe</Link>{state.data.status === 'placed' && <button className="text-link danger" onClick={cancel} disabled={busy}>Cancel order</button>}</div></div>)}</LoadState></section>;
+  return <section className="page narrow"><PageHeading eyebrow="From the cafe counter" title="Your order." /><LoadState {...state} retry={state.reload}>{state.data && (state.data.user !== user!._id ? <EmptyState title="This order belongs to another profile." to="/orders" label="Your orders" /> : <div className="receipt"><div className="flex items-center justify-between gap-3"><Status value={state.data.status} /><small>{dateTime(state.data.createdAt)}</small></div><div className="receipt-items">{state.data.items.map(item => <div key={item.menuItem}><span>{item.name} × {item.quantity}</span><strong>{item.unitPriceCredits * item.quantity} cr</strong></div>)}</div><dl className="summary-list"><div><dt>Subtotal</dt><dd>{state.data.subtotalCredits} cr</dd></div><div><dt>Discount</dt><dd>−{state.data.discountCredits} cr</dd></div><div className="total"><dt>Total</dt><dd>{state.data.totalCredits} credits</dd></div></dl><Feedback error={error} /><div className="form-actions"><Link className="button" to="/history">Go to your focus sessions</Link>{state.data.status === 'placed' && <button className="text-link danger" onClick={cancel} disabled={busy}>Cancel order</button>}</div></div>)}</LoadState></section>;
 }
 
 export function OrdersPage() {

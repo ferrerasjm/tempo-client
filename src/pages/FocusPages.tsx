@@ -1,3 +1,4 @@
+import { RewardTray } from '../components/RewardTray';
 import { Link, useParams } from 'react-router-dom';
 import { cafeApi } from '../services/cafeApi';
 import { useApi } from '../hooks/useApi';
@@ -51,7 +52,7 @@ export function ActiveFocusPage() {
       {!corner && <h1>{session.sessionLabel ? session.sessionLabel + ' will ' : ''}{room.state.data.task.title}</h1>}
       {planned || running || paused || completed ? <>
         {!corner && <p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p>}
-        <p className="focus-hint">{planned ? 'Choose your corner, then start when you’re ready.' : paused ? 'Take a breath. Your timer is paused.' : completed ? 'A little progress. A well-earned pause.' : timer.remainingSeconds ? 'One thing at a time.' : 'Time’s up. Stop to save your session.'}</p>
+        <p className="focus-hint">{planned ? 'Choose your corner, then start when you’re ready.' : paused ? 'Your reward break is in progress.' : completed ? 'A little progress. A well-earned pause.' : timer.remainingSeconds ? 'One thing at a time.' : 'Time’s up. Stop to save your session.'}</p>
         <div className="focus-table"><SpaceIllustration name={area.name} /><div className="tabletop">
           <div className="session-drink"><MenuArtwork name={session.drinkName || 'Cafe Latte'} /></div>
           {corner && <><h1>{session.sessionLabel ? session.sessionLabel + ' will ' : ''}{room.state.data.task.title}</h1><p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p></>}
@@ -62,16 +63,17 @@ export function ActiveFocusPage() {
             <div className="session-controls">
               {planned && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('start')}>{room.busy ? 'Starting…' : room.canTakeSeat ? 'Start session' : 'No seat available'}</button>}
               {paused && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('resume')}>{room.canTakeSeat ? 'Resume timer' : 'No seat available'}</button>}
-              {running && timer.remainingSeconds > 0 && <button className="button secondary" disabled={room.busy} onClick={() => room.action('pause')}>Pause timer</button>}
               {running && !room.holdsSeat && timer.remainingSeconds > 0 && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('move')}>{room.canTakeSeat ? 'Reserve this seat' : 'Area full'}</button>}
               {(running || paused) && <button className="button" disabled={room.busy} onClick={() => room.action('stop')}>Stop session</button>}
               {planned && <button className="text-link" disabled={room.busy} onClick={() => room.action('stop')}>Cancel setup</button>}
             </div>
+            {paused && <p className="reward-break" role="status">{timer.rewardBreakRemainingSeconds > 0 ? 'Break remaining: ' + timerText(timer.rewardBreakRemainingSeconds) : 'Break finished. Resuming needs an available seat.'}</p>}
+            {!paused && <RewardTray rewards={room.rewards.data} loading={room.rewards.loading} error={room.rewards.error} retry={room.rewards.reload} enabled={running && timer.remainingSeconds > 0} busy={room.busy} useItem={item => room.action('pause', item)} />}
             <div className="music-controls"><button className="text-link" disabled={!music.available || !running || timer.remainingSeconds === 0} onClick={music.toggle}>{music.playing ? 'Pause music' : 'Play music'}</button><label>Volume<input type="range" min={0} max={1} step={.05} value={music.volume} disabled={!music.available} onChange={event => music.setVolume(Number(event.target.value))} /></label></div>
             {!music.available && <p className="music-note">Background music hasn’t been added yet.</p>}
             {music.error && <p className="music-note" role="status">{music.error}</p>}
-            <details className="quiet-options"><summary>Session details</summary><p className="note">{session.plannedMinutes} minute focus · {session.breakMinutes} minute break · {timer.elapsedMinutes} minutes focused</p><p className="note">Pausing releases your seat. Resuming checks availability again.</p><button className="text-link" onClick={room.seats.reload}>Refresh seats</button></details>
-          </> : <><p className="note">{session.completedMinutes} {session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {session.focusScore}%</p><Link className="button" to="/study/drink">Prepare another session</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${room.state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/analytics">Productivity Analytics</Link></div></>}
+            <details className="quiet-options"><summary>Session details</summary><p className="note">{session.plannedMinutes} minute focus · {session.breakMinutes} minute break · {timer.elapsedMinutes} minutes focused</p><p className="note">A purchased reward unlocks one short break and releases your seat. Resuming checks availability again. Stopping early saves your time but earns no mission credits.</p><button className="text-link" onClick={room.seats.reload}>Refresh seats</button></details>
+          </> : <><p className="note">{session.tempoCreditsEarned ? session.tempoCreditsEarned + ' Tempo Credits earned / ' : ''}{session.completedMinutes} {session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {session.focusScore}%</p><Link className="button" to="/study/drink">Prepare another session</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${room.state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/analytics">Productivity Analytics</Link><Link className="text-link" to="/menu">Reward shop</Link></div></>}
           <Feedback error={room.error} />
         </div></div>
         <nav className="scene-navigation" aria-label="Cafe spaces"><button className="icon-button" aria-label="Previous cafe space" disabled={room.viewIndex === -1 || room.busy} onClick={() => room.browse(room.viewIndex - 1)}>←</button><button className="icon-button" aria-label="Next cafe space" disabled={room.viewIndex === room.state.data.areas.length - 1 || room.busy} onClick={() => room.browse(room.viewIndex + 1)}>→</button></nav>
