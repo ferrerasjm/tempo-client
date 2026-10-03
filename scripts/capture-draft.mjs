@@ -9,7 +9,7 @@ try {
   await page.screenshot({ path: 'docs/screenshots/landing-desktop.png', fullPage: true });
   await page.goto('http://localhost:5173/welcome');
   await page.getByRole('button', { name: /demo@cafetempo.test/ }).click();
-  await page.getByRole('heading', { name: /^Settle in/ }).waitFor();
+  await page.getByRole('heading', { name: 'Make yourself at home.' }).waitFor();
   await page.screenshot({ path: 'docs/screenshots/cafe-desktop.png', fullPage: true });
   await page.goto('http://localhost:5173/analytics');
   await page.locator('.metrics').waitFor();
@@ -36,6 +36,16 @@ try {
       }
     }
   }
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto('http://localhost:5173/focus');
+  await page.locator('.loading').waitFor({ state: 'hidden' });
+  await page.screenshot({ path: 'docs/screenshots/focus-setup-desktop.png', fullPage: true });
+  await page.goto('http://localhost:5173/focus/' + sessions.find(session => session.status === 'completed')._id);
+  await page.locator('.focus-table').waitFor();
+  await page.screenshot({ path: 'docs/screenshots/focus-desktop.png', fullPage: true });
+  await page.goto('http://localhost:5173/spaces/' + areas[0]._id);
+  await page.getByText('Reserve this space for later', { exact: true }).click();
+  await page.screenshot({ path: 'docs/screenshots/reservation-desktop.png', fullPage: true });
   console.log('Checked all 17 page routes at 375px and 1366px without horizontal overflow.');
   console.log('Saved read-only demo screenshots in docs/screenshots.');
 } finally { await browser.close(); }
