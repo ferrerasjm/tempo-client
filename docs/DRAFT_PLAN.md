@@ -19,6 +19,10 @@ The concept calls for a cafe entrance, themed spaces, task planning, focus sessi
 | --- | --- | --- |
 | `/` | Illustrated entrance with one entry action | None; profile loading is shared |
 | `/welcome` | Choose an existing study profile | `GET /users` |
+| `/study/drink` | Select one available drink | `GET /menu-items`, `GET /focus-sessions` |
+| `/study/size` | Tall / Grande / Venti duration | `GET /menu-items` |
+| `/study/label` | Selected drink and name/label | `GET /menu-items` |
+| `/study/task` | Task notepad and optional details; prepare session | `GET /tasks/:id` when retrying, `GET /cafe-areas`, `POST /tasks` or `PATCH /tasks/:id`, `POST /focus-sessions` |
 | `/cafe` | Clickable cafe scene | Shared profile state |
 | `/spaces` | Choose a cafe area | `GET /cafe-areas` |
 | `/spaces/:id` | Study now or optional future reservation | `GET /cafe-areas/:id`, `GET /cafe-areas/:id/availability`, `GET /reservations`, `POST /reservations` |
@@ -26,7 +30,7 @@ The concept calls for a cafe entrance, themed spaces, task planning, focus sessi
 | `/tasks/new` | New task form | `POST /tasks` |
 | `/tasks/:id/edit` | Edit task/status | `GET /tasks/:id`, `PATCH /tasks/:id` |
 | `/focus` | Select task/area/energy and request recommendation | `GET /tasks`, `GET /cafe-areas`, `GET /focus-sessions`, `POST /focus/recommendation`, `POST /focus-sessions` |
-| `/focus/:id` | Countdown, completion, cancellation, and break | `GET /focus-sessions/:id`, `GET /tasks/:id`, `GET /cafe-areas/:id`, `PATCH /focus-sessions/:id` |
+| `/focus/:id` | Start, pause/resume, stop, scene browsing, seat changes, music, and break | `GET /focus-sessions/:id`, `GET /tasks/:id`, `GET /cafe-areas`, `GET /cafe-areas/:id/availability`, `PATCH /focus-sessions/:id` |
 | `/history` | Session history and scores | `GET /focus-sessions`, `GET /tasks`, `GET /cafe-areas` |
 | `/menu` | Drink/snack selection | `GET /menu-items` |
 | `/order-summary` | Preview and place virtual order | `POST /orders/calculate`, `POST /orders` |

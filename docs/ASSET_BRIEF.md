@@ -15,4 +15,4 @@ Use your own work or assets you have permission to use. No video or audio is req
 
 Place final files in public/assets/. Update src/assets.ts for the entrance, and swap the presentation in SpaceIllustration.tsx or MenuArtwork.tsx for room/item files. Keep room and item names matched to server data. Add a fallback for unknown menu items.
 
-Audio is not implemented in this draft. If you later want ambience, provide original or licensed audio separately and use an explicit play/mute control.
+Music controls are implemented and await your file. Place your MP3 at `public/assets/cozy-cafe.mp3` and set `music` to `/assets/cozy-cafe.mp3` in `src/assets.ts`. OGG or WAV also works; match the filename and extension. See [STUDY_FLOW.md](STUDY_FLOW.md).
