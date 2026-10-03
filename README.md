@@ -23,7 +23,7 @@ npm.cmd run dev
 
 Open **http://localhost:5173**. Use `localhost` so it matches the server's default CORS origin. The client defaults to `http://localhost:5000/api`. To change that address, copy `.env.example` to `.env` and edit `VITE_API_URL`; restart Vite afterward. Client environment variables are public, so never put database credentials here.
 
-Click **Come on in**, choose **Demo Student**, then start a study session. Use **Explore** to reach the study board, spaces, counter, reservations and notebook. Profile selection is not authentication. The existing backend has no password login; authentication is optional under the rubric and has not been implemented.
+Click the animated cafe entrance (hover or focus to see **ready to lock in?**), choose **Demo Student**, then start a study session. Use **Explore** to reach the study board, spaces, counter, reservations and notebook. Profile selection is not authentication. The existing backend has no password login; authentication is optional under the rubric and has not been implemented.
 
 ## What the draft supports
 

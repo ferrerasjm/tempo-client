@@ -1,5 +1,9 @@
 # A quieter cafe draft
 
+## Animated entrance
+
+The landing page uses the supplied cats-outdoor-cafe.gif, copied unchanged to public/assets/cafe-entrance.gif. The full image links to /welcome for demo profile selection. Hover and keyboard focus show “ready to lock in?”; touch devices show the invitation without hover. The separate Enter button and landing header are removed. The GIF path stays in assets.ts, and the entry presentation lives in entrance.css.
+
 ## Full-screen reference direction
 
 The setup and counter now use a large centered white sheet on an original SVG cafe tabletop. Small hanging signs replace the conventional header. The lobby fills the viewport, and the focus screen uses a large countdown, a cup, a curved white table and side arrows.
