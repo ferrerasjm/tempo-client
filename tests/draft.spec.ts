@@ -46,9 +46,9 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'A little room to focus.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'cafe tempo', exact: true })).toBeVisible();
   await page.screenshot({ path: `${screenshotDir}/landing-desktop.png`, fullPage: true });
-  await page.getByRole('link', { name: 'Come on in' }).click();
+  await page.getByRole('link', { name: 'Enter Cafe Tempo', exact: true }).click();
   await expect(page.getByText('Selecting a profile is not a password login.', { exact: false })).toBeVisible();
   await page.getByRole('button', { name: new RegExp(profileName) }).click();
   await expect(page.getByRole('heading', { name: 'Make yourself at home.' })).toBeVisible();

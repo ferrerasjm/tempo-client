@@ -1,0 +1,66 @@
+/* The supplied GIF is the entry link. Keep its full composition visible. */
+.app-shell .gif-entrance {
+  min-height: 100svh;
+  padding: 36px 32px;
+  gap: 18px;
+}
+.entrance-art {
+  position: relative;
+  display: block;
+  width: min(1220px, 100%);
+  border: 3px solid #1b211d;
+  border-radius: 4px;
+  background: #213e3f;
+  cursor: pointer;
+}
+.entrance-art img {
+  width: 100%;
+  height: auto;
+  max-height: calc(100svh - 115px);
+  object-fit: contain;
+  border-radius: 1px;
+  image-rendering: pixelated;
+}
+.entrance-tooltip {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translate(-50%, 5px);
+  padding: 12px 22px;
+  border: 2px solid #1b211d;
+  border-radius: 999px;
+  background: #fff;
+  color: #1b211d;
+  font-size: 1rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s, transform .15s, visibility .15s;
+}
+.entrance-art:hover .entrance-tooltip,
+.entrance-art:focus-visible .entrance-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+.entrance-art .entrance-tooltip.dismissed {
+  opacity: 0;
+  visibility: hidden;
+}
+.app-shell .gif-entrance .entrance-caption {
+  font: 1rem var(--font-serif);
+  letter-spacing: .03em;
+  color: #39473a;
+}
+/* Touch users get the same invitation without needing hover. */
+@media (hover: none) {
+  .entrance-art .entrance-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 480px) {
+  .app-shell .gif-entrance { padding: 20px 16px; gap: 15px; }
+  .entrance-tooltip { padding: 8px 15px; font-size: .8rem; }
+}

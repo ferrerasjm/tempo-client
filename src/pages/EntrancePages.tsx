@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { artwork } from '../assets';
 import { useCafe } from '../state/CafeContext';
@@ -5,13 +6,17 @@ import { CafeScene } from '../components/CafeScene';
 import { EmptyState, LoadState, PageHeading } from '../components/ui';
 
 export function LandingPage() {
-  return <>
-    <section className="entrance"><p className="eyebrow">Your virtual study cafe</p><h1>A little room<br /><em>to focus.</em></h1><p>Slow down, settle in, and give one thing your attention.</p>
-      <img className="storefront" src={artwork.entrance} alt="Cafe Tempo's welcoming storefront with a striped awning and an open door." />
-      <Link className="button entrance-button" to="/welcome">Come on in <span aria-hidden="true">→</span></Link>
-      <small className="entrance-note">A task. A quiet corner. A little progress.</small>
-    </section>
-  </>;
+  const [tooltipDismissed, setTooltipDismissed] = useState(false);
+  return <section className="entrance gif-entrance">
+    <Link className="entrance-art" to="/welcome" aria-label="Enter Cafe Tempo" aria-describedby="entrance-tooltip"
+      onPointerEnter={() => setTooltipDismissed(false)} onPointerLeave={() => setTooltipDismissed(false)}
+      onFocus={() => setTooltipDismissed(false)} onBlur={() => setTooltipDismissed(false)}
+      onKeyDown={event => { if (event.key === 'Escape') setTooltipDismissed(true); }}>
+      <img src={artwork.entrance} width={1440} height={800} alt="An animated pixel-art cafe surrounded by greenery, with cats sitting by the entrance." />
+      <span id="entrance-tooltip" role="tooltip" className={tooltipDismissed ? 'entrance-tooltip dismissed' : 'entrance-tooltip'}>ready to lock in?</span>
+    </Link>
+    <h1 className="entrance-caption">cafe tempo</h1>
+  </section>;
 }
 
 export function WelcomePage() {

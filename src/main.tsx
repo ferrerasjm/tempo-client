@@ -5,6 +5,7 @@ import App from './App';
 import { CafeProvider } from './state/CafeContext';
 import './styles.css';
 import './experience.css';
+import './entrance.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><BrowserRouter><CafeProvider><App /></CafeProvider></BrowserRouter></React.StrictMode>,
