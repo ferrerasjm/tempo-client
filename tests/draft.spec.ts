@@ -13,6 +13,9 @@ const Task = serverRequire('./src/models/Task');
 const FocusSession = serverRequire('./src/models/FocusSession');
 const Reservation = serverRequire('./src/models/Reservation');
 const Order = serverRequire('./src/models/Order');
+const CafeArea = serverRequire('./src/models/CafeArea');
+const fixtureUsers: string[] = [];
+const fixtureAreas: string[] = [];
 let userId: string;
 let focusPath = '';
 let orderPath = '';
@@ -29,19 +32,22 @@ test.beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URI);
   const user = await User.create({ displayName: profileName, email: `draft-${Date.now()}@cafetempo.test` });
   userId = String(user._id);
+  fixtureUsers.push(userId);
 });
 test.afterAll(async () => {
-  if (userId) {
-    await FocusSession.deleteMany({ user: userId });
-    await Reservation.deleteMany({ user: userId });
-    await Order.deleteMany({ user: userId });
-    await Task.deleteMany({ user: userId });
-    await User.findByIdAndDelete(userId);
+  for (const id of fixtureUsers) {
+    await FocusSession.deleteMany({ user: id });
+    await Reservation.deleteMany({ user: id });
+    await Order.deleteMany({ user: id });
+    await Task.deleteMany({ user: id });
+    await User.findByIdAndDelete(id);
   }
+  for (const id of fixtureAreas) await CafeArea.findByIdAndDelete(id);
   await mongoose.disconnect();
 });
 
 test('real frontend → API → Atlas flow', async ({ page }) => {
+  test.setTimeout(120000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1366, height: 900 });
@@ -51,58 +57,66 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   await page.getByRole('link', { name: 'Enter Cafe Tempo', exact: true }).click();
   await expect(page.getByText('Selecting a profile is not a password login.', { exact: false })).toBeVisible();
   await page.getByRole('button', { name: new RegExp(profileName) }).click();
-  await expect(page.getByRole('heading', { name: 'Make yourself at home.' })).toBeVisible();
-  await page.screenshot({ path: `${screenshotDir}/cafe-desktop.png`, fullPage: true });
-
-  await page.getByRole('link', { name: /Study board/ }).click();
-  await expect(page.getByRole('heading', { name: 'A clear board.' })).toBeVisible();
-  await page.getByRole('link', { name: 'Add a task +', exact: true }).click();
-  await page.getByLabel('Task title').fill('');
-  await page.getByRole('button', { name: 'Add task', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'What would you like to drink?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Choose Cafe Latte' }).click();
+  await page.getByRole('link', { name: 'Next', exact: true }).click();
+  await page.getByText('Grande', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: /Grande/ })).toBeChecked();
+  await page.getByRole('link', { name: 'Next', exact: true }).click();
+  await page.getByLabel('Name or label').fill('Focus learner');
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
   await expect(page.getByText('Enter a task title.')).toBeVisible();
-  await page.getByLabel('Task title').fill('Draft focus task');
-  await page.getByLabel('Description', { exact: true }).fill('Verify the complete cafe flow.');
+  await page.getByLabel('Task to accomplish').fill('Draft focus task');
+  await page.getByText('Task details', { exact: true }).click();
   await page.getByLabel('Deadline').fill(futureInput(48));
-  await page.getByLabel('Estimated minutes').fill('45');
-  await page.getByRole('button', { name: 'Add task', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Draft focus task', exact: true })).toBeVisible();
-  await page.getByText('Manage task', { exact: true }).click();
-  await page.getByRole('link', { name: 'Edit', exact: true }).click();
-  await expect(page.getByLabel('Task title')).toHaveValue('Draft focus task');
-  await page.getByLabel('Description', { exact: true }).fill('Edited task from the working UI.');
-  await page.getByRole('button', { name: 'Save changes' }).click();
-  await expect(page.getByText('Edited task from the working UI.')).toBeVisible();
-
-  await page.getByRole('link', { name: 'Focus →', exact: true }).click();
-  await expect(page.locator('.study-paper')).toBeVisible();
+  await page.getByLabel('Description', { exact: true }).fill('Verify the complete cafe flow.');
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.screenshot({ path: `${screenshotDir}/focus-setup-desktop.png`, fullPage: true });
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.getByRole('button', { name: 'Next →' }).click();
-  await page.getByLabel('Cafe area').selectOption({ label: 'Garden Patio' });
-  await page.getByRole('button', { name: 'Next →' }).click();
-  await page.getByRole('button', { name: 'Suggest a session' }).click();
-  await expect(page.getByText('Your suggested rhythm')).toBeVisible();
-  await page.getByRole('button', { name: 'Start focusing →' }).click();
-  await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
+  await page.screenshot({ path: `${screenshotDir}/notepad-desktop.png`, fullPage: true });
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Start session', exact: true })).toBeVisible();
   focusPath = new URL(page.url()).pathname;
-  await page.screenshot({ path: `${screenshotDir}/focus-active-desktop.png`, fullPage: true });
-  await page.getByRole('button', { name: 'Show cafe corner scene' }).click();
+  await expect(page.getByLabel('Time remaining')).toHaveText('45:00');
+  await page.reload();
+  await expect(page.getByLabel('Time remaining')).toHaveText('45:00');
+  await page.getByRole('button', { name: 'Next cafe space' }).click();
   await expect(page.locator('.space-badge')).toHaveText('garden patio');
-  await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
+  await page.getByRole('button', { name: 'Start session', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+  await page.screenshot({ path: `${screenshotDir}/focus-active-desktop.png`, fullPage: true });
+  await page.getByRole('button', { name: 'Pause timer' }).click();
+  await expect(page.getByRole('button', { name: 'Resume timer' })).toBeVisible();
+  const frozen = await page.getByLabel('Time remaining').textContent();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Resume timer' })).toBeVisible();
+  await expect(page.getByLabel('Time remaining')).toHaveText(frozen!);
+  await page.getByRole('button', { name: 'Resume timer' }).click();
+  await expect(page.getByRole('button', { name: 'Pause timer' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play music' })).toBeDisabled();
+  await expect(page.getByText('Background music hasn’t been added yet.')).toBeVisible();
+  await page.getByRole('button', { name: 'Next cafe space' }).click();
+  await expect(page.locator('.space-badge')).toHaveText('garden patio');
+  await page.getByRole('button', { name: 'Next cafe space' }).click();
+  await expect(page.locator('.space-badge')).toHaveText('library table');
+  await expect(page.getByText('You’re browsing.', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'Reserve this seat' }).click();
+  await expect(page.locator('.seat-status')).toContainText('your seat is reserved');
   const running = await (await page.request.get('http://localhost:5000/api/focus-sessions?user=' + userId)).json();
   expect(running.filter((session: { status: string }) => session.status === 'active')).toHaveLength(1);
-  await page.getByRole('button', { name: 'Show focus scene' }).click();
-  await expect(page.locator('.space-badge')).toHaveText('focus');
+  expect(running[0].drinkSize).toBe('grande');
+  expect(running[0].plannedMinutes).toBe(45);
+  expect(running[0].sessionLabel).toBe('Focus learner');
+  // Advance only this fixture's start time; no minute-long test wait is needed.
+  await FocusSession.findByIdAndUpdate(focusPath.split('/').pop(), { startedAt: new Date(Date.now() - 65000) });
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
-  await page.getByRole('button', { name: 'Finish session' }).click();
-  await page.getByLabel('Minutes you actually focused').fill('1');
-  await page.getByRole('button', { name: 'Save session' }).click();
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Stop session' }).click();
   await expect(page.getByText('1 minute saved', { exact: false })).toBeVisible();
   await page.getByRole('link', { name: 'Update task status' }).click();
+  await page.getByLabel('Description', { exact: true }).fill('Edited task from the working UI.');
   await page.getByLabel('Status', { exact: true }).selectOption('completed');
   await page.getByRole('button', { name: 'Save changes' }).click();
+  await expect(page.getByText('Edited task from the working UI.')).toBeVisible();
   await expect(page.locator('.status-completed')).toHaveText('completed');
 
   await page.goto('/menu');
@@ -115,7 +129,6 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   await page.getByRole('button', { name: 'Place order', exact: true }).click();
   await expect(page.locator('.status-placed')).toBeVisible();
   orderPath = new URL(page.url()).pathname;
-  page.on('dialog', dialog => dialog.accept());
   await page.getByRole('button', { name: 'Cancel order' }).click();
   await expect(page.locator('.status-cancelled')).toBeVisible();
 
@@ -171,7 +184,9 @@ test('375px pages, navigation and error recovery', async ({ page }) => {
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).not.toBeVisible();
-  for (const path of ['/', '/cafe', '/spaces', '/tasks', '/tasks/new', '/focus', focusPath, '/history', '/analytics', '/menu', '/order-summary', '/orders', orderPath, '/reservations']) {
+  const drinks = await (await page.request.get('http://localhost:5000/api/menu-items')).json();
+  await page.evaluate(({ userId, drink }) => sessionStorage.setItem('tempo-study-' + userId, JSON.stringify({ drink, size: 'tall', label: 'Mobile learner', taskId: '' })), { userId, drink: drinks.find((item: { category: string }) => item.category === 'drink')._id });
+  for (const path of ['/', '/welcome', '/cafe', '/spaces', '/tasks', '/tasks/new', '/focus', '/study/drink', '/study/size', '/study/label', '/study/task', focusPath, '/history', '/analytics', '/menu', '/order-summary', '/orders', orderPath, '/reservations']) {
     await page.goto(path);
     await expect(page.locator('h1').first()).toBeVisible();
     await expect(page.locator('.loading')).toHaveCount(0);
@@ -188,4 +203,56 @@ test('375px pages, navigation and error recovery', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Cafe Latte', exact: true })).toBeVisible();
   await page.goto('/spaces/000000000000000000000000');
   await expect(page.getByRole('alert')).toHaveText('Cafe area not found');
+});
+
+
+
+test('capacity prevents concurrent bookings, starts and full-area resumes', async ({ request }) => {
+  test.setTimeout(120000);
+  const area = await CafeArea.create({ name: 'ZZ Capacity ' + Date.now(), theme: 'Isolated capacity test', capacity: 1, suggestedFocusMinutes: 25 });
+  fixtureAreas.push(String(area._id));
+  const users = [];
+  const tasks = [];
+  for (let index = 0; index < 2; index++) {
+    const profile = await User.create({ displayName: 'Capacity ' + index, email: 'capacity-' + index + '-' + Date.now() + '@cafetempo.test' });
+    fixtureUsers.push(String(profile._id)); users.push(String(profile._id));
+    const task = await Task.create({ user: profile._id, title: 'Capacity test task', deadline: new Date(Date.now() + 86400000), difficulty: 'medium', estimatedMinutes: 25 });
+    tasks.push(String(task._id));
+  }
+  const start = new Date(Date.now() + 3000).toISOString();
+  const end = new Date(Date.now() + 30 * 60000).toISOString();
+  const booked = await Promise.all(users.map(user => request.post('http://localhost:5000/api/reservations', { data: { user, area: String(area._id), startsAt: start, endsAt: end } })));
+  expect(booked.map(response => response.status()).sort()).toEqual([201, 400]);
+  const winner = await booked.find(response => response.status() === 201)!.json();
+  const menu = await (await request.get('http://localhost:5000/api/menu-items')).json();
+  const drink = menu.find((item: { category: string }) => item.category === 'drink')._id;
+  const sessionIds = [];
+  for (let index = 0; index < 2; index++) {
+    const response = await request.post('http://localhost:5000/api/focus-sessions', { data: { user: users[index], task: tasks[index], area: String(area._id), energyLevel: 'medium', status: 'planned', drink, drinkSize: 'tall', sessionLabel: 'Capacity learner' } });
+    expect(response.status()).toBe(201); sessionIds.push((await response.json())._id);
+  }
+  const occupied = await request.patch('http://localhost:5000/api/focus-sessions/' + sessionIds[users.indexOf(winner.user) === 0 ? 1 : 0], { data: { action: 'start' } });
+  expect(occupied.status()).toBe(400);
+  expect((await occupied.json()).message).toContain('No seats remain');
+  await request.patch('http://localhost:5000/api/reservations/' + winner._id, { data: { status: 'cancelled' } });
+  const started = await Promise.all(sessionIds.map(id => request.patch('http://localhost:5000/api/focus-sessions/' + id, { data: { action: 'start' } })));
+  expect(started.map(response => response.status()).sort()).toEqual([200, 400]);
+  const first = started.findIndex(response => response.status() === 200);
+  const second = first === 0 ? 1 : 0;
+  const action = (index: number, value: string) => request.patch('http://localhost:5000/api/focus-sessions/' + sessionIds[index], { data: { action: value } });
+  const pause = await action(first, 'pause'); expect(pause.status()).toBe(200);
+  const paused = await pause.json();
+  await new Promise(resolve => setTimeout(resolve, 1200));
+  const saved = await (await request.get('http://localhost:5000/api/focus-sessions/' + sessionIds[first])).json();
+  expect(saved.status).toBe('paused'); expect(saved.elapsedSeconds).toBe(paused.elapsedSeconds);
+  expect((await action(second, 'start')).status()).toBe(200);
+  const full = await action(first, 'resume');
+  expect(full.status()).toBe(400); expect((await full.json()).message).toContain('No seats remain');
+  const availability = await (await request.get('http://localhost:5000/api/cafe-areas/' + area._id + '/availability', { params: { startsAt: new Date().toISOString(), endsAt: end } })).json();
+  expect(availability.remainingSeats).toBe(0);
+  expect((await action(second, 'stop')).status()).toBe(200);
+  const resumed = await action(first, 'resume'); expect(resumed.status()).toBe(200);
+  expect((await resumed.json()).pausedMilliseconds).toBeGreaterThanOrEqual(1200);
+  expect((await action(first, 'stop')).status()).toBe(200);
+  expect((await action(first, 'stop')).status()).toBe(400);
 });
