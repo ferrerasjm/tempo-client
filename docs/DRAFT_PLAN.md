@@ -17,11 +17,11 @@ The concept calls for a cafe entrance, themed spaces, task planning, focus sessi
 
 | Route | Screen | Server requests |
 | --- | --- | --- |
-| `/` | Illustrated entrance and short cafe ritual | None; profile loading is shared |
+| `/` | Illustrated entrance with one entry action | None; profile loading is shared |
 | `/welcome` | Choose an existing study profile | `GET /users` |
 | `/cafe` | Clickable cafe scene | Shared profile state |
 | `/spaces` | Choose a cafe area | `GET /cafe-areas` |
-| `/spaces/:id` | Area details and reservation form | `GET /cafe-areas/:id`, `GET /cafe-areas/:id/availability`, `POST /reservations` |
+| `/spaces/:id` | Study now or optional future reservation | `GET /cafe-areas/:id`, `GET /cafe-areas/:id/availability`, `GET /reservations`, `POST /reservations` |
 | `/tasks` | Task board and priority | `GET /tasks`, `GET /tasks/priorities`, `DELETE /tasks/:id` |
 | `/tasks/new` | New task form | `POST /tasks` |
 | `/tasks/:id/edit` | Edit task/status | `GET /tasks/:id`, `PATCH /tasks/:id` |

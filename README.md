@@ -23,7 +23,7 @@ npm.cmd run dev
 
 Open **http://localhost:5173**. Use `localhost` so it matches the server's default CORS origin. The client defaults to `http://localhost:5000/api`. To change that address, copy `.env.example` to `.env` and edit `VITE_API_URL`; restart Vite afterward. Client environment variables are public, so never put database credentials here.
 
-Click **Come on in**, choose **Demo Student**, then use the cafe objects or navigation menu. Profile selection is not authentication. The existing backend has no password login; authentication is optional under the rubric and has not been implemented.
+Click **Come on in**, choose **Demo Student**, then start a study session. Use **Explore** to reach the study board, spaces, counter, reservations and notebook. Profile selection is not authentication. The existing backend has no password login; authentication is optional under the rubric and has not been implemented.
 
 ## What the draft supports
 
@@ -35,7 +35,7 @@ Click **Come on in**, choose **Demo Student**, then use the cafe objects or navi
 - Read productivity statistics, current streak, longest streak, favorite area, and most ordered drink.
 - Recover from failed requests and show validation, empty, loading, and success states.
 
-There are 17 page routes, with a shared component for the add/edit task form. The endpoint-to-screen map and design plan are in [docs/DRAFT_PLAN.md](docs/DRAFT_PLAN.md).
+There are 17 page routes, with a shared component for the add/edit task form. The endpoint map is in [docs/DRAFT_PLAN.md](docs/DRAFT_PLAN.md). The simplified flow and handoff are in [docs/REDESIGN.md](docs/REDESIGN.md), with an optional [asset brief](docs/ASSET_BRIEF.md).
 
 ## Structure for the frontend handoff
 
