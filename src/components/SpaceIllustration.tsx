@@ -1,10 +1,10 @@
-export function SpaceIllustration({ name, className = '' }: { name: string; className?: string }) {
+export function SpaceIllustration({ name, className = '', immersive = false }: { name: string; className?: string; immersive?: boolean }) {
   const midnight = name === 'Midnight Cafe';
   const garden = name === 'Garden Patio';
   const quiet = name === 'Quiet Corner';
   const library = name === 'Library Table';
-  return <svg className={`space-illustration ${className}`} viewBox="0 0 480 320" role="img" aria-label={`Original illustration of ${name}`}>
-    <rect x="1" y="1" width="478" height="318" rx="12" fill={midnight ? '#344653' : garden ? '#e2e8db' : '#f0eadc'} />
+  return <svg className={`space-illustration ${className}`} viewBox="0 0 480 320" preserveAspectRatio={immersive ? 'xMidYMid slice' : 'xMidYMid meet'} role="img" aria-label={`Original illustration of ${name}`}>
+    <rect x="0" y="0" width="480" height="320" rx={immersive ? 0 : 12} fill={midnight ? '#344653' : garden ? '#e2e8db' : '#f0eadc'} />
     <g fill="none" stroke={midnight ? '#e9e0cd' : '#4d5045'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 255q216-7 444 0" opacity=".45" />
       {library ? <><path d="M87 46h302v121H87zM87 105h302" fill="#bca484" /><path d="M107 102V59h15v43m14 0V53h20v49m13 0V63h20v39m21 0V55h23v47m22 0V62h17v40m15 0V57h24v45m19 0V68h30v34m-246 61v-42h32v42m18 0v-42h18v42m25 0v-38h36v38m30 0v-42h15v42m22 0v-35h27v35" /></> : quiet ? <><path d="M101 244V104q0-12 10-12M86 96h49l-10-37h-28z" fill="#d4bd83" /><path d="M154 242v-98q52-33 113 0v98m-119-70q-20-9-20 15v50h155v-50q0-24-20-15m-112 45h114m-100 26-9 28m98-28 9 28" fill="#a7b5a0" /></> : <>

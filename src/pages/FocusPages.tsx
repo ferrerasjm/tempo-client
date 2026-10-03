@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { FocusSettings } from '../components/FocusSettings';
 import { RewardTray } from '../components/RewardTray';
 import { Link, useParams } from 'react-router-dom';
 import { cafeApi } from '../services/cafeApi';
@@ -39,6 +41,7 @@ export function StartFocusPage() {
 export function ActiveFocusPage() {
   const { id = '' } = useParams(); const { user } = useCafe();
   const room = useFocusRoom(id);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { session, area, timer } = room;
   const running = session?.status === 'active';
   const paused = session?.status === 'paused';
@@ -53,12 +56,11 @@ export function ActiveFocusPage() {
       {planned || running || paused || completed ? <>
         {!corner && <p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p>}
         <p className="focus-hint">{planned ? 'Choose your corner, then start when you’re ready.' : paused ? 'Your reward break is in progress.' : completed ? 'A little progress. A well-earned pause.' : timer.remainingSeconds ? 'One thing at a time.' : 'Time’s up. Stop to save your session.'}</p>
-        <div className="focus-table"><SpaceIllustration name={area.name} /><div className="tabletop">
+        <div className="focus-table"><SpaceIllustration name={area.name} immersive /><div className="tabletop">
           <div className="session-drink"><MenuArtwork name={session.drinkName || 'Cafe Latte'} /></div>
           {corner && <><h1>{session.sessionLabel ? session.sessionLabel + ' will ' : ''}{room.state.data.task.title}</h1><p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p></>}
-          {session.drinkName && <p className="drink-caption">{session.drinkSize} {session.drinkName}</p>}
           {planned || running || paused ? <>
-            <div className="seat-status" role="status">{room.seats.loading ? 'Checking seats…' : room.seats.error ? <><span>Seats could not be checked.</span><button className="text-link" onClick={room.seats.reload}>Retry seats</button></> : room.seats.data && <>{area.name} · {room.seats.data.remainingSeats} / {room.seats.data.capacity} seats available {room.holdsSeat && <span>· your seat is reserved</span>}</>}</div>
+            <div className="seat-status" role="status">{room.seats.loading ? 'Checking seats…' : room.seats.error ? <><span>Seats could not be checked.</span><button className="text-link" onClick={room.seats.reload}>Retry seats</button></> : room.seats.data && <>{room.seats.data.remainingSeats} / {room.seats.data.capacity} seats available {room.holdsSeat && <span>· your seat is reserved</span>}</>}</div>
             {running && !room.holdsSeat && <p className="browsing-note">You’re browsing. Your reserved seat is in {room.state.data.areas.find(item => item._id === session.area)?.name}.</p>}
             <div className="session-controls">
               {planned && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('start')}>{room.busy ? 'Starting…' : room.canTakeSeat ? 'Start session' : 'No seat available'}</button>}
@@ -68,18 +70,16 @@ export function ActiveFocusPage() {
               {planned && <button className="text-link" disabled={room.busy} onClick={() => room.action('stop')}>Cancel setup</button>}
             </div>
             {paused && <p className="reward-break" role="status">{timer.rewardBreakRemainingSeconds > 0 ? 'Break remaining: ' + timerText(timer.rewardBreakRemainingSeconds) : 'Break finished. Resuming needs an available seat.'}</p>}
-            {!paused && <RewardTray rewards={room.rewards.data} loading={room.rewards.loading} error={room.rewards.error} retry={room.rewards.reload} enabled={running && timer.remainingSeconds > 0} busy={room.busy} useItem={item => room.action('pause', item)} />}
-            <div className="music-controls"><button className="text-link" disabled={!music.available || !running || timer.remainingSeconds === 0} onClick={music.toggle}>{music.playing ? 'Pause music' : 'Play music'}</button><label>Volume<input type="range" min={0} max={1} step={.05} value={music.volume} disabled={!music.available} onChange={event => music.setVolume(Number(event.target.value))} /></label></div>
-            {!music.available && <p className="music-note">Background music hasn’t been added yet.</p>}
-            {music.error && <p className="music-note" role="status">{music.error}</p>}
-            <details className="quiet-options"><summary>Session details</summary><p className="note">{session.plannedMinutes} minute focus · {session.breakMinutes} minute break · {timer.elapsedMinutes} minutes focused</p><p className="note">A purchased reward unlocks one short break and releases your seat. Resuming checks availability again. Stopping early saves your time but earns no mission credits.</p><button className="text-link" onClick={room.seats.reload}>Refresh seats</button></details>
+            {!paused && <RewardTray compact rewards={room.rewards.data} loading={room.rewards.loading} error={room.rewards.error} retry={room.rewards.reload} enabled={running && timer.remainingSeconds > 0} busy={room.busy} useItem={item => room.action('pause', item)} />}
+            <button className="text-link focus-settings-toggle" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>Session settings</button>
+
           </> : <><p className="note">{session.tempoCreditsEarned ? session.tempoCreditsEarned + ' Tempo Credits earned / ' : ''}{session.completedMinutes} {session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {session.focusScore}%</p><Link className="button" to="/study/drink">Prepare another session</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${room.state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/analytics">Productivity Analytics</Link><Link className="text-link" to="/menu">Reward shop</Link></div></>}
           <Feedback error={room.error} />
         </div></div>
         <nav className="scene-navigation" aria-label="Cafe spaces"><button className="icon-button" aria-label="Previous cafe space" disabled={room.viewIndex === -1 || room.busy} onClick={() => room.browse(room.viewIndex - 1)}>←</button><button className="icon-button" aria-label="Next cafe space" disabled={room.viewIndex === room.state.data.areas.length - 1 || room.busy} onClick={() => room.browse(room.viewIndex + 1)}>→</button></nav>
       </> : <EmptyState title="This session has ended." to="/study/drink" label="Prepare a new session" />}
     </>)}
-  </LoadState></section>;
+  </LoadState><FocusSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} room={room} music={music} /></section>;
 }
 
 export function FocusHistoryPage() {
