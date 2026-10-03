@@ -7,10 +7,10 @@ export const drinkSizes = [
   { value: 'venti', label: 'Venti', minutes: 60 },
 ] as const;
 export type DrinkSize = typeof drinkSizes[number]['value'];
-interface StudyDraft { drink: string; size: DrinkSize; label: string; taskId: string }
+interface StudyDraft { areaId: string; drink: string; size: DrinkSize; label: string; taskId: string }
 interface StudyDraftState { draft: StudyDraft; update: (values: Partial<StudyDraft>) => void; reset: () => void }
 const Context = createContext<StudyDraftState | null>(null);
-const empty: StudyDraft = { drink: '', size: 'tall', label: '', taskId: '' };
+const empty: StudyDraft = { areaId: '', drink: '', size: 'tall', label: '', taskId: '' };
 
 function DraftStore({ userId, children }: { userId: string; children: ReactNode }) {
   const storageKey = 'tempo-study-' + userId;
@@ -18,6 +18,7 @@ function DraftStore({ userId, children }: { userId: string; children: ReactNode 
     try {
       const saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
       return {
+        areaId: typeof saved.areaId === 'string' ? saved.areaId : '',
         drink: typeof saved.drink === 'string' ? saved.drink : '',
         label: typeof saved.label === 'string' ? saved.label : '',
         taskId: typeof saved.taskId === 'string' ? saved.taskId : '',

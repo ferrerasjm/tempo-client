@@ -12,7 +12,7 @@ export interface FocusSession {
   _id: string; user: string; task: string; area: string; energyLevel: string;
   plannedMinutes: number; completedMinutes: number; breakMinutes: number;
   status: 'planned' | 'active' | 'paused' | 'completed' | 'cancelled'; startedAt: string | null; endedAt: string | null; focusScore: number | null;
-  drink?: string | null; drinkName?: string; drinkSize?: string; sessionLabel?: string;
+  taskCompleted?: boolean; taskConfirmed?: boolean; taskTitle?: string; drink?: string | null; drinkName?: string; drinkSize?: string; sessionLabel?: string;
   tempoCreditsEarned?: number; rewardBreakEndsAt?: string | null; rewardBreaks?: { order: string; menuItem: string; name: string; startedAt: string; endsAt: string }[];
   pausedAt?: string | null; pausedMilliseconds?: number; elapsedSeconds?: number; serverTime?: string;
 }

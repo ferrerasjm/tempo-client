@@ -44,35 +44,6 @@
 .entry-task-details summary { min-height: 44px; padding: 10px 0; text-align: center; font-size: .75rem; cursor: pointer; }
 .entry-task-details[open] { padding: 10px 15px; border: 1px solid #ccd2c4; }
 
-/* Focus rooms cover the viewport; only essentials sit on the low table. */
-.app-shell .session-room { min-height: 100svh !important; height: 100svh; }
-.session-room .focus-table > .space-illustration { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border-radius: 0; }
-.session-room .tabletop { position: absolute; margin: 0; height: 210px; min-height: 210px; padding: 28px 20px 12px; }
-.session-room.scene-corner .tabletop { height: 235px; min-height: 235px; }
-.session-room .session-drink { width: 165px; height: 155px; margin: -140px auto 12px; }
-.session-room .session-drink .drink-art { width: 100%; height: 100%; }
-.session-room.scene-corner .tabletop h1 { position: static; margin: 4px auto 8px; max-width: min(600px, 80%); font-size: .8rem; text-decoration: none; }
-.session-room.scene-corner .tabletop .timer { position: static; margin: 4px 0 10px; font-size: 2.3rem; line-height: 1; }
-.session-room .seat-status, .session-room .browsing-note { font-size: .72rem; margin: 4px auto; }
-.session-room .browsing-note { max-width: 480px; }
-.session-room .session-controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 8px 0 0; }
-.session-room .session-controls .button { min-height: 42px; padding: 8px 18px; }
-.session-room .focus-settings-toggle { min-height: 36px; padding: 6px; font-size: .72rem; }
-.session-room .reward-break { margin: 4px auto; font-size: .8rem; }
-.session-room .tabletop .form-error { max-width: 450px; margin: 4px auto; padding: 5px 10px; font-size: .72rem; }
-.session-room .space-badge { max-width: calc(100% - 200px); }
-.session-room.scene-corner .tabletop > .note { visibility: visible; }
-.session-room .reward-tray { position: absolute; top: 12px; left: calc(50% + 125px); width: min(300px, calc(50% - 150px)); margin: 0; font-size: .7rem; }
-.table-rewards { display: flex; flex-wrap: nowrap; gap: 8px; max-width: 100%; overflow-x: auto; justify-content: flex-start; }
-.table-rewards button { position: relative; flex-shrink: 0; background: none; border: 0; border-radius: 5px; padding: 4px; min-width: 60px; }
-.table-rewards button:hover:not(:disabled) { background: #f0eadc; }
-.table-rewards .drink-art { width: 60px; height: 55px; margin: 0 auto; }
-.reward-quantity { display: block; font-size: .65rem; }
-.focus-settings h3 { margin: 22px 0 8px; font-size: .95rem; }
-.focus-settings .note { margin: 10px 0; font-size: .85rem; }
-.focus-settings .music-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; }
-.music-controls label { display: flex; align-items: center; gap: 10px; font-size: .8rem; }
-.music-controls input { width: 130px; accent-color: #1c211d; }
 .tempo-missions { margin: -10px auto 30px; font-size: .8rem; }
 .tempo-missions summary { cursor: pointer; padding: 10px; }
 .tempo-missions details p { margin: 8px auto; max-width: 480px; }
@@ -91,25 +62,4 @@
   .drink-choice span { font-size: .75rem; }
   .study-drinks .drink-art { width: 100px; height: 105px; }
   .task-notepad { padding: 25px 12px; min-height: 210px; }
-  .session-room .tabletop { height: 205px; min-height: 205px; padding: 20px 12px 10px; }
-  .session-room.scene-corner .tabletop { height: 255px; min-height: 255px; }
-  .session-room .session-drink { width: 120px; height: 110px; margin-top: -100px; margin-bottom: 12px; }
-  .session-room.scene-corner .tabletop .timer { font-size: 2rem; }
-  .session-room.scene-corner .tabletop h1 { font-size: .75rem; }
-  .session-room .space-badge { max-width: calc(100% - 150px); }
-  .session-room .session-controls { gap: 8px; }
-  .session-room .session-controls .button { padding: 8px 12px; font-size: .75rem; }
-  .session-room .seat-status, .session-room .browsing-note { font-size: .65rem; }
-  .session-room .reward-tray { top: -55px; left: calc(50% + 60px); width: calc(50% - 75px); }
-  .table-rewards button { min-width: 45px; }
-  .table-rewards .drink-art { width: 45px; height: 45px; }
 }
-@media (max-height: 650px) and (min-width: 600px) {
-  .session-room .session-drink { width: 125px; height: 115px; margin-top: -105px; }
-  .session-room .tabletop { height: 175px; min-height: 175px; }
-  .session-room.scene-corner .tabletop { height: 215px; min-height: 215px; }
-}
-
-/* Allow transient break, browsing, and error messages to remain visible. */
-.session-room .tabletop:has(.form-error),
-.session-room.scene-corner .tabletop:has(.browsing-note, .reward-break) { height: auto; min-height: 255px; }

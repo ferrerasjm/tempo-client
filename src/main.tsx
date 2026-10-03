@@ -8,6 +8,8 @@ import './styles.css';
 import './experience.css';
 import './entrance.css';
 import './study.css';
+import './focus-room.css';
+import './sip-stats.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><BrowserRouter><CafeProvider><StudyDraftProvider><App /></StudyDraftProvider></CafeProvider></BrowserRouter></React.StrictMode>,

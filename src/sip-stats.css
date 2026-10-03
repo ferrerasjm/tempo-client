@@ -1,0 +1,53 @@
+.app-shell .sip-stats-page {
+  width: 100%;
+  max-width: none;
+  min-height: 100svh;
+  padding: 40px 32px;
+  display: grid;
+  place-items: center;
+  background: #efefec;
+  color: #111;
+}
+.sip-stats-layout {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 500px);
+  gap: clamp(40px, 7.3vw, 140px);
+  align-items: center;
+  transform: translateX(40px);
+}
+.sip-timer { text-align: center; }
+.sip-timer .drink-art { width: 340px; height: 340px; object-fit: contain; margin: 0 auto; }
+.sip-timer p { margin-top: 30px; color: #191919; font-size: 68px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.sip-stats {
+  height: 665px;
+  padding: 46px 44px;
+  border: 2px solid #111;
+  border-radius: 4px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sip-stats-heading { text-align: center; margin-bottom: 26px; }
+.app-shell .sip-stats-heading h1 { display: inline-block; max-width: 100%; overflow-wrap: anywhere; font: 400 20px var(--font-sans); padding-bottom: 12px; border-bottom: 2px solid #111; }
+.sip-list { min-height: 0; flex: 1; overflow-y: auto; scrollbar-width: thin; }
+.sip-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 0; font-size: 18px; line-height: 1.35; }
+.sip-row .drink-art { width: 26px; height: 26px; object-fit: contain; }
+.sip-row strong { font-weight: 400; overflow-wrap: anywhere; }
+.sip-row > span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sip-empty { flex: 1; color: #717681; text-align: center; font-size: 18px; font-weight: 600; font-style: italic; }
+.sip-total { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; min-height: 54px; flex-shrink: 0; margin: 24px 0 48px; padding: 10px 16px; border: 2px solid #111; border-radius: 999px; color: #717681; font-size: 15px; }
+.sip-count { display: flex; align-items: center; gap: 6px; color: #111; }
+.sip-total .drink-art { width: 28px; height: 28px; object-fit: contain; }
+.app-shell .sip-back { align-self: center; padding: 0; min-height: 28px; color: #111; font-size: 18px; text-decoration: none; text-underline-offset: 2px; }
+@media (max-width: 1100px) { .sip-stats-layout { transform: none; } }
+@media (max-width: 760px) {
+  .app-shell .sip-stats-page { padding: 32px 20px; }
+  .sip-stats-layout { grid-template-columns: minmax(0, 500px); justify-content: center; gap: 30px; }
+  .sip-timer .drink-art { width: 200px; height: 200px; }
+  .sip-timer p { margin-top: 14px; font-size: 48px; }
+  .sip-stats { height: 580px; padding: 32px 24px; }
+  .sip-row { gap: 10px; font-size: 16px; }
+  .sip-total { margin-bottom: 32px; }
+}

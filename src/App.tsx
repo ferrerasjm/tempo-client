@@ -3,7 +3,7 @@ import { Layout, ProfileGate } from './components/Layout';
 import { LandingPage, LobbyPage, WelcomePage } from './pages/EntrancePages';
 import { TaskFormPage, TaskListPage } from './pages/TaskPages';
 import { AreaPage, ReservationsPage, SpacesPage } from './pages/SpacePages';
-import { ActiveFocusPage, AnalyticsPage, FocusHistoryPage, StartFocusPage } from './pages/FocusPages';
+import { ActiveFocusPage, AnalyticsPage, FocusHistoryPage, SipStatsPage, StartFocusPage } from './pages/FocusPages';
 import { CheckoutPage, MenuPage, OrderPage, OrdersPage } from './pages/MenuPages';
 import { StudyDrinkPage, StudySizePage, StudyLabelPage, StudyTaskPage } from './pages/StudyEntryPages';
 
@@ -17,7 +17,7 @@ export default function App() {
       <Route path="spaces" element={<SpacesPage />} /><Route path="spaces/:id" element={<AreaPage />} />
       <Route path="tasks" element={<TaskListPage />} /><Route path="tasks/new" element={<TaskFormPage />} /><Route path="tasks/:id/edit" element={<TaskFormPage />} />
       <Route path="focus" element={<StartFocusPage />} /><Route path="focus/:id" element={<ActiveFocusPage />} />
-      <Route path="history" element={<FocusHistoryPage />} /><Route path="analytics" element={<AnalyticsPage />} />
+      <Route path="history" element={<FocusHistoryPage />} /><Route path="analytics" element={<AnalyticsPage />} /><Route path="sip-stats" element={<SipStatsPage />} />
       <Route path="menu" element={<MenuPage />} /><Route path="order-summary" element={<CheckoutPage />} /><Route path="orders" element={<OrdersPage />} /><Route path="orders/:id" element={<OrderPage />} />
       <Route path="reservations" element={<ReservationsPage />} />
     </Route>

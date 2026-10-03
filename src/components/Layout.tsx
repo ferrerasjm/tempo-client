@@ -4,28 +4,48 @@ import { useCafe } from '../state/CafeContext';
 import { artwork } from '../assets';
 import { LoadState } from './ui';
 import { Modal } from './Modal';
+import { useApi } from '../hooks/useApi';
+import { cafeApi } from '../services/cafeApi';
 
 export function Layout() {
-  const { user, notice } = useCafe();
+  const { user, notice, exploreOpen, closeExplore } = useCafe();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hiddenTooltip, setHiddenTooltip] = useState<string | null>(null);
+  const [signTooltipPosition, setSignTooltipPosition] = useState({ home: { x: 56, y: 96 }, explore: { x: 1490, y: 96 } });
   const location = useLocation();
-  useEffect(() => { setMenuOpen(false); window.scrollTo({ top: 0 }); }, [location.pathname, location.search]);
+  const focus = useApi(() => (menuOpen || exploreOpen) && user ? cafeApi.sessions(user._id) : Promise.resolve([]), [menuOpen, exploreOpen, user?._id, location.pathname]);
+  const unfinished = focus.data?.find(item => ['planned', 'active', 'paused'].includes(item.status));
+  useEffect(() => { setMenuOpen(false); closeExplore(); window.scrollTo({ top: 0 }); }, [location.pathname, location.search]);
   const session = /^\/focus\/[^/]+$/.test(location.pathname);
   const paper = ['/welcome', '/focus', '/menu', '/order-summary'].includes(location.pathname) || location.pathname.startsWith('/orders/') || location.pathname.startsWith('/study/');
   const room = location.pathname === '/cafe';
   const landing = location.pathname === '/';
   return <div className={`app-shell ${landing ? 'landing-shell' : session ? 'session-shell' : room ? 'room-shell' : paper ? 'paper-shell' : 'notebook-shell'}`}>
     <a className="skip-link" href="#main">Skip to content</a>
-    {!landing && <header className="site-header"><Link className="wordmark hanging-sign" aria-label="Cafe Tempo home" to="/"><img src={artwork.cup} alt="" /><span>cafe tempo</span></Link>
-      {user && <button className="menu-toggle hanging-sign" aria-haspopup="dialog" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><svg viewBox="0 0 48 40" aria-hidden="true"><path d="M7 8q9-3 17 2 8-5 17-2v26q-9-3-17 2-8-5-17-2zM24 10v26M11 14l8 1m-8 6 8 1m10-7 8-1m-8 7 8-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg><span>Explore</span></button>}
+    {!landing && location.pathname !== '/sip-stats' && <header className="site-header"><Link className="wordmark hanging-sign" aria-label="Cafe Tempo home" to="/" onMouseEnter={() => setHiddenTooltip(null)} onFocus={() => setHiddenTooltip(null)} onPointerMove={event => {
+      if (event.pointerType !== 'mouse') return;
+      setSignTooltipPosition(current => ({ ...current, home: { x: Math.max(8, Math.min(window.innerWidth - 8, event.clientX)), y: event.clientY } }));
+    }} onKeyDown={event => { if (event.key === 'Escape') setHiddenTooltip('home'); }}>
+      <img src={artwork.coffeeSign} alt="" />
+      <span className="sign-tooltip" hidden={hiddenTooltip === 'home'} aria-hidden="true" style={{ left: `clamp(80px, ${signTooltipPosition.home.x}px, calc(100vw - 80px))`, top: `${signTooltipPosition.home.y}px` }}>start over?</span>
+    </Link>
+      {user && <Link className="menu-toggle hanging-sign" aria-label="Sip Stats" to="/sip-stats" onMouseEnter={() => setHiddenTooltip(null)} onFocus={() => setHiddenTooltip(null)} onPointerMove={event => {
+        if (event.pointerType !== 'mouse') return;
+        setSignTooltipPosition(current => ({ ...current, explore: { x: Math.max(8, Math.min(window.innerWidth - 8, event.clientX)), y: event.clientY } }));
+      }} onKeyDown={event => { if (event.key === 'Escape') setHiddenTooltip('explore'); }}>
+        <img src={artwork.bathroomSign} alt="" />
+        <span className="sign-tooltip" hidden={hiddenTooltip === 'explore'} aria-hidden="true" style={{ left: `clamp(80px, ${signTooltipPosition.explore.x}px, calc(100vw - 80px))`, top: `${signTooltipPosition.explore.y}px` }}>sip stats</span>
+      </Link>}
     </header>}
-    <Modal open={menuOpen} title="Around the cafe" onClose={() => setMenuOpen(false)}>
+    <Modal open={menuOpen || exploreOpen} title="Explore the Cafe" onClose={() => { setMenuOpen(false); closeExplore(); }}>
       <nav className="explore-nav" aria-label="Main navigation">
-        <div><p className="eyebrow">Settle in</p><NavLink to="/study/drink">Prepare a session</NavLink><NavLink to="/cafe">Cafe lobby</NavLink><NavLink to="/focus">Smart focus recommendation</NavLink><NavLink to="/tasks">Study board</NavLink><NavLink to="/spaces">Find a space</NavLink></div>
-        <div><p className="eyebrow">Take a little break</p><NavLink to="/menu">Reward shop</NavLink><NavLink to="/reservations">Your reservations</NavLink><NavLink to="/orders">Your orders</NavLink></div>
-        <div><p className="eyebrow">Your notebook</p><NavLink to="/analytics">Productivity Analytics</NavLink><NavLink to="/history">Focus history</NavLink></div>
+        <div><p className="eyebrow">In the Cafe</p>
+          {focus.loading ? <p className="note" role="status">Checking Your Timer…</p> : focus.error ? <p className="note" role="alert">Your Timer Could Not Be Checked. <button className="text-link" onClick={focus.reload}>Retry</button></p> : <NavLink onClick={() => setMenuOpen(false)} to={unfinished ? `/focus/${unfinished._id}` : '/study/drink'}>{unfinished ? 'Return To Focus' : 'Choose A Drink'}</NavLink>}
+          <NavLink onClick={() => setMenuOpen(false)} to="/tasks">Task Board</NavLink><NavLink onClick={() => setMenuOpen(false)} to="/menu">Reward Shop</NavLink>
+        </div>
+        <div><p className="eyebrow">Your Notebook</p><NavLink onClick={() => setMenuOpen(false)} to="/orders">Your Orders</NavLink><NavLink onClick={() => setMenuOpen(false)} to="/history">Focus History</NavLink><NavLink onClick={() => setMenuOpen(false)} to="/analytics">Productivity Analytics</NavLink></div>
       </nav>
-      <Link className="text-link profile-link" to="/welcome">{user?.displayName} · Change profile</Link>
+      <Link className="text-link profile-link" onClick={() => setMenuOpen(false)} to="/welcome">Change Profile</Link>
     </Modal>
     {notice && <div className="toast" role="status">{notice}</div>}
     <main id="main"><Outlet /></main>

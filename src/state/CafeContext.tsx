@@ -8,6 +8,7 @@ interface CafeState {
   enter: (id: string) => void; leave: () => void;
   basket: Selection[]; setQuantity: (id: string, quantity: number) => void; clearBasket: () => void;
   notice: string; notify: (message: string) => void;
+  exploreOpen: boolean; openExplore: () => void; closeExplore: () => void;
 }
 const CafeContext = createContext<CafeState | null>(null);
 
@@ -24,6 +25,7 @@ export function CafeProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState(() => localStorage.getItem('tempo-profile') || '');
   const [basket, setBasket] = useState<Selection[]>(savedBasket);
   const [notice, setNotice] = useState('');
+  const [exploreOpen, setExploreOpen] = useState(false);
   useEffect(() => { sessionStorage.setItem('tempo-basket', JSON.stringify(basket)); }, [basket]);
   useEffect(() => {
     if (!notice) return;
@@ -52,6 +54,7 @@ export function CafeProvider({ children }: { children: ReactNode }) {
     user: profiles.data?.find(profile => profile._id === userId) || null,
     users: profiles.data || [], loading: profiles.loading, error: profiles.error, retry: profiles.reload,
     enter, leave, basket, setQuantity, clearBasket: () => setBasket([]), notice, notify: setNotice,
+    exploreOpen, openExplore: () => setExploreOpen(true), closeExplore: () => setExploreOpen(false),
   }}>{children}</CafeContext.Provider>;
 }
 

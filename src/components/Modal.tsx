@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 
-export function Modal({ open, title, onClose, busy = false, children }: {
-  open: boolean; title: string; onClose: () => void; busy?: boolean; children: ReactNode;
+export function Modal({ open, title, onClose, busy = false, className = '', children }: {
+  open: boolean; title: string; onClose: () => void; busy?: boolean; className?: string; children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -13,7 +13,7 @@ export function Modal({ open, title, onClose, busy = false, children }: {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = previous; };
   }, [open]);
-  return <dialog ref={ref} className="modal" aria-labelledby={titleId}
+  return <dialog ref={ref} className={`modal ${className}`} aria-labelledby={titleId}
     onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}
     onClick={event => {
       const bounds = event.currentTarget.getBoundingClientRect();

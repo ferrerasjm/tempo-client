@@ -1,0 +1,170 @@
+/* The room is scenery. Booking and the timer stay in the existing hooks. */
+.app-shell .session-room {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: none;
+  min-height: max(100svh, 760px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  background: #efefea;
+}
+.app-shell .session-room.scene-focus { height: 100svh; min-height: 100svh; overflow: hidden; }
+.session-room .space-badge {
+  position: absolute;
+  z-index: 3;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 220px);
+  margin: 0;
+  padding: 12px 22px;
+  border: 2px solid #292b26;
+  background: #fffefa;
+  color: #292b26;
+  font-size: .9rem;
+}
+.session-room.scene-focus::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/assets/cafe/focus-bg.webp') center / cover no-repeat;
+}
+.session-room .focus-readout { position: absolute; z-index: 2; top: 22%; inset-inline: 90px; }
+.session-room .timer {
+  margin: 0;
+  font-size: clamp(5rem, 10vw, 9rem);
+  line-height: 1.15;
+  font-weight: 400;
+  color: #1e211d;
+  letter-spacing: -.045em;
+}
+.session-room .focus-readout h1 {
+  position: static;
+  width: min(560px, 100%);
+  margin: 20px auto 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 9px;
+}
+.session-room .focus-table {
+  position: static;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+.session-room .tabletop {
+  position: absolute;
+  inset: 52% 0 0;
+  z-index: 2;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.session-room .session-drink { width: min(320px, 68vw); height: 62%; max-height: 330px; margin: 0 auto; }
+.session-room .session-drink .drink-art { width: 100%; height: 100%; object-fit: contain; }
+.session-room .session-controls { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 12px 0 0; }
+.scene-focus .session-controls { position: absolute; bottom: 34px; inset-inline: 0; }
+.timer-control { display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; border: 2px solid #111; border-radius: 6px; color: #111; background: #fff; }
+.timer-control svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.stop-control { color: #fff; background: #111; }
+.room-volume { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; }
+.room-volume input { width: 175px; height: 18px; padding: 0; border: 0; accent-color: #111; }
+.room-volume svg { width: 17px; height: 17px; fill: none; stroke: #758078; stroke-width: 1.5; }
+.session-feedback { position: absolute; z-index: 4; top: 110px; left: 50%; transform: translateX(-50%); width: min(460px, calc(100% - 40px)); font-size: .8rem; }
+.session-feedback .form-error { padding: 10px; background: #fff; }
+.finish-reopen { position: absolute; z-index: 4; top: 120px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.session-result { position: absolute; z-index: 3; bottom: 22px; inset-inline: 24px; font-size: .8rem; }
+.session-room .center-actions { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 8px; gap: 20px; }
+.scene-navigation { position: absolute; z-index: 4; top: 49%; inset-inline: 18px; display: flex; justify-content: space-between; pointer-events: none; }
+.scene-navigation .icon-button { pointer-events: auto; width: 54px; height: 54px; border: 0; background: #fffefa; color: #292b26; font-size: 1.8rem; box-shadow: 0 2px 3px #292b2612; }
+.scene-navigation button:disabled { opacity: .4; }
+.session-room > .loading, .session-room > .empty { margin-top: 150px; }
+
+/* Full room composition, with illustrated visitors behind the foreground table. */
+.room-scenery { position: absolute; inset: 0; z-index: 0; }
+.room-backdrop { width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.room-characters { position: absolute; bottom: calc(48% + 48px); left: 4%; width: 92%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 2vw, 38px); align-items: end; }
+.cafe-visitor { position: relative; width: 85%; max-width: min(300px, 30svh); margin: 0 auto; }
+.cafe-visitor:nth-child(odd) { transform: translateY(18px); }
+.cafe-visitor:nth-child(even) { transform: translateY(-12px); }
+.visitor-furniture { width: 100%; height: auto; }
+.visitor-character-position { position: absolute; bottom: 42%; right: 0; width: 70%; }
+.visitor-character { width: 100%; height: auto; animation: cafe-sway 3s ease-in-out infinite; }
+.cafe-visitor:nth-child(even) .visitor-furniture { transform: scaleX(-1); }
+.cafe-visitor:nth-child(even) .visitor-character-position { right: auto; left: 0; }
+/* Yellow and red face the opposite way in their supplied SVGs. */
+.cafe-visitor:first-child .visitor-character-position,
+.cafe-visitor:last-child .visitor-character-position { transform: scaleX(-1); }
+.visitor-drink { position: absolute; left: 13%; bottom: 40%; width: 22%; height: auto; }
+.cafe-visitor:nth-child(even) .visitor-drink { left: auto; right: 13%; }
+.cafe-visitor:nth-child(2) .visitor-character { animation-delay: -.8s; }
+.cafe-visitor:nth-child(3) .visitor-character { animation-delay: -1.7s; }
+.cafe-visitor:nth-child(4) .visitor-character { animation-delay: -2.3s; }
+.character-tooltip { position: absolute; z-index: 5; bottom: calc(100% + 14px); left: 50%; transform: translate(-50%, 5px); width: max-content; max-width: min(230px, 100%); padding: 10px 14px; border-radius: 999px; color: #fff; background: #090b09; box-shadow: 0 5px 0 rgb(0 0 0 / 18%); font-size: .78rem; font-weight: 700; letter-spacing: .01em; opacity: 0; visibility: hidden; transition: opacity .15s, transform .15s, visibility .15s; }
+.character-tooltip::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px; background: #090b09; transform: translateX(-50%) rotate(45deg); z-index: -1; }
+.cafe-visitor:hover .character-tooltip, .cafe-visitor:focus .character-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.cafe-visitor.tooltip-dismissed .character-tooltip { opacity: 0; visibility: hidden; }
+.snack-art { display: grid; place-items: center; height: auto; min-height: 55px; font-size: .75rem; }
+.session-room.scene-corner .tabletop .timer { font-size: 1.65rem; margin: 14px 0 0; letter-spacing: 0; }
+@keyframes cafe-sway { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+@media (max-width: 800px) {
+  .session-room .focus-readout { inset-inline: 40px; }
+  .app-shell .session-room.scene-corner { min-height: max(100svh, 980px); }
+  .room-characters { left: 5%; width: 90%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; }
+  .cafe-visitor { max-width: 165px; width: 90%; }
+  .cafe-visitor:nth-child(odd) { transform: translateY(8px); }
+  .cafe-visitor:nth-child(even) { transform: translateY(-8px); }
+}
+@media (max-width: 480px) {
+  .app-shell .hanging-sign:last-child { margin-right: 0; }
+  .app-shell .session-room { min-height: max(100svh, 780px); }
+  .session-room .space-badge { top: 26px; padding: 9px 12px; max-width: calc(100% - 160px); font-size: .75rem; }
+  .session-room .focus-readout { inset-inline: 35px; }
+  .session-room .timer { font-size: clamp(4rem, 19vw, 5rem); }
+  .session-room .focus-readout h1 { font-size: .9rem; margin-top: 20px; }
+  .scene-navigation { inset-inline: 10px; top: 47%; }
+  .scene-navigation .icon-button { width: 44px; height: 44px; font-size: 1.4rem; }
+  .room-characters { left: 4%; width: 92%; gap: 10px 14px; }
+  .character-tooltip { max-width: 150px; padding: 8px 10px; font-size: .65rem; }
+  .session-room .center-actions { gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .visitor-character { animation: none; } }
+
+/* End-of-timer confirmation and the next drink on one simple sheet. */
+.modal.session-finish { position: fixed; inset: 0; margin: auto; width: min(500px, 92vw); padding: 32px 36px; border: 2px solid #111; border-radius: 8px; background: #fff; color: #111; text-align: center; }
+.modal.session-finish[open] { display: flex; flex-direction: column; }
+.session-finish::backdrop { background: #0006; backdrop-filter: none; }
+.session-finish .modal-heading { position: static; justify-content: center; padding-inline: 15px; margin: 10px 0 24px; }
+.session-finish .modal-heading h2 { font-family: var(--font-sans); font-size: 1.1rem; }
+.session-finish .modal-heading > button { position: absolute; top: 6px; right: 6px; background: none; border: 0; }
+.session-finish .finished-drink { order: -1; margin-bottom: 15px; }
+.session-finish .finished-drink .drink-art { width: 95px; height: 95px; }
+.session-finish .finished-task { border: 2px solid #111; border-radius: 6px; padding: 15px; margin: 0 0 18px; overflow-wrap: anywhere; }
+.session-finish .button { min-width: 90px; background: #111; color: #fff; border-color: #111; }
+.session-finish > .button { align-self: center; }
+.session-finish .finish-later { display: block; margin: 15px auto 0; padding: 8px; font-size: .8rem; }
+.next-drink-picker, .next-size-picker { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 25px; }
+.next-drink-picker .drink-art { width: 105px; height: 105px; }
+.next-drink-picker p { margin: 6px 0 0; font-size: .8rem; }
+.next-size-picker p { min-width: 150px; margin: 0; }
+.session-finish .icon-button { flex-shrink: 0; border: 0; background: none; color: #111; }
+.session-finish .field input { text-align: center; border: 2px solid #111; border-radius: 6px; background: #fff; }
+.session-finish .field > label { font-size: .85rem; }
+.session-finish .form-error { margin: 12px 0; }
+@media (max-width: 480px) {
+  .modal.session-finish { padding: 28px 22px; }
+  .next-drink-picker, .next-size-picker { gap: 12px; }
+  .next-size-picker p { min-width: 125px; font-size: .9rem; }
+}

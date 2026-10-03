@@ -6,7 +6,7 @@ export function PageHeading({ eyebrow, title, description, action }: { eyebrow: 
 }
 export function LoadState({ loading, error, retry, children }: { loading: boolean; error: string; retry: () => void; children: ReactNode }) {
   if (loading) return <p className="loading" role="status">Opening the cafe…</p>;
-  if (error) return <div className="empty"><p role="alert">{error}</p><button className="button secondary" onClick={retry}>Try again</button></div>;
+  if (error) return <div className="empty"><p role="alert">{error}</p><button className="button secondary" onClick={retry}>Try Again</button></div>;
   return <>{children}</>;
 }
 export function EmptyState({ title, children, to, label }: { title: string; children?: ReactNode; to?: string; label?: string }) {
