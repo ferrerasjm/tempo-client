@@ -83,11 +83,14 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   await expect(page.locator('.space-badge')).toHaveText('garden patio');
   await page.getByRole('button', { name: 'Start session', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Pause timer' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Session settings', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Session settings' })).toBeVisible();
   await expect(page.getByText('Finish your full timer to earn credits for a break reward.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play music' })).toBeDisabled();
+  await page.keyboard.press('Escape');
   const noReward = await page.request.patch('http://localhost:5000/api/focus-sessions/' + focusPath.split('/').pop(), { data: { action: 'pause' } });
   expect(noReward.status()).toBe(400);
   await page.screenshot({ path: `${screenshotDir}/focus-active-desktop.png`, fullPage: true });
-  await expect(page.getByRole('button', { name: 'Play music' })).toBeDisabled();
   await page.getByRole('button', { name: 'Next cafe space' }).click();
   await expect(page.locator('.space-badge')).toHaveText('library table');
   await expect(page.getByText('You’re browsing.', { exact: false })).toBeVisible();

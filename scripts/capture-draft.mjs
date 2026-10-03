@@ -59,6 +59,19 @@ try {
   await capture('docs/screenshots/focus-desktop.png');
   await page.getByRole('button', { name: 'Next cafe space' }).click();
   await capture('docs/screenshots/focus-corner-desktop.png');
+  for (const width of [375, 1915]) {
+    await page.setViewportSize({ width, height: 945 });
+    await page.goto('http://localhost:5173/focus/' + sessions.find(session => session.status === 'completed')._id);
+    await page.locator('.timer').waitFor();
+    for (let index = 0; index < areas.length; index++) {
+      await page.getByRole('button', { name: 'Next cafe space' }).click();
+      const scene = await page.locator('.focus-table > .space-illustration').boundingBox();
+      const table = await page.locator('.tabletop').boundingBox();
+      if (!scene || Math.abs(scene.width - width) > 1 || !table || table.height > 945 * .4) throw new Error('Room should fill the width with a low table');
+    }
+  }
+  console.log('All five focus spaces fill desktop/mobile width with tables under 40% of the viewport.');
+  await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto('http://localhost:5173/spaces/' + areas[0]._id);
   await page.getByText('Reserve this space for later', { exact: true }).click();
   await capture('docs/screenshots/reservation-desktop.png');
