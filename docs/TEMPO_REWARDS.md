@@ -13,7 +13,7 @@ Task reopening and repeated completion cannot earn the same task award twice. Re
 
 1. Open Explore → Reward shop. Your balance and mission rules appear above the existing menu.
 2. Select items and review the order. The existing server prices and focus discount still apply. Place order is disabled when your balance is insufficient; the server also checks it.
-3. Paid items appear on the focus table, including after reload. The drink selected during session setup is decorative and does not unlock a break.
+3. Paid items appear as small clickable items on the focus table, including after reload. Their quantities are visible; credit balances and break rules are in Session settings. The drink selected during session setup is decorative and does not unlock a break.
 4. While focusing, click a purchased item to use one unit for a break of up to five minutes. There is no free Pause timer button.
 5. Resume timer can end the break early. The client and server check expiry; the server checks every five seconds even with the page closed. Music follows timer state.
 6. The break releases the seat. Automatic resume rechecks capacity. If the original area is full or unavailable, the timer stays paused while waiting for a seat. The user can browse another area and resume there.

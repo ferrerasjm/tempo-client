@@ -44,3 +44,7 @@ API calls remain in services/cafeApi.ts. Setup, session actions, and reservation
 SpaceIllustration and MenuArtwork are original vector placeholders. Replace these presentation components with images without changing the hooks or API contracts. See ASSET_BRIEF.md.
 
 The new flow extends the existing focus-session endpoints with planned/paused state, selected drink fields, persisted timer actions, and shared live-seat capacity checks. The recommendation formula and order discount remain available. Tempo Credits missions and purchased break rewards are implemented. Authentication and passport achievements remain unimplemented. See STUDY_FLOW.md.
+
+## Focus room spacing
+
+All five room scenes fill the viewport width using SVG cover scaling. The foreground table is 235 pixels tall on desktop and 255 pixels on mobile. Essential timer and seat controls remain visible; credits, sound, session details, and break explanations are in the keyboard-accessible Session settings dialog. Purchased rewards remain as small clickable table items. This keeps most of the viewport available for the cafe scene.
