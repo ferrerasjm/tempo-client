@@ -1,5 +1,15 @@
 # A quieter cafe draft
 
+## Full-screen reference direction
+
+The setup and counter now use a large centered white sheet on an original SVG cafe tabletop. Small hanging signs replace the conventional header. The lobby fills the viewport, and the focus screen uses a large countdown, a cup, a curved white table and side arrows.
+
+The arrows switch between the quiet focus presentation and the session's cafe corner. They do not change the saved area, create another session, pause time or reset the countdown. Scene selection is temporary presentation state.
+
+Shared record and form styling remains in styles.css. The immersive presentation is in experience.css. Native dialog navigation still provides access to every project page.
+
+Photographic drink cutouts and real ambient footage are still optional replacements. The layout is closer to the reference, while the current illustrations remain original placeholders.
+
 ## What changed
 
 - The header shows the wordmark and one Explore button. Secondary pages live in an accessible dialog with keyboard dismissal.

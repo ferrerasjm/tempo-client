@@ -74,6 +74,10 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   await expect(page.getByText('Edited task from the working UI.')).toBeVisible();
 
   await page.getByRole('link', { name: 'Focus →', exact: true }).click();
+  await expect(page.locator('.study-paper')).toBeVisible();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.screenshot({ path: `${screenshotDir}/focus-setup-desktop.png`, fullPage: true });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.getByRole('button', { name: 'Next →' }).click();
   await page.getByLabel('Cafe area').selectOption({ label: 'Garden Patio' });
   await page.getByRole('button', { name: 'Next →' }).click();
@@ -82,6 +86,14 @@ test('real frontend → API → Atlas flow', async ({ page }) => {
   await page.getByRole('button', { name: 'Start focusing →' }).click();
   await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
   focusPath = new URL(page.url()).pathname;
+  await page.screenshot({ path: `${screenshotDir}/focus-active-desktop.png`, fullPage: true });
+  await page.getByRole('button', { name: 'Show cafe corner scene' }).click();
+  await expect(page.locator('.space-badge')).toHaveText('garden patio');
+  await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
+  const running = await (await page.request.get('http://localhost:5000/api/focus-sessions?user=' + userId)).json();
+  expect(running.filter((session: { status: string }) => session.status === 'active')).toHaveLength(1);
+  await page.getByRole('button', { name: 'Show focus scene' }).click();
+  await expect(page.locator('.space-badge')).toHaveText('focus');
   await page.reload();
   await expect(page.getByRole('button', { name: 'Finish session' })).toBeVisible();
   await page.getByRole('button', { name: 'Finish session' }).click();
