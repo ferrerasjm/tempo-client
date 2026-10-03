@@ -1,51 +1,40 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cafeApi } from '../services/cafeApi';
 import { useApi } from '../hooks/useApi';
+import { useStudySetup } from '../hooks/useStudySetup';
 import { useFocusTimer } from '../hooks/useFocusTimer';
 import { useCafe } from '../state/CafeContext';
 import { errorMessage } from '../api/http';
 import { dateTime, timerText } from '../utils/dates';
 import { artwork } from '../assets';
-import { completionSchema, focusSchema, type CompletionValues, type FocusValues } from '../schemas/forms';
+import { completionSchema, type CompletionValues } from '../schemas/forms';
 import { EmptyState, Feedback, Field, LoadState, PageHeading, Status } from '../components/ui';
-import type { Recommendation } from '../types';
+import { SpaceBrowser } from '../components/SpaceBrowser';
+import { SpaceIllustration } from '../components/SpaceIllustration';
+import { Modal } from '../components/Modal';
 
 export function StartFocusPage() {
-  const { user, notify } = useCafe(); const navigate = useNavigate(); const [params] = useSearchParams();
-  const state = useApi(async () => {
-    const [tasks, areas, sessions] = await Promise.all([cafeApi.tasks(user!._id), cafeApi.areas(), cafeApi.sessions(user!._id)]);
-    return { tasks: tasks.filter(task => task.status !== 'completed'), areas: areas.filter(area => area.active), active: sessions.find(session => session.status === 'active') };
-  }, [user!._id]);
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [error, setError] = useState(''); const [starting, setStarting] = useState(false);
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FocusValues>({ resolver: zodResolver(focusSchema), defaultValues: { task: params.get('task') || '', area: params.get('area') || '', energyLevel: 'medium' } });
-  const task = watch('task'); const area = watch('area'); const energyLevel = watch('energyLevel');
-  useEffect(() => { setRecommendation(null); setError(''); }, [task, area, energyLevel]);
-  async function recommend(values: FocusValues) {
-    setError(''); setRecommendation(null);
-    try { setRecommendation(await cafeApi.recommendation(values.task, values.energyLevel)); }
-    catch (reason) { setError(errorMessage(reason)); }
-  }
-  async function start() {
-    if (!recommendation) return;
-    setStarting(true); setError('');
-    try {
-      const session = await cafeApi.startSession({ user: user!._id, task, area, energyLevel });
-      notify('Your focus session has started.'); navigate(`/focus/${session._id}`);
-    } catch (reason) { setError(errorMessage(reason)); state.reload(); }
-    finally { setStarting(false); }
-  }
-  return <section className="page narrow"><PageHeading eyebrow="A quiet stretch of time" title="What will you focus on?" description="Choose your task, your corner, and how much energy you have today." action={<Link className="text-link" to="/history">Focus history →</Link>} /><LoadState {...state} retry={state.reload}>
-    {state.data?.active ? <div className="empty"><h2>You have a session in progress.</h2><p>Finish or cancel it before starting another.</p><Link className="button" to={`/focus/${state.data.active._id}`}>Return to session</Link></div> : !state.data?.tasks.length ? <EmptyState title="Start with one task." to="/tasks/new" label="Add a task">Your study board needs an unfinished task.</EmptyState> : <form className="paper-form" onSubmit={handleSubmit(recommend)} noValidate>
-      <Field label="Task" error={errors.task?.message}><select {...register('task')} disabled={isSubmitting || starting}><option value="">Choose a task</option>{state.data.tasks.map(task => <option key={task._id} value={task._id}>{task.title}</option>)}</select></Field>
-      <Field label="Cafe area" error={errors.area?.message}><select {...register('area')} disabled={isSubmitting || starting}><option value="">Choose your corner</option>{state.data.areas.map(area => <option key={area._id} value={area._id}>{area.name}</option>)}</select></Field>
-      <Field label="Current energy" error={errors.energyLevel?.message}><select {...register('energyLevel')} disabled={isSubmitting || starting}><option value="low">Low — a gentle start</option><option value="medium">Medium — ready to settle in</option><option value="high">High — let’s get into it</option></select></Field>
-      <Feedback error={error} /><button className="button secondary" disabled={isSubmitting || starting}>{isSubmitting ? 'Finding your rhythm…' : 'Suggest a session'}</button>
-      {recommendation && <div className="recommendation" role="status"><p className="eyebrow">Your suggested rhythm</p><div className="rhythm"><strong>{recommendation.plannedMinutes}<small>minutes of focus</small></strong><span>then</span><strong>{recommendation.breakMinutes}<small>minutes of rest</small></strong></div><button type="button" className="button" disabled={starting} onClick={start}>{starting ? 'Starting…' : 'Start focusing →'}</button></div>}
-    </form>}
+  const setup = useStudySetup();
+  const { state, form, step, busy, recommendation } = setup;
+  const { register, watch, setValue, formState: { errors } } = form;
+  const area = watch('area'); const task = watch('task');
+  const titles = ['What’s your one thing?', 'Choose a quiet corner.', 'How are you feeling?', 'Your little plan.'];
+  return <section className="page narrow centered study-setup"><LoadState {...state} retry={state.reload}>
+    {state.data?.active ? <EmptyState title="You have a session in progress." to={`/focus/${state.data.active._id}`} label="Return to session">Finish or cancel it before starting another.</EmptyState> : !state.data?.tasks.length ? <><PageHeading eyebrow="A small beginning" title={titles[0]} /><EmptyState title="Start with one task." to="/tasks/new?next=focus" label="Add a task">Write down what you’d like to work on.</EmptyState></> : <>
+      <p className="step-caption">Step {step + 1} of 4 · {['Your task','Your space','Your pace','Ready to begin'][step]}</p>
+      <PageHeading eyebrow="A quiet stretch of time" title={titles[step]} />
+      <div className="setup-paper" key={step}>
+        {step === 0 && <><div className="intention-note"><p className="eyebrow">Today, I will…</p><Field label="Task" error={errors.task?.message}><select {...register('task')} disabled={busy}>{state.data.tasks.map(item => <option key={item._id} value={item._id}>{item.title}</option>)}</select></Field></div><Link className="text-link" to="/tasks/new?next=focus">Add a different task</Link></>}
+        {step === 1 && <><SpaceBrowser areas={state.data.areas} value={area} onChange={id => setValue('area', id, { shouldValidate: true })} /><Field label="Cafe area" error={errors.area?.message}><select {...register('area')} disabled={busy}>{state.data.areas.map(item => <option key={item._id} value={item._id}>{item.name}</option>)}</select></Field><p className="note">No reservation needed to begin.</p></>}
+        {step === 2 && <fieldset className="energy-choices"><legend className="sr-only">Current energy</legend>{[['low','A gentle start','Low energy'],['medium','Ready to settle in','Medium energy'],['high','Let’s get into it','High energy']].map(([value,label,hint]) => <label key={value}><input type="radio" value={value} {...register('energyLevel')} /><span>{label}<small>{hint}</small></span></label>)}</fieldset>}
+        {step === 3 && recommendation && <div className="recommendation" role="status"><img className="review-cup" src={artwork.cup} alt="" /><p className="eyebrow">Your suggested rhythm</p><h2>{state.data.tasks.find(item => item._id === task)?.title}</h2><p>{state.data.areas.find(item => item._id === area)?.name}</p><div className="rhythm"><strong>{recommendation.plannedMinutes}<small>minutes of focus</small></strong><span>then</span><strong>{recommendation.breakMinutes}<small>minutes of rest</small></strong></div></div>}
+        <Feedback error={setup.error} />
+        <div className="wizard-actions"><button className="button" disabled={busy || (step === 1 && !state.data.areas.length)} onClick={step === 3 ? setup.start : setup.next}>{busy ? 'One moment…' : step === 3 ? 'Start focusing →' : step === 2 ? 'Suggest a session' : 'Next →'}</button>{step > 0 && <button className="text-link" disabled={busy} onClick={setup.back}>← Back</button>}</div>
+      </div>
+    </>}
   </LoadState></section>;
 }
 
@@ -57,28 +46,32 @@ export function ActiveFocusPage() {
     return { session, task, area };
   }, [id]);
   const timer = useFocusTimer(state.data?.session || null);
-  const [error, setError] = useState(''); const [cancelling, setCancelling] = useState(false);
+  const [error, setError] = useState(''); const [cancelling, setCancelling] = useState(false); const [finishing, setFinishing] = useState(false);
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<CompletionValues>({ resolver: zodResolver(completionSchema), defaultValues: { completedMinutes: 0 } });
-  useEffect(() => {
-    if (state.data?.session.status === 'active') setValue('completedMinutes', Math.min(120, Math.max(0, Math.floor((Date.now() - new Date(state.data.session.startedAt!).getTime()) / 60000))));
-  }, [state.data, setValue]);
+  useEffect(() => { if (finishing) { setValue('completedMinutes', Math.min(120, timer.elapsedMinutes)); setError(''); } }, [finishing, setValue]);
   async function complete(values: CompletionValues) {
     setError('');
-    try { await cafeApi.finishSession(id, { status: 'completed', ...values }); notify('Focus session saved. Time for a break.'); state.reload(); }
+    try { await cafeApi.finishSession(id, { status: 'completed', ...values }); setFinishing(false); notify('Focus session saved. Time for a break.'); state.reload(); }
     catch (reason) { setError(errorMessage(reason)); }
   }
   async function cancel() {
     if (!window.confirm('Cancel this focus session? It will not count toward your focus statistics.')) return;
     setCancelling(true); setError('');
     try { await cafeApi.finishSession(id, { status: 'cancelled' }); notify('Focus session cancelled.'); navigate('/focus'); }
-    catch (reason) { setError(errorMessage(reason)); }
-    finally { setCancelling(false); }
+    catch (reason) { setError(errorMessage(reason)); } finally { setCancelling(false); }
   }
+  const active = state.data?.session.status === 'active'; const completed = state.data?.session.status === 'completed';
   return <section className="page focus-page"><LoadState {...state} retry={state.reload}>{state.data && (state.data.session.user !== user!._id ? <EmptyState title="This session belongs to another profile." to="/focus" label="Start your session" /> : <>
-    <p className="eyebrow">{state.data.area.name} · {state.data.session.status === 'completed' ? 'A well-earned pause' : 'One thing at a time'}</p><h1>{state.data.task.title}</h1><img className="focus-cup" src={artwork.cup} alt="A warm cup beside your study task." />
-    {state.data.session.status === 'active' ? <><p className="timer" aria-label="Time remaining">{timerText(timer.remainingSeconds)}</p><p>{timer.remainingSeconds ? 'Let everything else wait a little.' : 'Your session time is up. Save the minutes you worked.'}</p><p className="note">{state.data.session.plannedMinutes} minute focus · {state.data.session.breakMinutes} minute break · {timer.elapsedMinutes} minutes elapsed</p>
-      <form className="completion-form" onSubmit={handleSubmit(complete)} noValidate><Field label="Minutes you actually focused" error={errors.completedMinutes?.message}><input type="number" min={1} max={120} {...register('completedMinutes', { valueAsNumber: true })} /></Field><button type="button" className="text-link" onClick={() => setValue('completedMinutes', timer.elapsedMinutes, { shouldValidate: true })}>Use elapsed minutes</button><Feedback error={error} /><div className="form-actions"><button className="button" disabled={isSubmitting || cancelling}>{isSubmitting ? 'Saving…' : 'Finish session'}</button><button className="text-link danger" type="button" disabled={cancelling || isSubmitting} onClick={cancel}>Cancel session</button></div></form>
-    </> : state.data.session.status === 'completed' ? <><p className="timer">{timerText(timer.breakRemainingSeconds)}</p><p>{timer.breakRemainingSeconds ? 'Your break is underway. Stretch, breathe, sip.' : 'Your break is finished. Ready when you are.'}</p><p className="note">{state.data.session.completedMinutes} minutes saved · Focus score {state.data.session.focusScore}%</p><div className="center-actions"><Link className="button" to="/focus">Choose the next task</Link><Link className="text-link" to={`/tasks/${state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/history">View focus history</Link></div></> : <EmptyState title="This session has ended." to="/focus" label="Start a new session" />}
+    <p className="space-badge">{state.data.area.name} · {completed ? 'break time' : 'focus time'}</p>
+    <h1>{state.data.task.title}</h1>
+    {active || completed ? <>
+      <p className="timer" aria-label={active ? 'Time remaining' : 'Break remaining'}>{timerText(active ? timer.remainingSeconds : timer.breakRemainingSeconds)}</p>
+      <p className="focus-hint">{active ? timer.remainingSeconds ? 'One thing at a time. You’re right where you need to be.' : 'Time’s up. Save your session when you’re ready.' : timer.breakRemainingSeconds ? 'Stretch, breathe, sip. You’ve earned a pause.' : 'Ready when you are.'}</p>
+      <div className="focus-table"><SpaceIllustration name={state.data.area.name} /><div className="tabletop"><img className="focus-cup" src={artwork.cup} alt="An original illustration of a warm cup on your table." />
+      {active ? <><button className="button" onClick={() => setFinishing(true)}>Finish session</button><details className="quiet-options"><summary>Session details</summary><p className="note">{state.data.session.plannedMinutes} minute focus · {state.data.session.breakMinutes} minute break · {timer.elapsedMinutes} minutes elapsed</p><button className="text-link danger" disabled={cancelling} onClick={cancel}>Cancel session</button><Feedback error={error} /></details></> : <><p className="note">{state.data.session.completedMinutes} {state.data.session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {state.data.session.focusScore}%</p><Link className="button" to="/focus">Choose the next task</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/history">View focus history</Link></div></>}
+      </div></div>
+    </> : <EmptyState title="This session has ended." to="/focus" label="Start a new session" />}
+    <Modal open={finishing} title="A little progress, saved." onClose={() => setFinishing(false)} busy={isSubmitting}><form onSubmit={handleSubmit(complete)} noValidate><p className="note">Save the minutes you actually worked. At least one minute is needed to complete a session.</p><Field label="Minutes you actually focused" error={errors.completedMinutes?.message}><input type="number" min={1} max={120} {...register('completedMinutes', { valueAsNumber: true })} /></Field><button type="button" className="text-link" onClick={() => setValue('completedMinutes', Math.min(120, timer.elapsedMinutes), { shouldValidate: true })}>Use elapsed minutes</button><Feedback error={error} /><button className="button w-full" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save session'}</button></form></Modal>
   </>)}</LoadState></section>;
 }
 

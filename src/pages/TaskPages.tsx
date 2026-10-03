@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cafeApi } from '../services/cafeApi';
@@ -31,16 +31,16 @@ export function TaskListPage() {
     finally { setBusy(''); }
   }
 
-  return <section className="page"><PageHeading eyebrow="The study board" title="What’s on your mind?" description="Your unfinished tasks are ordered by their server-calculated priority." action={<Link className="button" to="/tasks/new">Add a task +</Link>} />
+  return <section className="page"><PageHeading eyebrow="The study board" title="What’s on your mind?" description="Choose one thing to work on. The most urgent tasks appear first." action={<Link className="button" to="/tasks/new">Add a task +</Link>} />
     <div className="toolbar"><label>Show <select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">All tasks</option><option value="todo">To do</option><option value="in_progress">In progress</option><option value="completed">Completed</option></select></label><span>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</span></div>
     <Feedback error={error} /><LoadState {...state} retry={state.reload}>
-      {tasks.length === 0 ? <EmptyState title="A clear board." to="/tasks/new" label="Plan a task">Add a task or choose another filter.</EmptyState> : <div className="record-list">{tasks.map(task => <article className="task-row" key={task._id}><div className="task-score">{task.status === 'completed' ? '✓' : task.priorityScore ?? 0}<small>{task.status === 'completed' ? 'done' : 'priority'}</small></div><div className="record-main"><h2>{task.title}</h2><p>{task.description}</p><div className="metadata"><span>{dateTime(task.deadline)}</span><span>{task.estimatedMinutes} min · {task.difficulty} difficulty</span><Status value={task.status} /></div></div><div className="row-actions"><Link className="text-link" to={`/tasks/${task._id}/edit`}>Edit</Link>{task.status !== 'completed' && <Link className="text-link" to={`/focus?task=${task._id}`}>Focus →</Link>}<button className="text-link danger" disabled={busy === task._id} onClick={() => remove(task)}>Delete</button></div></article>)}</div>}
+      {tasks.length === 0 ? <EmptyState title="A clear board." to="/tasks/new" label="Plan a task">Add a task or choose another filter.</EmptyState> : <div className="record-list">{tasks.map(task => <article className="task-row" key={task._id}><div className="task-score">{task.status === 'completed' ? '✓' : task.priorityScore ?? 0}<small>{task.status === 'completed' ? 'done' : 'priority'}</small></div><div className="record-main"><h2>{task.title}</h2><p>{task.description}</p><div className="metadata"><span>{dateTime(task.deadline)}</span><span>{task.estimatedMinutes} min · {task.difficulty} difficulty</span><Status value={task.status} /></div></div><div className="row-actions">{task.status !== 'completed' && <Link className="text-link" to={`/focus?task=${task._id}`}>Focus →</Link>}<details className="task-management"><summary>Manage task</summary><Link className="text-link" to={`/tasks/${task._id}/edit`}>Edit</Link><button className="text-link danger" disabled={busy === task._id} onClick={() => remove(task)}>Delete</button></details></div></article>)}</div>}
     </LoadState>
   </section>;
 }
 
 export function TaskFormPage() {
-  const { id } = useParams();
+  const { id } = useParams(); const [params] = useSearchParams();
   const { user, notify } = useCafe();
   const navigate = useNavigate();
   const state = useApi<Task | null>(() => id ? cafeApi.task(id) : Promise.resolve(null), [id]);
@@ -60,7 +60,7 @@ export function TaskFormPage() {
       if (id) await cafeApi.updateTask(id, body);
       else await cafeApi.createTask(body);
       notify(id ? 'Task updated.' : 'Task added to the study board.');
-      navigate('/tasks');
+      navigate(params.get('next') === 'focus' ? '/focus' : '/tasks');
     } catch (reason) { setError(errorMessage(reason)); }
   }
 

@@ -4,22 +4,23 @@ import { cafeApi } from '../services/cafeApi';
 import { useApi } from '../hooks/useApi';
 import { useCafe } from '../state/CafeContext';
 import { errorMessage } from '../api/http';
-import { artwork } from '../assets';
 import { dateTime } from '../utils/dates';
 import { EmptyState, Feedback, LoadState, PageHeading, Status } from '../components/ui';
+import { MenuArtwork } from '../components/MenuArtwork';
 
 export function MenuPage() {
   const state = useApi(cafeApi.menu); const { basket, setQuantity } = useCafe();
-  const [category, setCategory] = useState('all');
-  const items = (state.data || []).filter(item => category === 'all' || item.category === category);
   const count = basket.reduce((total, item) => total + item.quantity, 0);
-  return <section className="page"><PageHeading eyebrow="At the counter" title="What would you like?" description="A little something to keep you company. All prices are virtual credits." action={<Link className="text-link" to="/orders">Your orders →</Link>} />
-    <div className="menu-tabs" role="group" aria-label="Menu category">{['all', 'drink', 'snack'].map(value => <button key={value} className={category === value ? 'active' : ''} onClick={() => setCategory(value)} aria-pressed={category === value}>{value === 'all' ? 'Everything' : value === 'drink' ? 'Drinks' : 'Snacks'}</button>)}</div>
-    <LoadState {...state} retry={state.reload}>{items.length === 0 ? <EmptyState title="Nothing on this part of the menu yet." /> : <div className="menu-grid">{items.map(item => {
+  return <section className="page counter-page centered"><PageHeading eyebrow="At the counter" title="What would you like?" description="A little something to keep you company. Virtual credits only." />
+    <LoadState {...state} retry={state.reload}>{!state.data?.length ? <EmptyState title="The menu isn’t ready yet." /> : <div className="menu-grid">{state.data.map(item => {
       const quantity = basket.find(entry => entry.menuItem === item._id)?.quantity || 0;
-      return <article className={`menu-item ${quantity ? 'selected' : ''}`} key={item._id}><div className={`menu-art ${item.category}`}><img src={artwork.cup} alt="" /><span className="cookie" aria-hidden="true" /></div><h2>{item.name}</h2><p>{item.priceCredits} credits {!item.available && '· Unavailable'}</p><div className="quantity-control"><button aria-label={`Remove one ${item.name}`} disabled={quantity === 0} onClick={() => setQuantity(item._id, quantity - 1)}>−</button><output aria-label={`${item.name} quantity`}>{quantity}</output><button aria-label={`Add one ${item.name}`} disabled={!item.available || quantity >= 20} onClick={() => setQuantity(item._id, quantity + 1)}>+</button></div></article>;
+      return <article className={`menu-item ${quantity ? 'selected' : ''}`} key={item._id}>
+        <button className="menu-pick" aria-label={`Choose ${item.name}`} aria-pressed={quantity > 0} disabled={!item.available} onClick={() => setQuantity(item._id, quantity ? 0 : 1)}><MenuArtwork name={item.name} snack={item.category === 'snack'} /><h2>{item.name}</h2><p>{item.priceCredits} credits {!item.available && '· Unavailable'}</p></button>
+        {quantity > 0 && <div className="quantity-control"><button aria-label={`Remove one ${item.name}`} onClick={() => setQuantity(item._id, quantity - 1)}>−</button><output aria-label={`${item.name} quantity`}>{quantity}</output><button aria-label={`Add one ${item.name}`} disabled={quantity >= 20} onClick={() => setQuantity(item._id, quantity + 1)}>+</button></div>}
+      </article>;
     })}</div>}</LoadState>
-    <div className="basket-bar"><span>{count ? `${count} ${count === 1 ? 'item' : 'items'} selected` : 'Choose a drink or a snack to begin.'}</span>{count > 0 && <Link className="button" to="/order-summary">Review your order →</Link>}</div>
+    <div className="basket-bar"><span>{count ? `${count} ${count === 1 ? 'item' : 'items'} on your tray` : 'Choose something to begin.'}</span>{count > 0 && <Link className="button" to="/order-summary">Review your order →</Link>}</div>
+    <Link className="text-link" to="/orders">Your past orders</Link>
   </section>;
 }
 
