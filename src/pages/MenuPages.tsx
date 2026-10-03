@@ -19,7 +19,7 @@ export function MenuPage() {
         {quantity > 0 && <div className="quantity-control"><button aria-label={`Remove one ${item.name}`} onClick={() => setQuantity(item._id, quantity - 1)}>−</button><output aria-label={`${item.name} quantity`}>{quantity}</output><button aria-label={`Add one ${item.name}`} disabled={quantity >= 20} onClick={() => setQuantity(item._id, quantity + 1)}>+</button></div>}
       </article>;
     })}</div>}</LoadState>
-    <div className="basket-bar"><span>{count ? `${count} ${count === 1 ? 'item' : 'items'} on your tray` : 'Choose something to begin.'}</span>{count > 0 && <Link className="button" to="/order-summary">Review your order →</Link>}</div>
+    <div className="basket-bar"><span>{count ? `${count} ${count === 1 ? 'item' : 'items'} on your tray` : 'Choose something to begin.'}</span>{count > 0 ? <Link className="button" to="/order-summary">Review your order →</Link> : <button className="button" disabled>Choose something first</button>}</div>
     <Link className="text-link" to="/orders">Your past orders</Link>
   </section>;
 }

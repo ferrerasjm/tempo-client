@@ -23,7 +23,8 @@ export function StartFocusPage() {
   const area = watch('area'); const task = watch('task');
   const titles = ['What’s your one thing?', 'Choose a quiet corner.', 'How are you feeling?', 'Your little plan.'];
   return <section className="page narrow centered study-setup"><LoadState {...state} retry={state.reload}>
-    {state.data?.active ? <EmptyState title="You have a session in progress." to={`/focus/${state.data.active._id}`} label="Return to session">Finish or cancel it before starting another.</EmptyState> : !state.data?.tasks.length ? <><PageHeading eyebrow="A small beginning" title={titles[0]} /><EmptyState title="Start with one task." to="/tasks/new?next=focus" label="Add a task">Write down what you’d like to work on.</EmptyState></> : <>
+    {state.data?.active ? <div className="study-paper"><PageHeading eyebrow="One thing at a time" title="Your session is waiting." /><EmptyState title="You have a session in progress." to={`/focus/${state.data.active._id}`} label="Return to session">Finish or cancel it before starting another.</EmptyState></div> : !state.data?.tasks.length ? <div className="study-paper"><PageHeading eyebrow="A small beginning" title={titles[0]} /><EmptyState title="Start with one task." to="/tasks/new?next=focus" label="Add a task">Write down what you’d like to work on.</EmptyState></div> : <>
+      <div className="study-paper">
       <p className="step-caption">Step {step + 1} of 4 · {['Your task','Your space','Your pace','Ready to begin'][step]}</p>
       <PageHeading eyebrow="A quiet stretch of time" title={titles[step]} />
       <div className="setup-paper" key={step}>
@@ -33,7 +34,7 @@ export function StartFocusPage() {
         {step === 3 && recommendation && <div className="recommendation" role="status"><img className="review-cup" src={artwork.cup} alt="" /><p className="eyebrow">Your suggested rhythm</p><h2>{state.data.tasks.find(item => item._id === task)?.title}</h2><p>{state.data.areas.find(item => item._id === area)?.name}</p><div className="rhythm"><strong>{recommendation.plannedMinutes}<small>minutes of focus</small></strong><span>then</span><strong>{recommendation.breakMinutes}<small>minutes of rest</small></strong></div></div>}
         <Feedback error={setup.error} />
         <div className="wizard-actions"><button className="button" disabled={busy || (step === 1 && !state.data.areas.length)} onClick={step === 3 ? setup.start : setup.next}>{busy ? 'One moment…' : step === 3 ? 'Start focusing →' : step === 2 ? 'Suggest a session' : 'Next →'}</button>{step > 0 && <button className="text-link" disabled={busy} onClick={setup.back}>← Back</button>}</div>
-      </div>
+      </div></div>
     </>}
   </LoadState></section>;
 }
@@ -47,6 +48,7 @@ export function ActiveFocusPage() {
   }, [id]);
   const timer = useFocusTimer(state.data?.session || null);
   const [error, setError] = useState(''); const [cancelling, setCancelling] = useState(false); const [finishing, setFinishing] = useState(false);
+  const [scene, setScene] = useState<'focus' | 'corner'>('focus');
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<CompletionValues>({ resolver: zodResolver(completionSchema), defaultValues: { completedMinutes: 0 } });
   useEffect(() => { if (finishing) { setValue('completedMinutes', Math.min(120, timer.elapsedMinutes)); setError(''); } }, [finishing, setValue]);
   async function complete(values: CompletionValues) {
@@ -61,8 +63,8 @@ export function ActiveFocusPage() {
     catch (reason) { setError(errorMessage(reason)); } finally { setCancelling(false); }
   }
   const active = state.data?.session.status === 'active'; const completed = state.data?.session.status === 'completed';
-  return <section className="page focus-page"><LoadState {...state} retry={state.reload}>{state.data && (state.data.session.user !== user!._id ? <EmptyState title="This session belongs to another profile." to="/focus" label="Start your session" /> : <>
-    <p className="space-badge">{state.data.area.name} · {completed ? 'break time' : 'focus time'}</p>
+  return <section className={`page focus-page scene-${scene}`}><LoadState {...state} retry={state.reload}>{state.data && (state.data.session.user !== user!._id ? <EmptyState title="This session belongs to another profile." to="/focus" label="Start your session" /> : <>
+    <p className="space-badge">{scene === 'focus' ? completed ? 'break' : 'focus' : state.data.area.name.toLowerCase()}</p>
     <h1>{state.data.task.title}</h1>
     {active || completed ? <>
       <p className="timer" aria-label={active ? 'Time remaining' : 'Break remaining'}>{timerText(active ? timer.remainingSeconds : timer.breakRemainingSeconds)}</p>
@@ -70,6 +72,7 @@ export function ActiveFocusPage() {
       <div className="focus-table"><SpaceIllustration name={state.data.area.name} /><div className="tabletop"><img className="focus-cup" src={artwork.cup} alt="An original illustration of a warm cup on your table." />
       {active ? <><button className="button" onClick={() => setFinishing(true)}>Finish session</button><details className="quiet-options"><summary>Session details</summary><p className="note">{state.data.session.plannedMinutes} minute focus · {state.data.session.breakMinutes} minute break · {timer.elapsedMinutes} minutes elapsed</p><button className="text-link danger" disabled={cancelling} onClick={cancel}>Cancel session</button><Feedback error={error} /></details></> : <><p className="note">{state.data.session.completedMinutes} {state.data.session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {state.data.session.focusScore}%</p><Link className="button" to="/focus">Choose the next task</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/history">View focus history</Link></div></>}
       </div></div>
+      <nav className="scene-navigation" aria-label="Study scene"><button className="icon-button" aria-label="Show focus scene" disabled={scene === 'focus'} onClick={() => setScene('focus')}>←</button><button className="icon-button" aria-label="Show cafe corner scene" disabled={scene === 'corner'} onClick={() => setScene('corner')}>→</button></nav>
     </> : <EmptyState title="This session has ended." to="/focus" label="Start a new session" />}
     <Modal open={finishing} title="A little progress, saved." onClose={() => setFinishing(false)} busy={isSubmitting}><form onSubmit={handleSubmit(complete)} noValidate><p className="note">Save the minutes you actually worked. At least one minute is needed to complete a session.</p><Field label="Minutes you actually focused" error={errors.completedMinutes?.message}><input type="number" min={1} max={120} {...register('completedMinutes', { valueAsNumber: true })} /></Field><button type="button" className="text-link" onClick={() => setValue('completedMinutes', Math.min(120, timer.elapsedMinutes), { shouldValidate: true })}>Use elapsed minutes</button><Feedback error={error} /><button className="button w-full" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save session'}</button></form></Modal>
   </>)}</LoadState></section>;

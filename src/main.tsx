@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { CafeProvider } from './state/CafeContext';
 import './styles.css';
+import './experience.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><BrowserRouter><CafeProvider><App /></CafeProvider></BrowserRouter></React.StrictMode>,
