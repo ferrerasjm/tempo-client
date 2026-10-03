@@ -1,4 +1,4 @@
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 mkdirSync('docs/screenshots', { recursive: true });
@@ -6,7 +6,7 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1366, height: 900 }, timezoneId: 'Asia/Manila' });
   async function capture(path) {
-    await page.locator('.loading').waitFor({ state: 'hidden' });
+    await expect(page.locator('.loading')).toHaveCount(0, { timeout: 10000 });
     await page.evaluate(async () => {
       await Promise.all(document.getAnimations().filter(animation => animation.effect?.getComputedTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {})));
     });
@@ -40,7 +40,7 @@ try {
     for (const path of paths) {
       await page.goto(`http://localhost:5173${path}`);
       await page.locator('h1').first().waitFor({ timeout: 10000 }).catch(() => { throw new Error('Missing visible heading on ' + path + ' at ' + width + 'px'); });
-      await page.locator('.loading').waitFor({ state: 'hidden' });
+      await expect(page.locator('.loading')).toHaveCount(0, { timeout: 10000 });
       if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) {
         throw new Error(`Horizontal overflow on ${path} at ${width}px`);
       }
@@ -52,7 +52,7 @@ try {
     await capture('docs/screenshots/study-' + step + '-desktop.png');
   }
   await page.goto('http://localhost:5173/focus');
-  await page.locator('.loading').waitFor({ state: 'hidden' });
+  await expect(page.locator('.loading')).toHaveCount(0, { timeout: 10000 });
   if (await page.locator('.study-paper').count()) await capture('docs/screenshots/focus-setup-desktop.png');
   await page.goto('http://localhost:5173/focus/' + sessions.find(session => session.status === 'completed')._id);
   await page.locator('.timer').waitFor();

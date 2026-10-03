@@ -8,17 +8,17 @@
 4. Write your task on the notepad. Open Task details to change deadline, difficulty, estimate, description, or energy.
 5. Click Start. This saves the task and a **planned** session; the timer has not started and no seat is occupied yet.
 6. Browse spaces using the arrows. Click Start session to take a seat and start the timer. Capacity is checked for the entire remaining focus window, including future reservations.
-7. Pause timer releases the seat and freezes elapsed time. Resume timer checks capacity again. While running, arrows preview spaces; Reserve this seat moves your actual seat after a server check.
+7. A purchased reward item replaces the free Pause timer control. Click it for a break of up to five minutes; one item is consumed, the seat is released, and elapsed time freezes. Resume timer checks capacity again. While running, arrows preview spaces; Reserve this seat moves your actual seat after a server check.
 8. Stop session saves elapsed whole minutes. Under one minute is cancelled. Update task status separately when its work is finished.
 9. Open Explore → Productivity Analytics to view the saved totals, streaks, and cafe habits.
 
-The selected drink is a session companion. It does not automatically create a virtual order or deduct credits. Counter and order calculation remain available through Explore. Smart focus recommendation remains a separate option for planning existing tasks. Unlimited duration is not offered because the current session schema and seat checks use finite durations.
+The selected drink is a session companion. It does not unlock a break; purchase a reward using earned Tempo Credits for that. See [TEMPO_REWARDS.md](TEMPO_REWARDS.md). It does not automatically create a virtual order or deduct credits. Counter and order calculation remain available through Explore. Smart focus recommendation remains a separate option for planning existing tasks. Unlimited duration is not offered because the current session schema and seat checks use finite durations.
 
 ## Add music later
 
 1. Copy your audio file to `client/public/assets/cozy-cafe.mp3`.
 2. In `client/src/assets.ts`, change `music: ''` to `music: '/assets/cozy-cafe.mp3'`.
-3. Start a session. Music loops while the timer runs. Pause music affects only music; Pause timer pauses both. Resume timer resumes music unless you manually paused it. Stop session stops playback.
+3. Start a session. Music loops while the timer runs. Pause music affects only music; a reward break pauses both music and the timer. Resume timer resumes music unless you manually paused it. Stop session stops playback.
 4. Test the Volume slider. If the browser blocks playback, use Play music.
 
 OGG and WAV also work; use the matching path and extension. Until a file is configured, music controls stay disabled and explain that the file has not been added. Actual audio playback still needs checking after the file is supplied.

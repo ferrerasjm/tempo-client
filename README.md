@@ -30,8 +30,9 @@ Click the animated cafe entrance (hover or focus to see **ready to lock in?**), 
 - Create, edit, complete, filter, and delete tasks; display server-calculated priority.
 - Explore five cafe areas, check availability, reserve a seat, and cancel a reservation.
 - Prepare a session through drink selection (Tall 25, Grande 45, Venti 60 minutes), a label, and a task notepad. Smart focus recommendation remains available through Explore.
-- Start, pause, resume, stop, and reload sessions using server timestamps. Stopping saves elapsed whole minutes; sessions under one minute are cancelled.
+- Start, take a purchased reward break, resume, stop, and reload sessions using server timestamps. Stopping saves elapsed whole minutes; sessions under one minute are cancelled.
 - Browse the five spaces with arrows; explicitly reserve a different seat while running. Full areas are blocked by the server. Pausing releases the seat; resuming checks capacity again.
+- Earn Tempo Credits from full focus sessions and task goals; spend them on single-use table rewards. A reward unlocks a timed break; unused orders can be refunded. See [docs/TEMPO_REWARDS.md](docs/TEMPO_REWARDS.md).
 - Music playback and volume controls are wired; the audio file will be added later.
 - Run a countdown from the persisted session start time and show the recommended break after completion.
 - Select drinks and snacks, preview server-calculated totals/discounts, place an order, view order history, and cancel an order.

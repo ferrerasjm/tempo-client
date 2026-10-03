@@ -19,7 +19,7 @@ Photographic drink cutouts and real ambient footage are still optional replaceme
 - The header shows the wordmark and one Explore button. Secondary pages live in an accessible dialog with keyboard dismissal.
 - The lobby has one primary study action and two cafe objects: the study board and counter.
 - The main setup is profile, drink, size, label, and task notepad. Smart focus recommendation remains available through Explore. Durations and session creation come from the server.
-- The timer is the main content. Start, pause/resume, and stop are explicit controls. Stop saves elapsed whole minutes; Session details explains seat behavior.
+- The timer is the main content. Start, reward breaks, resume, and stop are explicit controls. Stop saves elapsed whole minutes; Session details explains seat behavior.
 - Five original SVG room illustrations give the space browser distinct moods. Drink selection uses original cup and cookie illustrations.
 - The counter starts with four item choices. Quantity controls appear only for selected items.
 - Task editing and deletion sit under Manage task.
@@ -43,4 +43,4 @@ API calls remain in services/cafeApi.ts. Setup, session actions, and reservation
 
 SpaceIllustration and MenuArtwork are original vector placeholders. Replace these presentation components with images without changing the hooks or API contracts. See ASSET_BRIEF.md.
 
-The new flow extends the existing focus-session endpoints with planned/paused state, selected drink fields, persisted timer actions, and shared live-seat capacity checks. The recommendation formula and order discount remain available. Authentication and passport achievements remain unimplemented. See STUDY_FLOW.md.
+The new flow extends the existing focus-session endpoints with planned/paused state, selected drink fields, persisted timer actions, and shared live-seat capacity checks. The recommendation formula and order discount remain available. Tempo Credits missions and purchased break rewards are implemented. Authentication and passport achievements remain unimplemented. See STUDY_FLOW.md.

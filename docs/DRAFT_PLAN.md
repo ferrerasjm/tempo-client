@@ -4,7 +4,7 @@
 
 The client repository initially contained only `.gitignore`. The server contained CommonJS Express route modules, seven Mongoose models, middleware, reusable calculations, a seed script, and 27 project endpoints. Authentication was absent. One `GET /api/users` route was added to read existing profiles without hardcoding IDs; it is not login or signup.
 
-The concept calls for a cafe entrance, themed spaces, task planning, focus sessions, virtual orders, seat reservations, and productivity summaries. Optional passport stamps are outside this draft. The reference site starts at a cafe entrance and proceeds to drink selection. Original temporary SVGs preserve that staged, illustrated feel while the required project flows remain usable.
+The concept calls for a cafe entrance, themed spaces, task planning, focus sessions, virtual orders, seat reservations, and productivity summaries. Credit-based gamification is implemented; optional passport stamps remain outside this draft. The reference site starts at a cafe entrance and proceeds to drink selection. Original temporary SVGs preserve that staged, illustrated feel while the required project flows remain usable.
 
 ## Implementation order
 
@@ -30,9 +30,9 @@ The concept calls for a cafe entrance, themed spaces, task planning, focus sessi
 | `/tasks/new` | New task form | `POST /tasks` |
 | `/tasks/:id/edit` | Edit task/status | `GET /tasks/:id`, `PATCH /tasks/:id` |
 | `/focus` | Select task/area/energy and request recommendation | `GET /tasks`, `GET /cafe-areas`, `GET /focus-sessions`, `POST /focus/recommendation`, `POST /focus-sessions` |
-| `/focus/:id` | Start, pause/resume, stop, scene browsing, seat changes, music, and break | `GET /focus-sessions/:id`, `GET /tasks/:id`, `GET /cafe-areas`, `GET /cafe-areas/:id/availability`, `PATCH /focus-sessions/:id` |
+| `/focus/:id` | Start, pause/resume, stop, scene browsing, seat changes, music, and break | `GET /focus-sessions/:id`, `GET /tasks/:id`, `GET /cafe-areas`, `GET /cafe-areas/:id/availability`, `GET /rewards`, `PATCH /focus-sessions/:id` |
 | `/history` | Session history and scores | `GET /focus-sessions`, `GET /tasks`, `GET /cafe-areas` |
-| `/menu` | Drink/snack selection | `GET /menu-items` |
+| `/menu` | Reward shop, balance, and mission rules | `GET /menu-items`, `GET /rewards` |
 | `/order-summary` | Preview and place virtual order | `POST /orders/calculate`, `POST /orders` |
 | `/orders` | Order history | `GET /orders` |
 | `/orders/:id` | Saved order and cancellation | `GET /orders/:id`, `PATCH /orders/:id` |
