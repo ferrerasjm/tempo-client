@@ -24,7 +24,7 @@ export function WelcomePage() {
   const navigate = useNavigate();
   return <section className="page narrow"><PageHeading eyebrow="Before you settle in" title="Welcome to the cafe." description="Choose a study profile to continue." />
     <LoadState loading={cafe.loading} error={cafe.error} retry={cafe.retry}>
-      {cafe.users.length === 0 ? <EmptyState title="No profiles yet">Run the server seed command, then try again.</EmptyState> : <div className="profile-list">{cafe.users.map(user => <button className="profile-choice" key={user._id} onClick={() => { cafe.enter(user._id); navigate('/cafe'); }}><span className="avatar">{user.displayName.slice(0, 1)}</span><span><strong>{user.displayName}</strong><small>{user.email}</small></span><span aria-hidden="true">→</span></button>)}</div>}
+      {cafe.users.length === 0 ? <EmptyState title="No profiles yet">Run the server seed command, then try again.</EmptyState> : <div className="profile-list">{cafe.users.map(user => <button className="profile-choice" key={user._id} onClick={() => { cafe.enter(user._id); navigate('/study/drink'); }}><span className="avatar">{user.displayName.slice(0, 1)}</span><span><strong>{user.displayName}</strong><small>{user.email}</small></span><span aria-hidden="true">→</span></button>)}</div>}
     </LoadState>
     <p className="note">This draft uses existing demo profiles. Selecting a profile is not a password login.</p>
     {cafe.user && <button className="text-link" onClick={() => { cafe.leave(); cafe.notify('You left the study profile.'); }}>Leave current profile</button>}

@@ -13,7 +13,7 @@ export function useStudySetup() {
   const { user, notify } = useCafe(); const navigate = useNavigate(); const [params] = useSearchParams();
   const state = useApi(async () => {
     const [tasks, areas, sessions] = await Promise.all([cafeApi.tasks(user!._id), cafeApi.areas(), cafeApi.sessions(user!._id)]);
-    return { tasks: tasks.filter(task => task.status !== 'completed'), areas: areas.filter(area => area.active), active: sessions.find(session => session.status === 'active') };
+    return { tasks: tasks.filter(task => task.status !== 'completed'), areas: areas.filter(area => area.active), active: sessions.find(session => ['planned', 'active', 'paused'].includes(session.status)) };
   }, [user!._id]);
   const form = useForm<FocusValues>({ resolver: zodResolver(focusSchema), defaultValues: { task: params.get('task') || '', area: params.get('area') || '', energyLevel: 'medium' } });
   const [step, setStep] = useState(0); const [recommendation, setRecommendation] = useState<Recommendation | null>(null);

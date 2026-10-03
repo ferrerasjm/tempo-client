@@ -11,7 +11,9 @@ export interface Recommendation { plannedMinutes: number; breakMinutes: number; 
 export interface FocusSession {
   _id: string; user: string; task: string; area: string; energyLevel: string;
   plannedMinutes: number; completedMinutes: number; breakMinutes: number;
-  status: 'planned' | 'active' | 'completed' | 'cancelled'; startedAt: string | null; endedAt: string | null; focusScore: number | null;
+  status: 'planned' | 'active' | 'paused' | 'completed' | 'cancelled'; startedAt: string | null; endedAt: string | null; focusScore: number | null;
+  drink?: string | null; drinkName?: string; drinkSize?: string; sessionLabel?: string;
+  pausedAt?: string | null; pausedMilliseconds?: number; elapsedSeconds?: number; serverTime?: string;
 }
 export interface MenuItem { _id: string; name: string; category: 'drink' | 'snack'; priceCredits: number; available: boolean }
 export interface Selection { menuItem: string; quantity: number }

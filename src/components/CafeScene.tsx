@@ -7,6 +7,6 @@ export function CafeScene() {
       <Link className="hotspot board" to="/tasks">Study board <span aria-hidden="true">↗</span></Link>
       <Link className="hotspot counter" to="/menu">The counter <span aria-hidden="true">↗</span></Link>
     </nav>
-    <div className="scene-invitation"><p>There’s a quiet corner waiting for you.</p><Link className="button" to="/focus">Start a study session →</Link></div>
+    <div className="scene-invitation"><p>There’s a quiet corner waiting for you.</p><Link className="button" to="/study/drink">Start a study session →</Link></div>
   </div>;
 }

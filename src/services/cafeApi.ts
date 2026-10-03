@@ -21,6 +21,7 @@ export const cafeApi = {
   session: async (id: string) => (await http.get<FocusSession>(`/focus-sessions/${id}`)).data,
   startSession: async (body: object) => (await http.post<FocusSession>('/focus-sessions', body)).data,
   finishSession: async (id: string, body: object) => (await http.patch<FocusSession>(`/focus-sessions/${id}`, body)).data,
+  sessionAction: async (id: string, action: 'start' | 'pause' | 'resume' | 'move' | 'stop', area?: string) => (await http.patch<FocusSession>(`/focus-sessions/${id}`, { action, area })).data,
   statistics: async (user: string) => (await http.get<Statistics>('/focus/statistics', { params: { user } })).data,
   menu: async () => (await http.get<MenuItem[]>('/menu-items')).data,
   preview: async (user: string, items: Selection[]) => (await http.post<OrderPreview>('/orders/calculate', { user, items })).data,

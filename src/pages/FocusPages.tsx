@@ -1,20 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, useParams } from 'react-router-dom';
 import { cafeApi } from '../services/cafeApi';
 import { useApi } from '../hooks/useApi';
 import { useStudySetup } from '../hooks/useStudySetup';
-import { useFocusTimer } from '../hooks/useFocusTimer';
+import { useFocusRoom } from '../hooks/useFocusRoom';
+import { useFocusMusic } from '../hooks/useFocusMusic';
 import { useCafe } from '../state/CafeContext';
-import { errorMessage } from '../api/http';
 import { dateTime, timerText } from '../utils/dates';
 import { artwork } from '../assets';
-import { completionSchema, type CompletionValues } from '../schemas/forms';
 import { EmptyState, Feedback, Field, LoadState, PageHeading, Status } from '../components/ui';
 import { SpaceBrowser } from '../components/SpaceBrowser';
 import { SpaceIllustration } from '../components/SpaceIllustration';
-import { Modal } from '../components/Modal';
+import { MenuArtwork } from '../components/MenuArtwork';
 
 export function StartFocusPage() {
   const setup = useStudySetup();
@@ -40,42 +36,48 @@ export function StartFocusPage() {
 }
 
 export function ActiveFocusPage() {
-  const { id = '' } = useParams(); const { user, notify } = useCafe(); const navigate = useNavigate();
-  const state = useApi(async () => {
-    const session = await cafeApi.session(id);
-    const [task, area] = await Promise.all([cafeApi.task(session.task), cafeApi.area(session.area)]);
-    return { session, task, area };
-  }, [id]);
-  const timer = useFocusTimer(state.data?.session || null);
-  const [error, setError] = useState(''); const [cancelling, setCancelling] = useState(false); const [finishing, setFinishing] = useState(false);
-  const [scene, setScene] = useState<'focus' | 'corner'>('focus');
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<CompletionValues>({ resolver: zodResolver(completionSchema), defaultValues: { completedMinutes: 0 } });
-  useEffect(() => { if (finishing) { setValue('completedMinutes', Math.min(120, timer.elapsedMinutes)); setError(''); } }, [finishing, setValue]);
-  async function complete(values: CompletionValues) {
-    setError('');
-    try { await cafeApi.finishSession(id, { status: 'completed', ...values }); setFinishing(false); notify('Focus session saved. Time for a break.'); state.reload(); }
-    catch (reason) { setError(errorMessage(reason)); }
-  }
-  async function cancel() {
-    if (!window.confirm('Cancel this focus session? It will not count toward your focus statistics.')) return;
-    setCancelling(true); setError('');
-    try { await cafeApi.finishSession(id, { status: 'cancelled' }); notify('Focus session cancelled.'); navigate('/focus'); }
-    catch (reason) { setError(errorMessage(reason)); } finally { setCancelling(false); }
-  }
-  const active = state.data?.session.status === 'active'; const completed = state.data?.session.status === 'completed';
-  return <section className={`page focus-page scene-${scene}`}><LoadState {...state} retry={state.reload}>{state.data && (state.data.session.user !== user!._id ? <EmptyState title="This session belongs to another profile." to="/focus" label="Start your session" /> : <>
-    <p className="space-badge">{scene === 'focus' ? completed ? 'break' : 'focus' : state.data.area.name.toLowerCase()}</p>
-    <h1>{state.data.task.title}</h1>
-    {active || completed ? <>
-      <p className="timer" aria-label={active ? 'Time remaining' : 'Break remaining'}>{timerText(active ? timer.remainingSeconds : timer.breakRemainingSeconds)}</p>
-      <p className="focus-hint">{active ? timer.remainingSeconds ? 'One thing at a time. You’re right where you need to be.' : 'Time’s up. Save your session when you’re ready.' : timer.breakRemainingSeconds ? 'Stretch, breathe, sip. You’ve earned a pause.' : 'Ready when you are.'}</p>
-      <div className="focus-table"><SpaceIllustration name={state.data.area.name} /><div className="tabletop"><img className="focus-cup" src={artwork.cup} alt="An original illustration of a warm cup on your table." />
-      {active ? <><button className="button" onClick={() => setFinishing(true)}>Finish session</button><details className="quiet-options"><summary>Session details</summary><p className="note">{state.data.session.plannedMinutes} minute focus · {state.data.session.breakMinutes} minute break · {timer.elapsedMinutes} minutes elapsed</p><button className="text-link danger" disabled={cancelling} onClick={cancel}>Cancel session</button><Feedback error={error} /></details></> : <><p className="note">{state.data.session.completedMinutes} {state.data.session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {state.data.session.focusScore}%</p><Link className="button" to="/focus">Choose the next task</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/history">View focus history</Link></div></>}
-      </div></div>
-      <nav className="scene-navigation" aria-label="Study scene"><button className="icon-button" aria-label="Show focus scene" disabled={scene === 'focus'} onClick={() => setScene('focus')}>←</button><button className="icon-button" aria-label="Show cafe corner scene" disabled={scene === 'corner'} onClick={() => setScene('corner')}>→</button></nav>
-    </> : <EmptyState title="This session has ended." to="/focus" label="Start a new session" />}
-    <Modal open={finishing} title="A little progress, saved." onClose={() => setFinishing(false)} busy={isSubmitting}><form onSubmit={handleSubmit(complete)} noValidate><p className="note">Save the minutes you actually worked. At least one minute is needed to complete a session.</p><Field label="Minutes you actually focused" error={errors.completedMinutes?.message}><input type="number" min={1} max={120} {...register('completedMinutes', { valueAsNumber: true })} /></Field><button type="button" className="text-link" onClick={() => setValue('completedMinutes', Math.min(120, timer.elapsedMinutes), { shouldValidate: true })}>Use elapsed minutes</button><Feedback error={error} /><button className="button w-full" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save session'}</button></form></Modal>
-  </>)}</LoadState></section>;
+  const { id = '' } = useParams(); const { user } = useCafe();
+  const room = useFocusRoom(id);
+  const { session, area, timer } = room;
+  const running = session?.status === 'active';
+  const paused = session?.status === 'paused';
+  const planned = session?.status === 'planned';
+  const completed = session?.status === 'completed';
+  const music = useFocusMusic(Boolean(running && timer.remainingSeconds > 0));
+  const corner = room.viewIndex >= 0;
+  return <section className={`page focus-page session-room ${corner ? 'scene-corner' : 'scene-focus'}`}><LoadState {...room.state} retry={room.state.reload}>
+    {session && room.state.data && area && (session.user !== user!._id ? <EmptyState title="This session belongs to another profile." to="/study/drink" label="Prepare your session" /> : <>
+      <p className="space-badge">{corner ? area.name.toLowerCase() : completed ? 'break' : paused ? 'paused' : 'focus'}</p>
+      {!corner && <h1>{session.sessionLabel ? session.sessionLabel + ' will ' : ''}{room.state.data.task.title}</h1>}
+      {planned || running || paused || completed ? <>
+        {!corner && <p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p>}
+        <p className="focus-hint">{planned ? 'Choose your corner, then start when you’re ready.' : paused ? 'Take a breath. Your timer is paused.' : completed ? 'A little progress. A well-earned pause.' : timer.remainingSeconds ? 'One thing at a time.' : 'Time’s up. Stop to save your session.'}</p>
+        <div className="focus-table"><SpaceIllustration name={area.name} /><div className="tabletop">
+          <div className="session-drink"><MenuArtwork name={session.drinkName || 'Cafe Latte'} /></div>
+          {corner && <><h1>{session.sessionLabel ? session.sessionLabel + ' will ' : ''}{room.state.data.task.title}</h1><p className="timer" aria-label={completed ? 'Break remaining' : 'Time remaining'}>{timerText(completed ? timer.breakRemainingSeconds : timer.remainingSeconds)}</p></>}
+          {session.drinkName && <p className="drink-caption">{session.drinkSize} {session.drinkName}</p>}
+          {planned || running || paused ? <>
+            <div className="seat-status" role="status">{room.seats.loading ? 'Checking seats…' : room.seats.error ? <><span>Seats could not be checked.</span><button className="text-link" onClick={room.seats.reload}>Retry seats</button></> : room.seats.data && <>{area.name} · {room.seats.data.remainingSeats} / {room.seats.data.capacity} seats available {room.holdsSeat && <span>· your seat is reserved</span>}</>}</div>
+            {running && !room.holdsSeat && <p className="browsing-note">You’re browsing. Your reserved seat is in {room.state.data.areas.find(item => item._id === session.area)?.name}.</p>}
+            <div className="session-controls">
+              {planned && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('start')}>{room.busy ? 'Starting…' : room.canTakeSeat ? 'Start session' : 'No seat available'}</button>}
+              {paused && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('resume')}>{room.canTakeSeat ? 'Resume timer' : 'No seat available'}</button>}
+              {running && timer.remainingSeconds > 0 && <button className="button secondary" disabled={room.busy} onClick={() => room.action('pause')}>Pause timer</button>}
+              {running && !room.holdsSeat && timer.remainingSeconds > 0 && <button className="button" disabled={room.busy || !room.canTakeSeat} onClick={() => room.action('move')}>{room.canTakeSeat ? 'Reserve this seat' : 'Area full'}</button>}
+              {(running || paused) && <button className="button" disabled={room.busy} onClick={() => room.action('stop')}>Stop session</button>}
+              {planned && <button className="text-link" disabled={room.busy} onClick={() => room.action('stop')}>Cancel setup</button>}
+            </div>
+            <div className="music-controls"><button className="text-link" disabled={!music.available || !running || timer.remainingSeconds === 0} onClick={music.toggle}>{music.playing ? 'Pause music' : 'Play music'}</button><label>Volume<input type="range" min={0} max={1} step={.05} value={music.volume} disabled={!music.available} onChange={event => music.setVolume(Number(event.target.value))} /></label></div>
+            {!music.available && <p className="music-note">Background music hasn’t been added yet.</p>}
+            {music.error && <p className="music-note" role="status">{music.error}</p>}
+            <details className="quiet-options"><summary>Session details</summary><p className="note">{session.plannedMinutes} minute focus · {session.breakMinutes} minute break · {timer.elapsedMinutes} minutes focused</p><p className="note">Pausing releases your seat. Resuming checks availability again.</p><button className="text-link" onClick={room.seats.reload}>Refresh seats</button></details>
+          </> : <><p className="note">{session.completedMinutes} {session.completedMinutes === 1 ? 'minute' : 'minutes'} saved · Focus score {session.focusScore}%</p><Link className="button" to="/study/drink">Prepare another session</Link><div className="center-actions"><Link className="text-link" to={`/tasks/${room.state.data.task._id}/edit`}>Update task status</Link><Link className="text-link" to="/analytics">Productivity Analytics</Link></div></>}
+          <Feedback error={room.error} />
+        </div></div>
+        <nav className="scene-navigation" aria-label="Cafe spaces"><button className="icon-button" aria-label="Previous cafe space" disabled={room.viewIndex === -1 || room.busy} onClick={() => room.browse(room.viewIndex - 1)}>←</button><button className="icon-button" aria-label="Next cafe space" disabled={room.viewIndex === room.state.data.areas.length - 1 || room.busy} onClick={() => room.browse(room.viewIndex + 1)}>→</button></nav>
+      </> : <EmptyState title="This session has ended." to="/study/drink" label="Prepare a new session" />}
+    </>)}
+  </LoadState></section>;
 }
 
 export function FocusHistoryPage() {
@@ -85,13 +87,13 @@ export function FocusHistoryPage() {
     return { sessions, tasks, areas };
   }, [user!._id]);
   return <section className="page"><PageHeading eyebrow="Your time, well spent" title="A little history of focus." action={<Link className="button" to="/focus">Start a session →</Link>} /><LoadState {...state} retry={state.reload}>
-    {!state.data?.sessions.length ? <EmptyState title="Your first session is waiting." to="/focus" label="Start focusing" /> : <div className="record-list">{state.data.sessions.map(session => <article className="record-row" key={session._id}><div><h2>{state.data!.tasks.find(task => task._id === session.task)?.title || 'Study task'}</h2><p>{state.data!.areas.find(area => area._id === session.area)?.name} · {dateTime(session.startedAt)}</p><div className="metadata"><Status value={session.status} /><span>{session.completedMinutes} / {session.plannedMinutes} min</span>{session.focusScore !== null && <span>Focus score {session.focusScore}%</span>}</div></div><Link className="text-link" to={`/focus/${session._id}`}>{session.status === 'active' ? 'Resume →' : 'View →'}</Link></article>)}</div>}
+    {!state.data?.sessions.length ? <EmptyState title="Your first session is waiting." to="/focus" label="Start focusing" /> : <div className="record-list">{state.data.sessions.map(session => <article className="record-row" key={session._id}><div><h2>{state.data!.tasks.find(task => task._id === session.task)?.title || 'Study task'}</h2><p>{state.data!.areas.find(area => area._id === session.area)?.name} · {dateTime(session.startedAt)}</p><div className="metadata"><Status value={session.status} /><span>{session.completedMinutes} / {session.plannedMinutes} min</span>{session.focusScore !== null && <span>Focus score {session.focusScore}%</span>}</div></div><Link className="text-link" to={`/focus/${session._id}`}>{['planned', 'active', 'paused'].includes(session.status) ? 'Resume →' : 'View →'}</Link></article>)}</div>}
   </LoadState></section>;
 }
 
 export function AnalyticsPage() {
   const { user } = useCafe(); const state = useApi(() => cafeApi.statistics(user!._id), [user!._id]);
-  return <section className="page"><PageHeading eyebrow="Your study notebook" title="Small sessions add up." description="A summary of the focus time and tasks you’ve completed." action={<Link className="text-link" to="/history">View session history →</Link>} /><LoadState {...state} retry={state.reload}>{state.data && <>
+  return <section className="page"><PageHeading eyebrow="Your study notebook" title="Productivity Analytics" description="A summary of the focus time and tasks you’ve completed." action={<Link className="text-link" to="/history">View session history →</Link>} /><LoadState {...state} retry={state.reload}>{state.data && <>
     {state.data.completedSessions === 0 && <p className="note">Your notebook is ready. Complete a focus session to start filling it.</p>}
     <dl className="metrics"><div><dt>Focus minutes</dt><dd>{state.data.totalFocusMinutes}</dd></div><div><dt>Sessions completed</dt><dd>{state.data.completedSessions}</dd></div><div><dt>Tasks completed</dt><dd>{state.data.completedTasks}</dd></div><div><dt>Average session</dt><dd>{state.data.averageSessionMinutes}<small> min</small></dd></div></dl>
     <div className="notebook"><h2>Your cafe habits</h2><dl className="summary-list"><div><dt>Current study streak</dt><dd>{state.data.currentStreak} {state.data.currentStreak === 1 ? 'day' : 'days'}</dd></div><div><dt>Longest study streak</dt><dd>{state.data.longestStreak} days</dd></div><div><dt>Most productive day</dt><dd>{state.data.mostProductiveDay ? `${state.data.mostProductiveDay.date} · ${state.data.mostProductiveDay.totalMinutes} min` : 'No completed sessions yet'}</dd></div><div><dt>Favorite corner</dt><dd>{state.data.favoriteCafeArea?.name || 'Still finding your corner'}</dd></div><div><dt>Most ordered drink</dt><dd>{state.data.mostOrderedDrink?.name || 'No drinks ordered yet'}</dd></div></dl><p className="note">Study days and streaks follow Philippine time.</p></div>

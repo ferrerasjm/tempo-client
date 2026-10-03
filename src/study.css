@@ -1,0 +1,118 @@
+/* Four small decisions on one sheet: drink, size, label, intention. */
+.paper-shell > main > .entry-page { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.entry-paper {
+  position: relative;
+  width: 100%;
+  min-height: 86svh;
+  padding: 55px 40px 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+  border: 3px solid #1c211d;
+  border-radius: 9px 3px 7px 5px;
+}
+.entry-paper > h1 { font-size: 1.3rem; margin-bottom: 35px; }
+.entry-paper > .step-caption { position: absolute; bottom: 15px; inset-inline: 15px; margin: 0; }
+.entry-content { width: min(630px, 100%); margin: 0 auto; }
+.entry-content .note { max-width: 430px; margin: 20px auto; font-size: .73rem; }
+.entry-back { display: block; width: fit-content; margin: 12px auto 0; }
+.study-drinks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 0 auto 35px; }
+.drink-choice { padding: 15px 8px; background: none; border: 2px solid transparent; border-radius: 4px; min-height: 210px; }
+.drink-choice span, .drink-choice small { display: block; font-size: .9rem; margin-top: 10px; }
+.drink-choice.chosen { border-color: #1c211d; }
+.study-drinks:has(.chosen) .drink-choice:not(.chosen) { opacity: .45; }
+.drink-choice:hover:not(:disabled) .drink-art { transform: translateY(-5px) rotate(-3deg); }
+.entry-drink .drink-art { width: 100px; height: 100px; margin: 0 auto 20px; }
+.size-choices { margin: 0 auto 30px; padding: 0; border: 0; width: min(310px, 100%); }
+.size-choices label { display: flex; align-items: center; gap: 12px; padding: 15px; margin-bottom: 10px; border: 2px solid transparent; border-radius: 3px; cursor: pointer; }
+.size-choices .selected { border-color: #111; }
+.size-choices input { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
+.size-choices label:has(input:focus-visible) { outline: 3px solid #9a7b45; outline-offset: 3px; }
+.dotted-line { flex: 1; border-bottom: 1px dotted #a9afa5; }
+.drink-ticket { width: min(360px, 100%); padding: 20px 25px; margin: 0 auto 30px; background: #e9e6de; transform: rotate(-1deg); }
+.drink-ticket .drink-art { width: 90px; height: 80px; }
+.drink-ticket .field { margin: 15px 0; }
+.drink-ticket .field input { background: transparent; border: 0; border-bottom: 1px solid #889589; border-radius: 0; text-align: center; font-size: 1.5rem; font-family: var(--font-serif); }
+.drink-ticket .field > label { text-align: center; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; }
+.drink-ticket > p { font-size: .7rem; text-transform: uppercase; color: #46584b; }
+.task-notepad { width: min(330px, 100%); min-height: 240px; padding: 35px 25px; margin: 0 auto 15px; background: #fff6be; border-radius: 3px; box-shadow: 3px 5px 0 #1c211d0c; transform: rotate(-1deg); }
+.task-notepad .field > label { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.task-notepad .field textarea { background: transparent; border: 0; font-family: var(--font-serif); font-size: 1.4rem; font-style: italic; line-height: 1.5; text-align: center; padding: 6px; resize: vertical; }
+.task-notepad .field { margin-bottom: 0; }
+.entry-task-details { text-align: left; width: min(430px, 100%); margin: 10px auto; }
+.entry-task-details summary { min-height: 44px; padding: 10px 0; text-align: center; font-size: .75rem; cursor: pointer; }
+.entry-task-details[open] { padding: 10px 15px; border: 1px solid #ccd2c4; }
+
+/* More controls stay on the table; room browsing doesn't change the saved seat. */
+.session-room .session-drink { width: clamp(150px, 17vw, 240px); height: clamp(150px, 21svh, 210px); margin: -15svh auto 4px; }
+.session-room .session-drink .drink-art { width: 100%; height: 100%; }
+.session-room .drink-caption { font-size: .7rem; text-transform: lowercase; margin-bottom: 8px; }
+.session-room .seat-status { font-size: .7rem; color: #46584b; }
+.session-room .browsing-note { font-size: .66rem; }
+.session-room .session-controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 12px 0 6px; }
+.session-room .session-controls .button { min-height: 42px; padding: 8px 18px; }
+.session-room .music-controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 20px; margin: 4px 0; }
+.session-room .music-controls .text-link { font-size: .7rem; min-height: 35px; padding-block: 5px; }
+.music-controls label { display: flex; align-items: center; gap: 10px; font-size: .68rem; }
+.music-controls input { width: 110px; accent-color: #1c211d; }
+.session-room .music-note { font-size: .65rem; }
+.session-room .tabletop { height: 34svh; min-height: 310px; }
+.session-room .quiet-options { margin-top: 0; }
+.session-room .quiet-options summary { min-height: 32px; padding-block: 4px; font-size: .65rem; }
+.session-room .tabletop:has(.quiet-options[open]) { height: auto; min-height: 360px; }
+.session-room.scene-corner .tabletop { height: 37svh; min-height: 335px; }
+.session-room.scene-corner .session-drink { margin-top: -14svh; margin-bottom: 5svh; }
+.session-room.scene-corner h1 { bottom: 26svh; }
+.session-room.scene-corner .timer { bottom: 22svh; }
+.session-room.scene-corner .drink-caption { display: none; }
+.session-room .tabletop .form-error { max-width: 450px; margin: 8px auto; padding: 8px 12px; font-size: .7rem; }
+.session-room .space-badge { max-width: calc(100% - 200px); }
+.session-room .status-paused { background: #ece3c9; }
+
+@media (max-width: 800px) {
+  .entry-paper { min-height: calc(100svh - 135px); padding: 40px 25px 50px; }
+  .study-drinks { gap: 10px; }
+  .drink-choice { min-height: 175px; }
+  .study-drinks .drink-art { width: 115px; height: 120px; }
+}
+@media (max-width: 480px) {
+  .entry-paper { min-height: calc(100svh - 109px); padding: 35px 15px 50px; }
+  .entry-paper > h1 { font-size: 1.1rem; margin-bottom: 25px; }
+  .study-drinks { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .drink-choice { padding: 8px 4px; min-height: 155px; }
+  .drink-choice span { font-size: .75rem; }
+  .study-drinks .drink-art { width: 100px; height: 105px; }
+  .task-notepad { padding: 25px 12px; min-height: 210px; }
+  .session-room { min-height: 850px !important; }
+  .session-room .tabletop { height: 345px; min-height: 345px; padding-inline: 12px; }
+  .session-room.scene-corner .tabletop { height: 365px; min-height: 365px; }
+  .session-room .session-drink { width: 145px; height: 145px; margin-top: -100px; }
+  .session-room.scene-corner .session-drink { margin-top: -100px; margin-bottom: 65px; }
+  .session-room.scene-corner h1 { top: 565px; bottom: auto; }
+  .session-room.scene-corner .timer { top: 595px; bottom: auto; font-size: 1.3rem; }
+  .session-room .space-badge { max-width: calc(100% - 150px); }
+  .session-room .session-controls { gap: 8px; }
+  .session-room .session-controls .button { padding: 8px 12px; font-size: .75rem; }
+  .session-room .seat-status { font-size: .65rem; }
+  .session-room .browsing-note { font-size: .62rem; }
+}
+@media (max-height: 650px) and (min-width: 600px) {
+  .session-room { min-height: 830px !important; }
+  .session-room .tabletop { height: 330px; }
+  .session-room.scene-corner .tabletop { height: 360px; }
+  .session-room.scene-corner .session-drink { margin-bottom: 90px; }
+  .session-room.scene-corner h1 { top: 535px; bottom: auto; }
+  .session-room.scene-corner .timer { top: 565px; bottom: auto; }
+}
+
+/* Keep corner captions in normal flow so timer and seat status never collide. */
+.session-room.scene-corner .tabletop { height: 400px; min-height: 400px; }
+.session-room.scene-corner .session-drink { margin-bottom: 10px; }
+.session-room.scene-corner .tabletop h1 { position: static; margin: 6px auto; max-width: 560px; font-size: .9rem; }
+.session-room.scene-corner .tabletop .timer { position: static; margin: 8px 0 14px; font-size: 1.8rem; line-height: 1; }
+@media (max-width: 480px) {
+  .session-room.scene-corner { min-height: 900px !important; }
+  .session-room.scene-corner .tabletop { height: 410px; min-height: 410px; }
+  .session-room.scene-corner .tabletop h1 { font-size: .8rem; }
+}

@@ -24,3 +24,8 @@ export const focusSchema = z.object({
 export type FocusValues = z.infer<typeof focusSchema>;
 export const completionSchema = z.object({ completedMinutes: z.number().int().min(1, 'Enter at least one minute.').max(120, 'Maximum 120 minutes.') });
 export type CompletionValues = z.infer<typeof completionSchema>;
+
+export const studyLabelSchema = z.object({ label: z.string().trim().min(1, 'Add a name or label.').max(80, 'Use up to 80 characters.') });
+export type StudyLabelValues = z.infer<typeof studyLabelSchema>;
+export const studyTaskSchema = taskSchema.extend({ energyLevel: z.enum(['low', 'medium', 'high']) });
+export type StudyTaskValues = z.infer<typeof studyTaskSchema>;
