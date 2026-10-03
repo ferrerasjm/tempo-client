@@ -12,9 +12,8 @@ export type TaskFormValues = z.infer<typeof taskSchema>;
 
 export const reservationSchema = z.object({
   startsAt: z.string().min(1, 'Choose a start time.'),
-  endsAt: z.string().min(1, 'Choose an end time.'),
-}).refine(values => new Date(values.startsAt).getTime() > Date.now(), { path: ['startsAt'], message: 'Start time must be in the future.' })
-  .refine(values => new Date(values.endsAt).getTime() > new Date(values.startsAt).getTime(), { path: ['endsAt'], message: 'End time must be after the start.' });
+  durationMinutes: z.number().int().min(15).max(120),
+}).refine(values => new Date(values.startsAt).getTime() > Date.now(), { path: ['startsAt'], message: 'Choose a future start time.' });
 export type ReservationValues = z.infer<typeof reservationSchema>;
 
 export const focusSchema = z.object({
