@@ -14,7 +14,6 @@
   grid-template-columns: minmax(0, 340px) minmax(0, 500px);
   gap: clamp(40px, 7.3vw, 140px);
   align-items: center;
-  transform: translateX(40px);
 }
 .sip-timer { text-align: center; }
 .sip-timer .drink-art { width: 340px; height: 340px; object-fit: contain; margin: 0 auto; }
@@ -40,7 +39,7 @@
 .sip-total { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; min-height: 54px; flex-shrink: 0; margin: 24px 0 48px; padding: 10px 16px; border: 2px solid #111; border-radius: 999px; color: #717681; font-size: 15px; }
 .sip-count { display: flex; align-items: center; gap: 6px; color: #111; }
 .sip-total .drink-art { width: 28px; height: 28px; object-fit: contain; }
-.app-shell .sip-back { align-self: center; padding: 0; min-height: 28px; color: #111; font-size: 18px; text-decoration: none; text-underline-offset: 2px; }
+.app-shell .sip-back { justify-self: start; align-self: start; padding: 0; min-height: 28px; color: #111; font-size: 18px; text-decoration: none; text-underline-offset: 2px; }
 @media (max-width: 1100px) { .sip-stats-layout { transform: none; } }
 @media (max-width: 760px) {
   .app-shell .sip-stats-page { padding: 32px 20px; }

@@ -23,8 +23,8 @@ import type { Task } from "../types";
 import { pendingRequest, clearPendingRequest } from "../utils/pendingRequests";
 import { useConfirmation } from "../state/ConfirmationContext";
 import { useStudyDraft } from "../state/StudyDraftContext";
-import { Pagination } from "../components/Pagination";
 import { PageNavigation } from "../state/SessionNavigation";
+import { Pagination } from "../components/Pagination";
 
 function TaskActionIcon({
   action,
@@ -74,6 +74,7 @@ export function TaskListPage() {
   const unfinished = sessions.find((session) =>
     ["planned", "active", "paused"].includes(session.status),
   );
+  const backToSession = unfinished || null;
   const taskStatus = (task: Task) =>
     unfinished?.task === task._id &&
     ["active", "paused"].includes(unfinished.status) &&
@@ -176,9 +177,8 @@ export function TaskListPage() {
   return (
     <section className="page task-board">
       <PageNavigation
-        to="/cafe"
-        label="Back to Cafe"
-        preferSession
+        to={backToSession ? `/focus/${backToSession._id}` : "/welcome"}
+        label={backToSession ? "Back to Session" : "Back to Welcome"}
         className="task-board-navigation"
       >
         <Link className="task-history-button" to="/history">

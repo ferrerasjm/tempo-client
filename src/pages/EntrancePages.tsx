@@ -1,9 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { PageNavigation } from "../state/SessionNavigation";
 import { artwork } from "../assets";
 import { useCafe } from "../state/CafeContext";
-import { CafeScene } from "../components/CafeScene";
 import { EmptyState, LoadState, PageHeading } from "../components/ui";
+import { PageNavigation } from "../state/SessionNavigation";
 
 export function LandingPage() {
   return (
@@ -78,21 +77,6 @@ export function WelcomePage() {
           Leave Current Profile
         </button>
       )}
-    </section>
-  );
-}
-
-export function LobbyPage() {
-  const { user } = useCafe();
-  return (
-    <section className="page lobby">
-      <PageNavigation to="/welcome" label="Back to Profiles" preferSession />
-      <PageHeading
-        eyebrow={`Welcome, ${user?.displayName.split(" ")[0]}`}
-        title="Make yourself at home."
-        description="Start Focusing, or stop by the counter."
-      />
-      <CafeScene />
     </section>
   );
 }

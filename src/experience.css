@@ -67,6 +67,19 @@
   flex-direction: column;
   justify-content: center;
 }
+.paper-shell > main > .welcome-page {
+  justify-content: flex-start;
+  align-items: center;
+  padding: 40px;
+}
+.welcome-page > .page-navigation {
+  align-self: stretch;
+  margin-bottom: 24px;
+}
+.welcome-page > .page-heading {
+  width: 100%;
+  margin-top: 48px;
+}
 .paper-shell .page-heading { justify-content: center; text-align: center; margin-bottom: 35px; }
 .paper-shell .page-heading > div { width: 100%; }
 .paper-shell .page-heading .eyebrow { display: none; }
@@ -121,7 +134,7 @@
 .paper-shell .menu-pick { min-height: 190px; }
 .paper-shell .drink-art { width: 130px; height: 130px; }
 .paper-shell .menu-item h2 { font-size: .9rem; }
-.paper-shell .basket-bar { min-height: 48px; margin: 12px 0 0; gap: 10px; }
+.paper-shell .basket-bar { min-height: 48px; margin: 28px 0 0; gap: 10px; }
 .paper-shell .checkout-page { position: relative; }
 .paper-shell .checkout-page .page-heading .lede { max-width: none; }
 @media (min-width: 900px) {
@@ -148,8 +161,10 @@
 @media (max-width: 800px) {
   .paper-shell > main { padding: 110px 25px 25px; }
   .paper-shell > main > .page, .study-paper { min-height: calc(100svh - 135px); padding: 45px 25px; }
+  .paper-shell > main > .welcome-page { padding: 40px 25px; }
   .paper-shell > main > .counter-page { min-height: 0; padding-block: 60px 30px; }
   .paper-shell .page-heading { align-items: center; }
+  .welcome-page > .page-heading { margin-top: 36px; }
   .study-paper .step-caption { bottom: 12px; }
   .paper-shell .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
@@ -158,6 +173,7 @@
   .app-shell .hanging-sign { width: 105px; }
   .paper-shell > main { padding: 95px 14px 14px; }
   .paper-shell > main > .page, .study-paper { min-height: calc(100svh - 109px); padding: 35px 15px 45px; }
+  .paper-shell > main > .welcome-page { padding: 30px 20px 40px; }
   .paper-shell > main > .counter-page { min-height: 0; padding-block: 55px 22px; }
   .study-paper .intention-note { min-height: 200px; padding: 25px 12px; }
   .study-paper .page-heading { margin-bottom: 25px; }
@@ -168,7 +184,8 @@
   .paper-shell .drink-art { width: 105px; height: 115px; }
   .paper-shell .menu-pick { min-height: 155px; }
   .paper-shell .page-heading { margin-bottom: 25px; }
-  .paper-shell .basket-bar { margin-top: 18px; }
+  .welcome-page > .page-heading { margin-top: 24px; }
+  .paper-shell .basket-bar { margin-top: 24px; }
   .lobby > .page-heading { top: 28px; max-width: calc(100% - 150px); padding: 9px 10px; }
   .lobby > .page-heading h1 { font-size: .75rem; }
   .lobby .cafe-scene > img { object-position: 55% center; }

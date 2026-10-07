@@ -73,6 +73,9 @@ img,svg{display:block;max-width:100%}
 .empty{padding:50px 20px;text-align:center;margin:20px 0}
 .empty h2{font-family:var(--font-sans);font-size:1.7rem}
 .empty p{margin:15px 0 22px}
+.orders-page > .empty h2{font-size:1rem;font-weight:400}
+.task-board > .empty h2{font-size:1.1rem;font-weight:400}
+.task-board > .empty p{font-size:.85rem}
 .form-error{background:#f0e0d6;color:#944b3a;padding:12px 16px;margin:15px 0;border-radius:4px;font-size:.85rem}
 
 .modal{position:fixed;inset:0;margin:auto;border:1.5px solid #39473a;border-radius:10px 5px 9px 4px;background:#fffdf7;color:#293a31;padding:28px;width:min(560px,90vw);max-height:85svh;overflow:auto;text-align:left}
@@ -166,6 +169,9 @@ img,svg{display:block;max-width:100%}
 .task-editor .field label{font-size:1rem}
 .task-editor .field select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23293a31' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px}
 .task-editor textarea{font-size:1.05rem;line-height:1.65;min-height:160px;resize:vertical}
+.task-editor > .page-navigation{align-self:flex-start;margin-right:auto}
+.task-editor .page-heading .lede{max-width:none;white-space:nowrap}
+.task-editor textarea:focus{outline:none;box-shadow:none}
 .task-editor .field small{font-size:.9rem;line-height:1.5}
 @media(max-width:600px){.task-board .task-row{grid-template-columns:minmax(0,1fr);gap:16px}.task-pagination{border-radius:22px}.task-page-size{margin-left:4px;padding-left:8px}}
 @media(max-width:480px){.task-filters{align-items:stretch;flex-wrap:wrap;gap:10px}.task-filter-field{width:100%;justify-content:space-between;gap:8px}.task-filter-control{flex:1;max-width:220px}.task-filters p{flex-basis:100%;margin:0}.task-pagination{gap:2px;padding:8px}.task-pagination button{width:32px;height:36px}.task-page-size{flex-basis:100%;border-left:0;margin:4px 0 0;padding:6px 0 0;border-top:1px solid #ccd2c4;text-align:center}}
@@ -247,6 +253,7 @@ to{opacity:1}
 
 @media(max-width:700px){.page-heading{flex-direction:column;align-items:flex-start}
 .centered .page-heading{align-items:center}
+.task-editor .page-heading .lede{white-space:normal}
 .menu-grid{grid-template-columns:1fr 1fr}
 .task-row{flex-wrap:wrap;gap:15px}
 .row-actions{margin-left:70px;flex-direction:row;gap:20px}

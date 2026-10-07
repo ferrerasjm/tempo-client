@@ -15,13 +15,16 @@ import {
 import { pendingRequest, clearPendingRequest } from "../utils/pendingRequests";
 import { MenuArtwork } from "../components/MenuArtwork";
 import { useConfirmation } from "../state/ConfirmationContext";
-import { PageNavigation } from "../state/SessionNavigation";
 import { Pagination } from "../components/Pagination";
+import { PageNavigation } from "../state/SessionNavigation";
+import { sessionReturn } from "../utils/sessionReturn";
 
 export function MenuPage() {
   const state = useApi(cafeApi.pastries);
   const { user, basket, selectOnly, clearBasket } = useCafe();
   const rewards = useApi(() => cafeApi.rewards(user!._id), [user!._id]);
+  const sessions = useApi(() => cafeApi.sessions(user!._id), [user!._id]);
+  const returnContext = sessionReturn(sessions.data || []);
   const selectedCredits = basket.reduce((total, entry) => {
     const item = state.data?.find(
       (menuItem) => menuItem._id === entry.menuItem,
@@ -41,9 +44,8 @@ export function MenuPage() {
   return (
     <section className="page counter-page centered">
       <PageNavigation
-        to="/cafe"
-        label="Back to Cafe"
-        preferSession
+        to={returnContext ? `/focus/${returnContext.session._id}` : "/welcome"}
+        label={returnContext ? "Back to Session" : "Back to Welcome"}
         backClassName="text-link back-to-focus-link"
       >
         <Link className="text-link past-orders-link" to="/orders">
@@ -190,11 +192,7 @@ export function CheckoutPage() {
   if (!basket.length && !placed.current) return <Navigate to="/menu" replace />;
   return (
     <section className="page narrow checkout-page">
-      <PageNavigation
-        to="/menu"
-        label="Back to Reward Shop"
-        backClassName="text-link checkout-back"
-      />
+      <PageNavigation to="/menu" label="Back to Reward Shop" backClassName="text-link checkout-back" />
       <PageHeading
         eyebrow="Before we make your order"
         title="A little treat, sorted."
@@ -310,16 +308,11 @@ export function OrdersPage() {
         eyebrow="Reward Shop"
         title="Your Orders"
         description="Review your Tempo Credit purchases from the Reward Shop."
-        action={
-          <Link className="button" to="/menu">
-            Visit Menu
-          </Link>
-        }
       />
       <Feedback error={error} />
       <LoadState {...state} retry={state.reload}>
         {!orders.length ? (
-          <EmptyState title="No purchases yet." to="/menu" label="Visit Menu" />
+          <EmptyState title="No purchases yet." />
         ) : (
           <>
             <div className="record-list">

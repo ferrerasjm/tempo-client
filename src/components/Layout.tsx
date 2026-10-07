@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useState, type MouseEvent } from "react";
 import {
   Link,
   NavLink,
@@ -25,6 +25,7 @@ export function Layout() {
   const { reset } = useStudyDraft();
   const navigate = useNavigate();
   const [restarting, setRestarting] = useState(false);
+  const [pausingForNavigation, setPausingForNavigation] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const focus = useApi(
@@ -42,6 +43,27 @@ export function Layout() {
   function closeMenu() {
     setMenuOpen(false);
     closeExplore();
+  }
+  async function navigateFromExplore(
+    event: MouseEvent<HTMLAnchorElement>,
+    to: string,
+  ) {
+    event.preventDefault();
+    if (pausingForNavigation) return;
+    setPausingForNavigation(true);
+    try {
+      const sessions = user ? await cafeApi.sessions(user._id) : [];
+      const active = sessions.find((item) => item.status === "active");
+      if (active) {
+        await cafeApi.sessionAction(active._id, "pause", active.area);
+      }
+      closeMenu();
+      navigate(to);
+    } catch (reason) {
+      notify("Could not pause your focus timer. " + errorMessage(reason));
+    } finally {
+      setPausingForNavigation(false);
+    }
   }
   async function startOver() {
     if (restarting) return;
@@ -79,11 +101,10 @@ export function Layout() {
     ["/welcome", "/focus", "/menu", "/order-summary"].includes(
       location.pathname,
     ) || location.pathname.startsWith("/study/");
-  const room = location.pathname === "/cafe";
   const landing = location.pathname === "/";
   return (
     <div
-      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : room ? "room-shell" : paper ? "paper-shell" : "notebook-shell"}`}
+      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : paper ? "paper-shell" : "notebook-shell"}`}
     >
       <a className="skip-link" href="#main">
         Skip to content
@@ -143,22 +164,44 @@ export function Layout() {
                 {unfinished ? "Return To Focus" : "Choose A Drink"}
               </NavLink>
             )}
-            <NavLink onClick={closeMenu} to="/tasks">
+            <NavLink
+              onClick={(event) => void navigateFromExplore(event, "/tasks")}
+              to="/tasks"
+              aria-disabled={pausingForNavigation}
+            >
               Task Board
             </NavLink>
-            <NavLink onClick={closeMenu} to="/menu">
+            <NavLink
+              onClick={(event) => void navigateFromExplore(event, "/menu")}
+              to="/menu"
+              aria-disabled={pausingForNavigation}
+            >
               Reward Shop
             </NavLink>
           </div>
           <div>
             <p className="eyebrow">Your Notebook</p>
-            <NavLink onClick={closeMenu} to="/orders">
+            <NavLink
+              onClick={(event) => void navigateFromExplore(event, "/orders")}
+              to="/orders"
+              aria-disabled={pausingForNavigation}
+            >
               Your Orders
             </NavLink>
-            <NavLink onClick={closeMenu} to="/history">
+            <NavLink
+              onClick={(event) => void navigateFromExplore(event, "/history")}
+              to="/history"
+              aria-disabled={pausingForNavigation}
+            >
               Focus History
             </NavLink>
-            <NavLink onClick={closeMenu} to="/analytics">
+            <NavLink
+              onClick={(event) =>
+                void navigateFromExplore(event, "/analytics")
+              }
+              to="/analytics"
+              aria-disabled={pausingForNavigation}
+            >
               Productivity Stats
             </NavLink>
           </div>

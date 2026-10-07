@@ -12,13 +12,7 @@ const Context = createContext<{
   retry: () => void;
 }>({ destination: null, error: "", retry: () => {} });
 
-// App back links use explicit parents. The current session is an independent
-// escape route, refreshed on navigation and when returning from another tab.
-export function SessionNavigationProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function SessionNavigationProvider({ children }: { children: ReactNode }) {
   const { user } = useCafe();
   const location = useLocation();
   const sessions = useApi(
@@ -31,83 +25,33 @@ export function SessionNavigationProvider({
     return () => window.removeEventListener("focus", refresh);
   }, [sessions.reload]);
   return (
-    <Context.Provider
-      value={{
-        destination: sessionReturn(sessions.data || []),
-        error: sessions.error,
-        retry: sessions.reload,
-      }}
-    >
+    <Context.Provider value={{ destination: sessionReturn(sessions.data || []), error: sessions.error, retry: sessions.reload }}>
       {children}
     </Context.Provider>
   );
 }
 
-export function BackLink({
-  fallbackTo,
-  fallbackLabel,
-  className = "",
-  preferSession = false,
-}: {
+export function BackLink({ fallbackTo, fallbackLabel, className = "" }: {
   fallbackTo: string;
   fallbackLabel: string;
   className?: string;
-  preferSession?: boolean;
 }) {
-  const { destination } = useContext(Context);
-  const session = preferSession ? destination : null;
-  const to = session ? `/focus/${session.session._id}` : fallbackTo;
-  const label = session
-    ? session.label === "Return to Timer"
-      ? "Back to Timer"
-      : session.label
-    : fallbackLabel;
-  return (
-    <Link className={className} to={to}>
-      <span aria-hidden="true">{"\u2190"}</span> {label}
-    </Link>
-  );
+  return <Link className={className} to={fallbackTo}><span aria-hidden="true">{"\u2190"}</span> {fallbackLabel}</Link>;
 }
 
-export function PageNavigation({
-  to,
-  label,
-  preferSession = false,
-  className = "",
-  backClassName = "",
-  children,
-}: {
+export function PageNavigation({ to, label, className = "", backClassName = "", children }: {
   to: string;
   label: string;
-  preferSession?: boolean;
   className?: string;
   backClassName?: string;
   children?: ReactNode;
 }) {
-  const { destination, error, retry } = useContext(Context);
-  const sessionHref = destination ? `/focus/${destination.session._id}` : null;
+  const { error, retry } = useContext(Context);
   return (
-    <nav
-      className={`page-back page-navigation ${className}`}
-      aria-label="Page navigation"
-    >
-      <BackLink
-        fallbackTo={to}
-        fallbackLabel={label}
-        preferSession={preferSession}
-        className={backClassName}
-      />
+    <nav className={`page-back page-navigation ${className}`} aria-label="Page navigation">
+      <BackLink fallbackTo={to} fallbackLabel={label} className={backClassName} />
       <div className="page-navigation-actions">
-        {sessionHref && !preferSession && sessionHref !== to && (
-          <Link className="session-return-button" to={sessionHref}>
-            {destination!.label}
-          </Link>
-        )}
-        {error && (
-          <button type="button" className="text-link" onClick={retry}>
-            Retry Timer Link
-          </button>
-        )}
+        {error && <button type="button" className="text-link" onClick={retry}>Retry Timer Link</button>}
         {children}
       </div>
     </nav>

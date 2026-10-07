@@ -1,4 +1,29 @@
+import { useMemo } from "react";
 import { artwork, spaceArtwork } from "../assets";
+
+const characterActions = [
+  "working on a little idea",
+  "taking notes",
+  "working quietly",
+  "reading a chapter",
+  "sipping something warm",
+  "enjoying a quiet moment",
+  "making a little progress",
+  "lost in thought",
+  "sketching in the margins",
+  "planning the next chapter",
+  "organizing a few thoughts",
+  "reviewing a small detail",
+  "waiting for inspiration",
+  "settling into a good rhythm",
+  "highlighting an important line",
+  "pausing to think things through",
+  "checking off a tiny task",
+  "drafting something new",
+  "taking a well-earned break",
+  "watching the rain outside",
+  "keeping the evening company",
+] as const;
 
 function CafeVisitor({
   activity,
@@ -38,27 +63,43 @@ function CafeVisitor({
 }
 
 export function CafeRoomScene({ areaName }: { areaName: string }) {
+  const activities = useMemo(() => {
+    const shuffled = [...characterActions];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [shuffled[index], shuffled[swapIndex]] = [
+        shuffled[swapIndex],
+        shuffled[index],
+      ];
+    }
+    return shuffled.slice(0, 4);
+  }, [areaName]);
+
   return (
     <div className="room-scenery">
       <img className="room-backdrop" src={spaceArtwork(areaName)} alt="" />
       <div className="room-characters" aria-label="Decorative cafe characters">
         <CafeVisitor
-          activity="working on a little idea"
+          key={`${areaName}-yellow`}
+          activity={activities[0]}
           drink={artwork.drinks.americano}
           character={artwork.characters.yellow}
         />
         <CafeVisitor
-          activity="taking notes"
+          key={`${areaName}-green`}
+          activity={activities[1]}
           drink={artwork.drinks.matcha}
           character={artwork.characters.green}
         />
         <CafeVisitor
-          activity="working quietly"
+          key={`${areaName}-blue`}
+          activity={activities[2]}
           drink={artwork.drinks.cappuccino}
           character={artwork.characters.blue}
         />
         <CafeVisitor
-          activity="reading a chapter"
+          key={`${areaName}-red`}
+          activity={activities[3]}
           drink={artwork.drinks.latte}
           character={artwork.characters.red}
         />

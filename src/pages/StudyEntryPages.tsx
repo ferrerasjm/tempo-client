@@ -22,8 +22,8 @@ import {
 } from "../schemas/forms";
 import { EmptyState, Feedback, Field, LoadState } from "../components/ui";
 import { MenuArtwork } from "../components/MenuArtwork";
-import { PageNavigation } from "../state/SessionNavigation";
 import { useSfx } from "../hooks/useSfx";
+import { PageNavigation } from "../state/SessionNavigation";
 
 function EntryPaper({
   title,
@@ -38,15 +38,11 @@ function EntryPaper({
     "/study/label": ["/study/size", "Back to Drink Size"],
     "/study/task": ["/study/label", "Back to Drink Label"],
   };
-  const [to, label] = parents[pathname] || ["/cafe", "Back to Cafe"];
+  const [to, label] = parents[pathname] || ["/welcome", "Back to Welcome"];
   return (
     <section className="page narrow centered entry-page">
       <div className="entry-paper">
-        <PageNavigation
-          to={to}
-          label={label}
-          preferSession={pathname === "/study/drink"}
-        />
+        <PageNavigation to={to} label={label} />
         {title && <h1>{title}</h1>}
         <div className="entry-content">{children}</div>
       </div>
@@ -208,7 +204,9 @@ export function StudyLabelPage() {
   const navigate = useNavigate();
   const form = useForm<StudyLabelValues>({
     resolver: zodResolver(studyLabelSchema),
-    defaultValues: { label: draft.label || user!.displayName },
+    defaultValues: {
+      label: draft.label || user!.displayName.trim().split(/\s+/)[0],
+    },
   });
   if (!draft.drink) return <Navigate to="/study/drink" replace />;
   return (

@@ -18,9 +18,9 @@ import { MenuArtwork } from "../components/MenuArtwork";
 import { CafeRoomScene } from "../components/CafeRoomScene";
 import { SessionFinish } from "../components/SessionFinish";
 import { Pagination } from "../components/Pagination";
-import { BackLink, PageNavigation } from "../state/SessionNavigation";
 import { useConfirmation } from "../state/ConfirmationContext";
 import { useSfx } from "../hooks/useSfx";
+import { BackLink, PageNavigation } from "../state/SessionNavigation";
 
 export function StartFocusPage() {
   const location = useLocation();
@@ -474,13 +474,18 @@ export function FocusHistoryPage() {
 
 export function SipStatsPage() {
   const { user } = useCafe();
+  const userId = user?._id || "";
   const stats = useApi(async () => {
+    if (!userId) return { sessions: [], tasks: [] };
     const [sessions, tasks] = await Promise.all([
-      cafeApi.sessions(user!._id),
-      cafeApi.tasks(user!._id),
+      cafeApi.sessions(userId),
+      cafeApi.tasks(userId),
     ]);
-    return { sessions, tasks };
-  }, [user!._id]);
+    return {
+      sessions: sessions.filter((session) => session.user === userId),
+      tasks: tasks.filter((task) => task.user === userId),
+    };
+  }, [userId]);
   const current =
     stats.data?.sessions.find((session) =>
       ["planned", "active", "paused"].includes(session.status),
@@ -490,6 +495,7 @@ export function SipStatsPage() {
     stats.data?.sessions.filter((session) => session.status === "completed") ||
     [];
   const visibleSessions = current ? [current, ...completed] : completed;
+  const backSession = current || completed[0];
   const drinkName =
     current?.drinkName || completed[0]?.drinkName || "Cafe Latte";
   const drinks = [
@@ -497,6 +503,11 @@ export function SipStatsPage() {
   ];
   return (
     <section className="page sip-stats-page">
+      <BackLink
+        className="text-link sip-back"
+        fallbackTo={backSession ? `/focus/${backSession._id}` : "/study/drink"}
+        fallbackLabel="Back to Session"
+      />
       <LoadState {...stats} retry={stats.reload}>
         {stats.data && (
           <div className="sip-stats-layout">
@@ -567,12 +578,6 @@ export function SipStatsPage() {
                     ))
                   : "no sips yet"}
               </div>
-              <BackLink
-                className="text-link sip-back"
-                preferSession
-                fallbackTo="/study/drink"
-                fallbackLabel="Back to Session Setup"
-              />
             </div>
           </div>
         )}

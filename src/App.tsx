@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout, ProfileGate } from "./components/Layout";
-import { LandingPage, LobbyPage, WelcomePage } from "./pages/EntrancePages";
+import { LandingPage, WelcomePage } from "./pages/EntrancePages";
 import { TaskFormPage, TaskListPage } from "./pages/TaskPages";
 import { AreaPage, ReservationsPage, SpacesPage } from "./pages/SpacePages";
 import {
@@ -17,7 +17,6 @@ import {
   StudyLabelPage,
   StudyTaskPage,
 } from "./pages/StudyEntryPages";
-import { PageNavigation } from "./state/SessionNavigation";
 
 export default function App() {
   return (
@@ -30,7 +29,6 @@ export default function App() {
           <Route path="study/size" element={<StudySizePage />} />
           <Route path="study/label" element={<StudyLabelPage />} />
           <Route path="study/task" element={<StudyTaskPage />} />
-          <Route path="cafe" element={<LobbyPage />} />
           <Route path="spaces" element={<SpacesPage />} />
           <Route path="spaces/:id" element={<AreaPage />} />
           <Route path="tasks" element={<TaskListPage />} />
@@ -54,7 +52,6 @@ export default function App() {
           path="*"
           element={
             <section className="page narrow">
-              <PageNavigation to="/cafe" label="Back to Cafe" preferSession />
               <h1>That corner isn’t here.</h1>
               <p>The page may have moved.</p>
             </section>

@@ -5,13 +5,19 @@
   position: relative;
   width: 100%;
   min-height: 86svh;
-  padding: 55px 40px 65px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: #fff;
   border: 3px solid #1c211d;
   border-radius: 9px 3px 7px 5px;
+}
+.entry-paper > .page-navigation {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
 }
 .entry-paper > h1 { font-family: var(--font-sans); font-size: 1.35rem; font-weight: 500; line-height: 1.35; text-transform: lowercase; letter-spacing: 0; margin-bottom: 35px; }
 .entry-paper .button { font-family: var(--font-sans); text-transform: lowercase; letter-spacing: 0; font-size: 1rem; font-weight: 600; min-width: 106px; min-height: 53px; }
@@ -23,6 +29,14 @@
 .drink-choice span, .drink-choice small { display: block; font-size: .9rem; margin-top: 10px; }
 .drink-choice.chosen { border-color: #1c211d; }
 .study-drinks:has(.chosen) .drink-choice:not(.chosen) { opacity: .45; }
+
+@media (max-width: 480px) {
+  .entry-paper > .page-navigation {
+    top: 24px;
+    left: 20px;
+    right: 20px;
+  }
+}
 .drink-choice:hover:not(:disabled) .drink-art { transform: translateY(-5px) rotate(-3deg); }
 .entry-drink .drink-art { width: 100px; height: 100px; margin: 0 auto 20px; }
 .size-choices { margin: 0 auto 30px; padding: 0; border: 0; width: min(310px, 100%); }

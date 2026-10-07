@@ -26,7 +26,7 @@ export function SpacesPage() {
     state.data?.find((item) => item._id === selected) || state.data?.[0];
   return (
     <section className="page narrow centered">
-      <PageNavigation to="/cafe" label="Back to Cafe" preferSession />
+      <PageNavigation to="/welcome" label="Back to Welcome" />
       <PageHeading
         eyebrow="Find your corner"
         title="Where will you settle in?"
@@ -267,7 +267,7 @@ export function ReservationsPage() {
   }
   return (
     <section className="page narrow">
-      <PageNavigation to="/cafe" label="Back to Cafe" preferSession />
+      <PageNavigation to="/welcome" label="Back to Welcome" />
       <PageHeading
         eyebrow="Your reserved corners"
         title="A seat for later."
