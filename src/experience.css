@@ -21,7 +21,7 @@
 .app-shell .hanging-sign {
   pointer-events: auto;
   position: relative;
-  width: 90px;
+  width: 140px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -37,39 +37,6 @@
 }
 .app-shell .hanging-sign:last-child { margin-right: 0; }
 .app-shell .hanging-sign img { display: block; width: 100%; height: auto; }
-.app-shell .hanging-sign .sign-tooltip {
-  position: fixed;
-  z-index: 2;
-  transform: translate(-50%, calc(-100% - 10px));
-  margin: 0;
-  padding: 11px 20px;
-  max-width: calc(100vw - 16px);
-  border-radius: 999px;
-  background: #000;
-  color: #fff;
-  font: 600 1rem var(--font-sans);
-  line-height: 1.2;
-  white-space: nowrap;
-  box-shadow: 0 5px 12px #0002;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .15s, transform .15s, visibility .15s;
-  opacity: 0;
-}
-.app-shell .hanging-sign:hover .sign-tooltip,
-.app-shell .hanging-sign:focus-visible .sign-tooltip { visibility: visible; opacity: 1; transform: translate(-50%, calc(-100% - 6px)); }
-.app-shell .hanging-sign .sign-tooltip::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -6px;
-  width: 12px;
-  height: 12px;
-  background: #000;
-  transform: translateX(-50%) rotate(45deg);
-  z-index: -1;
-}
-.app-shell .hanging-sign .sign-tooltip[hidden] { display: none; }
 .app-shell .page { padding-top: 125px; min-height: 100svh; }
 .app-shell .button { background: #111; border-color: #111; color: #fff; border-radius: 5px; }
 .app-shell .button.secondary { background: #fff; color: #111; }
@@ -79,7 +46,7 @@
 .app-shell .page-heading h1 { font-size: clamp(1.35rem, 3vw, 1.8rem); }
 .app-shell .eyebrow { color: #48524a; }
 .app-shell .entrance { padding: 95px 20px 35px; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.app-shell .entrance h1 { font-family: var(--font-serif); font-size: clamp(2.8rem, 5vw, 4rem); }
+.app-shell .entrance h1 { font-family: var(--font-sans); font-size: clamp(2.8rem, 5vw, 4rem); }
 .app-shell .entrance .storefront { width: min(550px, 80vw); }
 .app-shell .entrance-note { margin-top: 15px; }
 
@@ -104,7 +71,7 @@
 .paper-shell .page-heading > div { width: 100%; }
 .paper-shell .page-heading .eyebrow { display: none; }
 .paper-shell .page-heading .lede { margin-inline: auto; max-width: 400px; font-size: .8rem; }
-.welcome-page .page-heading h1 { font: 400 clamp(1.8rem, 4vw, 2.6rem) Georgia, "Times New Roman", serif; letter-spacing: .01em; }
+.welcome-page .page-heading h1 { font: 400 clamp(1.8rem, 4vw, 2.6rem) var(--font-sans); letter-spacing: .01em; }
 .welcome-page .page-heading .lede { font-size: 1rem; white-space: nowrap; }
 .paper-shell .profile-list { width: min(450px, 100%); margin: 25px auto; }
 .paper-shell .page > .note { max-width: 450px; margin: 15px auto; font-size: .86rem; text-align: center; }
@@ -128,7 +95,7 @@
 .study-paper .intention-note { width: min(330px, 100%); min-height: 235px; padding: 40px 24px; display: flex; flex-direction: column; justify-content: center; margin: 0 auto 22px; }
 .study-paper .intention-note .eyebrow { display: block; margin-bottom: 20px; }
 .study-paper .intention-note .field > label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.study-paper .intention-note select { font-family: var(--font-serif); font-style: italic; text-align: center; font-size: 1.2rem; padding-inline: 0; }
+.study-paper .intention-note select { font-family: var(--font-sans); font-style: italic; text-align: center; font-size: 1.2rem; padding-inline: 0; }
 .study-paper .space-illustration { max-width: 330px; max-height: 220px; }
 .study-paper .space-browser h2 { font-size: 1rem; }
 .study-paper .space-browser > p { font-size: .75rem; }
@@ -141,8 +108,9 @@
 .study-paper .energy-choices label { border-bottom-color: transparent; }
 .study-paper .wizard-actions { margin-top: 25px; }
 .paper-shell .menu-grid { width: min(720px, 100%); margin: 0 auto; grid-template-columns: repeat(3, 1fr); gap: 15px 24px; }
-.paper-shell > main > .counter-page { position: relative; min-height: 72svh; justify-content: center; }
-.counter-page > .page-heading { position: relative; top: 10px; align-items: center; padding-top: 12px; }
+.paper-shell > main > .counter-page { position: relative; min-height: 0; padding-block: 42px 28px; justify-content: center; }
+.counter-page > .page-heading { align-items: center; margin-bottom: 16px; }
+.paper-shell .counter-page > .page-navigation { margin-bottom: 16px; }
 .counter-page > .page-heading .lede { width: 100%; max-width: none; text-align: center; white-space: nowrap; }
 .paper-shell .menu-item { border-radius: 3px; background: transparent; }
 .paper-shell .menu-item.selected { border-color: #111; }
@@ -153,14 +121,18 @@
 .paper-shell .menu-pick { min-height: 190px; }
 .paper-shell .drink-art { width: 130px; height: 130px; }
 .paper-shell .menu-item h2 { font-size: .9rem; }
-.paper-shell .basket-bar { min-height: 80px; margin-top: 25px; gap: 10px; }
-.paper-shell .counter-page > .past-orders-link { position: absolute; top: 28px; right: 60px; width: fit-content; margin: 0; }
-.paper-shell .counter-page > .back-to-focus-link { position: absolute; top: 28px; left: 60px; width: fit-content; margin: 0; }
+.paper-shell .basket-bar { min-height: 48px; margin: 12px 0 0; gap: 10px; }
 .paper-shell .checkout-page { position: relative; }
-.paper-shell .checkout-page > .checkout-back { position: absolute; top: 28px; left: 0; width: fit-content; margin: 0; }
+.paper-shell .checkout-page .page-heading .lede { max-width: none; }
+@media (min-width: 900px) {
+  .paper-shell .checkout-page .page-heading .lede { white-space: nowrap; }
+}
 
 /* The lobby is a place to enter, without a conventional webpage frame. */
 .app-shell .lobby { width: 100%; padding: 0; min-height: 100svh; position: relative; }
+.lobby > .page-navigation { position: absolute; z-index: 4; top: 12px; padding: 0 24px; }
+.lobby > .page-navigation > a { background: #fffdf7; padding: 8px 12px; border-radius: 5px; }
+.lobby > .page-navigation + .page-heading { top: 80px; }
 .lobby > .page-heading { position: absolute; z-index: 3; top: 45px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 250px); background: #fff; border: 2px solid #111; border-radius: 3px; padding: 12px 20px; }
 .lobby > .page-heading h1 { font-size: .9rem; }
 .lobby > .page-heading .eyebrow, .lobby > .page-heading .lede { display: none; }
@@ -171,25 +143,22 @@
 .lobby .scene-invitation { position: absolute; bottom: 0; width: 100%; min-height: 22svh; padding-top: 35px; border: 3px solid #111; border-bottom: 0; border-radius: 50% 50% 0 0 / 55% 55% 0 0; background: #fff; }
 .lobby .scene-invitation p { font-size: .8rem; }
 .notebook-shell .page { max-width: 960px; padding-bottom: 60px; }
+.notebook-shell .page.task-editor { display:flex;flex-direction:column;justify-content:center;width:min(960px,90%);max-width:960px;min-height:100svh;margin-inline:auto;padding:48px 0; }
 
 @media (max-width: 800px) {
   .paper-shell > main { padding: 110px 25px 25px; }
   .paper-shell > main > .page, .study-paper { min-height: calc(100svh - 135px); padding: 45px 25px; }
-  .paper-shell > main > .counter-page { min-height: 72svh; }
+  .paper-shell > main > .counter-page { min-height: 0; padding-block: 60px 30px; }
   .paper-shell .page-heading { align-items: center; }
   .study-paper .step-caption { bottom: 12px; }
   .paper-shell .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 @media (max-width: 480px) {
   .app-shell .site-header { padding: 0 14px; height: 107px; }
-  .app-shell .hanging-sign { width: 82px; }
-  .app-shell .hanging-sign .sign-tooltip { padding: 9px 14px; font-size: .85rem; }
+  .app-shell .hanging-sign { width: 105px; }
   .paper-shell > main { padding: 95px 14px 14px; }
   .paper-shell > main > .page, .study-paper { min-height: calc(100svh - 109px); padding: 35px 15px 45px; }
-  .paper-shell > main > .counter-page { min-height: 72svh; }
-  .paper-shell .counter-page > .past-orders-link { top: 20px; right: 20px; }
-  .paper-shell .counter-page > .back-to-focus-link { top: 20px; left: 20px; }
-  .paper-shell .checkout-page > .checkout-back { top: 20px; left: 0; }
+  .paper-shell > main > .counter-page { min-height: 0; padding-block: 55px 22px; }
   .study-paper .intention-note { min-height: 200px; padding: 25px 12px; }
   .study-paper .page-heading { margin-bottom: 25px; }
   .study-paper .page-heading h1 { font-size: 1.1rem; }

@@ -1,6 +1,7 @@
 /* Four small decisions on one sheet: drink, size, label, intention. */
 .paper-shell > main > .entry-page { padding: 0; background: transparent; border: 0; box-shadow: none; }
 .entry-paper {
+  font-family: var(--font-sans);
   position: relative;
   width: 100%;
   min-height: 86svh;
@@ -12,11 +13,11 @@
   border: 3px solid #1c211d;
   border-radius: 9px 3px 7px 5px;
 }
-.entry-paper > h1 { font-size: 1.3rem; margin-bottom: 35px; }
-.entry-paper > .step-caption { position: absolute; bottom: 15px; inset-inline: 15px; margin: 0; }
+.entry-paper > h1 { font-family: var(--font-sans); font-size: 1.35rem; font-weight: 500; line-height: 1.35; text-transform: lowercase; letter-spacing: 0; margin-bottom: 35px; }
+.entry-paper .button { font-family: var(--font-sans); text-transform: lowercase; letter-spacing: 0; font-size: 1rem; font-weight: 600; min-width: 106px; min-height: 53px; }
 .entry-content { width: min(630px, 100%); margin: 0 auto; }
 .entry-content .note { max-width: 430px; margin: 20px auto; font-size: .73rem; }
-.entry-back { display: block; width: fit-content; margin: 12px auto 0; }
+.entry-back { display: block; width: fit-content; margin: 12px auto 0; text-transform: lowercase; }
 .study-drinks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 0 auto 35px; }
 .drink-choice { padding: 15px 8px; background: none; border: 2px solid transparent; border-radius: 4px; min-height: 210px; }
 .drink-choice span, .drink-choice small { display: block; font-size: .9rem; margin-top: 10px; }
@@ -30,19 +31,19 @@
 .size-choices input { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
 .size-choices label:has(input:focus-visible) { outline: 3px solid #9a7b45; outline-offset: 3px; }
 .dotted-line { flex: 1; border-bottom: 1px dotted #a9afa5; }
-.drink-ticket { width: min(360px, 100%); padding: 20px 25px; margin: 0 auto 30px; background: #e9e6de; transform: rotate(-1deg); }
-.drink-ticket .drink-art { width: 90px; height: 80px; }
-.drink-ticket .field { margin: 15px 0; }
-.drink-ticket .field input { background: transparent; border: 0; border-bottom: 1px solid #889589; border-radius: 0; text-align: center; font-size: 1.5rem; font-family: var(--font-serif); }
-.drink-ticket .field > label { text-align: center; font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; }
-.drink-ticket > p { font-size: .7rem; text-transform: uppercase; color: #46584b; }
-.task-notepad { width: min(330px, 100%); min-height: 240px; padding: 35px 25px; margin: 0 auto 15px; background: #fff6be; border-radius: 3px; box-shadow: 3px 5px 0 #1c211d0c; transform: rotate(-1deg); }
+.drink-ticket { width: min(460px, 100%); padding: 30px 32px 24px; margin: 0 auto 30px; background: #e9e6de; transform: rotate(-1deg); }
+.drink-ticket .drink-art { display: block; width: 120px; height: 110px; object-fit: contain; margin: 0 auto 20px; }
+.drink-ticket .field { margin: 0 0 14px; gap: 22px; }
+.drink-ticket .field input { background: transparent; border: 0; border-bottom: 1px solid #9ca3af; border-radius: 0; outline: none; box-shadow: none; text-align: center; color: #191919; padding: 8px 0 14px; font-size: 2.75rem; font-weight: 700; font-family: var(--font-sans); }
+.drink-ticket .field > label { text-align: center; color: #253b4a; font-size: .75rem; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; }
+.drink-ticket-footer { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #253b4a; text-align: left; }
+.drink-ticket-order { flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.task-notepad { width: min(320px, 100%); min-height: 320px; padding: 56px 30px 28px; margin: 0 auto 30px; background: #fffbc2; border-radius: 4px; box-shadow: 4px 6px 12px #00000018; transform: rotate(-1deg); }
+.task-notepad > .eyebrow { margin-bottom: 28px; color: #293a31; font-size: .875rem; letter-spacing: 0; }
 .task-notepad .field > label { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
-.task-notepad .field textarea { background: transparent; border: 0; font-family: var(--font-serif); font-size: 1.4rem; font-style: italic; line-height: 1.5; text-align: center; padding: 6px; resize: vertical; }
+.task-notepad .field textarea { background: transparent; border: 0; outline: none; box-shadow: none; height: 180px; min-height: 180px; font-family: var(--font-sans); font-size: 1.875rem; font-style: normal; line-height: 1.5; text-align: center; padding: 6px 0; resize: none; }
+.task-notepad .field textarea::placeholder { color: #9ca3af; opacity: 1; }
 .task-notepad .field { margin-bottom: 0; }
-.entry-task-details { text-align: left; width: min(430px, 100%); margin: 10px auto; }
-.entry-task-details summary { min-height: 44px; padding: 10px 0; text-align: center; font-size: .75rem; cursor: pointer; }
-.entry-task-details[open] { padding: 10px 15px; border: 1px solid #ccd2c4; }
 
 .tempo-missions { margin: -10px auto 30px; font-size: .8rem; }
 .tempo-missions summary { cursor: pointer; padding: 10px; }
@@ -60,6 +61,9 @@
   .study-drinks { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
   .drink-choice { padding: 8px 4px; min-height: 155px; }
   .drink-choice span { font-size: .75rem; }
+  .drink-ticket { padding: 28px 20px; }
+  .drink-ticket .field input { font-size: 2.25rem; }
+  .drink-ticket-footer { font-size: .65rem; gap: 8px; }
   .study-drinks .drink-art { width: 100px; height: 105px; }
-  .task-notepad { padding: 25px 12px; min-height: 210px; }
+  .task-notepad { padding-inline: 20px; }
 }
