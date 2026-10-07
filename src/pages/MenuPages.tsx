@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { cafeApi } from "../services/cafeApi";
 import { useApi } from "../hooks/useApi";
 import { useCafe } from "../state/CafeContext";
@@ -48,7 +48,11 @@ export function MenuPage() {
         label={returnContext ? "Back to Session" : "Back to Welcome"}
         backClassName="text-link back-to-focus-link"
       >
-        <Link className="text-link past-orders-link" to="/orders">
+        <Link
+          className="text-link past-orders-link"
+          to="/orders"
+          state={{ from: "menu" }}
+        >
           View Past Orders
         </Link>
       </PageNavigation>
@@ -262,13 +266,19 @@ export function CheckoutPage() {
 
 export function OrdersPage() {
   const { user, notify } = useCafe();
+  const location = useLocation();
   const confirm = useConfirmation();
   const state = useApi(() => cafeApi.orders(user!._id), [user!._id]);
+  const sessions = useApi(() => cafeApi.sessions(user!._id), [user!._id]);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const orders = state.data || [];
+  const fromFocus = location.state?.from === "focus";
+  const session = fromFocus
+    ? sessionReturn(sessions.data || [])
+    : null;
   const pageCount = Math.max(1, Math.ceil(orders.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const visibleOrders = orders.slice(
@@ -303,7 +313,10 @@ export function OrdersPage() {
   }
   return (
     <section className="page orders-page">
-      <PageNavigation to="/menu" label="Back to Reward Shop" />
+      <PageNavigation
+        to={session ? `/focus/${session.session._id}` : "/menu"}
+        label={session ? "Back to Session" : "Back to Reward Shop"}
+      />
       <PageHeading
         eyebrow="Reward Shop"
         title="Your Orders"

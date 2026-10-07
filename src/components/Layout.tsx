@@ -58,7 +58,7 @@ export function Layout() {
         await cafeApi.sessionAction(active._id, "pause", active.area);
       }
       closeMenu();
-      navigate(to);
+      navigate(to, to === "/orders" ? { state: { from: "focus" } } : undefined);
     } catch (reason) {
       notify("Could not pause your focus timer. " + errorMessage(reason));
     } finally {
