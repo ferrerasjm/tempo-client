@@ -3,12 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.12 <25",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "test:e2e": "playwright test",
-    "screenshots": "node scripts/capture-draft.mjs"
+    "typecheck": "tsc -b --pretty false",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -20,7 +23,6 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
