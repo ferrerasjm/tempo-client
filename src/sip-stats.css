@@ -20,7 +20,7 @@
 .sip-timer .drink-art { @apply w-[340px]; @apply h-[340px]; @apply object-contain; @apply m-[0_auto]; }
 .sip-timer p { @apply mt-[30px]; @apply [color:#fff8e8]; @apply [text-shadow:2px_3px_0_#293a31]; @apply [font-size:68px]; @apply [line-height:1.2]; @apply [font-variant-numeric:tabular-nums]; }
 .sip-stats {
-  @apply h-[665px];
+  @apply h-auto;
   @apply p-[46px_44px];
   @apply [border:2px_solid_#111];
   @apply [border-radius:4px];
@@ -31,12 +31,12 @@
 }
 .sip-stats-heading { @apply text-center; @apply mb-[26px]; }
 .app-shell .sip-stats-heading h1 { @apply inline-block; @apply max-w-[100%]; @apply [overflow-wrap:anywhere]; @apply [font:400_20px_var(--font-sans)]; @apply pb-[12px]; @apply [border-bottom:2px_solid_#111]; }
-.sip-list { @apply min-h-[0]; @apply [flex:1]; @apply [overflow-y:auto]; @apply [scrollbar-width:thin]; }
+.sip-list { @apply min-h-[0]; @apply [flex:none]; @apply overflow-visible; }
 .sip-row { @apply grid; @apply grid-cols-[26px_minmax(0,_1fr)_auto]; @apply gap-[14px]; @apply items-center; @apply p-[10px_0]; @apply [font-size:18px]; @apply [line-height:1.35]; }
 .sip-row .drink-art { @apply w-[26px]; @apply h-[26px]; @apply object-contain; }
 .sip-row strong { @apply [font-weight:400]; @apply [overflow-wrap:anywhere]; }
 .sip-row > span:last-child { @apply whitespace-nowrap; @apply [font-variant-numeric:tabular-nums]; }
-.sip-empty { @apply [flex:1]; @apply [color:#717681]; @apply text-center; @apply [font-size:18px]; @apply [font-weight:600]; @apply italic; }
+.sip-empty { @apply [flex:none]; @apply [color:#717681]; @apply text-center; @apply [font-size:18px]; @apply [font-weight:600]; @apply italic; @apply py-[20px]; }
 .sip-total { @apply flex; @apply flex-wrap; @apply justify-center; @apply items-center; @apply gap-[12px]; @apply min-h-[54px]; @apply [flex-shrink:0]; @apply m-[24px_0_48px]; @apply p-[10px_16px]; @apply [border:2px_solid_#111]; @apply [border-radius:999px]; @apply [color:#717681]; @apply [font-size:15px]; }
 .sip-count { @apply flex; @apply items-center; @apply gap-[6px]; @apply [color:#111]; }
 .sip-total .drink-art { @apply w-[28px]; @apply h-[28px]; @apply object-contain; }
@@ -81,7 +81,7 @@
   .sip-stats-layout { @apply grid-cols-[minmax(0,_500px)]; @apply justify-center; @apply gap-[30px]; }
   .sip-timer .drink-art { @apply w-[200px]; @apply h-[200px]; }
   .sip-timer p { @apply mt-[14px]; @apply [font-size:48px]; }
-  .sip-stats { @apply h-[580px]; @apply p-[32px_24px]; }
+  .sip-stats { @apply h-auto; @apply p-[32px_24px]; }
   .sip-row { @apply gap-[10px]; @apply [font-size:16px]; }
   .sip-total { @apply mb-[32px]; }
 }
