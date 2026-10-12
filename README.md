@@ -14,7 +14,7 @@ npm.cmd run seed:reset
 npm.cmd run dev
 ```
 
-Set `MONGO_URI` in the server's private `.env` before seeding. `seed:reset` deletes and recreates only the records owned by `demo@cafetempo.test`, producing predictable presentation data. Use `npm.cmd run seed` when existing demo activity should be preserved. In the second terminal:
+Set `MONGO_URI` in the server's private `.env` before seeding. `seed:reset` deletes activity owned by the two seeded profiles and prepares their sample reservation, areas, and menu items; it leaves task, session, and order history empty. Use `npm.cmd run seed` when existing activity should be preserved. In the second terminal:
 
 ```powershell
 cd C:\Users\mjfer\cafe-tempo\client
@@ -24,7 +24,22 @@ npm.cmd run dev
 
 Open **http://localhost:5173**. Use `localhost` so it matches the server's default CORS origin. The client defaults to `http://localhost:5000/api`. To change that address, copy `.env.example` to `.env` and edit `VITE_API_URL`; restart Vite afterward. Client environment variables are public, so never put database credentials here.
 
-Click the animated cafe entrance (hover or focus to see **ready to lock in?**), choose **Demo Student**, then choose a drink, its size, a name or label, and a task. The notepad prepares your session; the **Play timer** icon starts it. Use **Explore the Cafe** to return to focus, choose a drink when no timer is unfinished, or visit the Task Board, reward shop, orders, history and analytics. Profile selection is not authentication. The existing backend has no password login; authentication is optional under the rubric and has not been implemented.
+Click the animated cafe entrance (hover or focus to see **ready to lock in?**), then log in with your email and password. New users can use **Sign Up**; successful registration returns to Login. Existing seeded profiles need a password configured using the server's `set-password` command. Choose a drink, its size, a name or label, and a task. The notepad prepares your session; the **Play timer** icon starts it. Explore the cafe to return to focus, choose a drink when no timer is unfinished, or visit the Task Board, reward shop, orders, history and analytics. API data is scoped to the logged-in account.
+
+## Team
+
+- Jan Matthew Ferreras: backend API, database models, seed data, and server documentation.
+- Nica Isabele Salvadora: client-side frontend design and adjustments.
+
+Both members have pushed their contributions to GitHub, as confirmed by the team.
+
+## Screenshots
+
+These screenshots show the application with browser test fixtures, rather than live MongoDB records. The preview uses the font fallback because external Google Fonts requests were blocked for reproducible comparisons.
+
+![Mobile sign up](docs/screenshots/mobile-signup.png)
+![Desktop Task Board](docs/screenshots/task-board.png)
+![Desktop focus view](docs/screenshots/focus.png)
 
 ## What the application supports
 
@@ -43,7 +58,7 @@ Click the animated cafe entrance (hover or focus to see **ready to lock in?**), 
 
 The focus room uses supplied table, room, drink, pastry, furniture, character, and audio assets. Character captions work on hover and keyboard focus; reduced-motion settings stop their gentle movement. These illustrations do not represent active users or individual chair reservations. Each cafe area maps to a distinct background and music track.
 
-There are 20 content routes plus the /focus setup alias, with a shared component for the add/edit task form. The endpoint map is documented in the server [README](../server/README.md).
+There are 19 content route patterns, two redirect routes (`/focus` and `/orders/:id`), and a not-found route. The add/edit task form shares a component. The endpoint map is documented in the server [README](../server/README.md).
 
 ## Structure for the frontend handoff
 
@@ -52,14 +67,14 @@ src/
   api/http.ts           axios instance and API error messages
   services/cafeApi.ts   typed endpoint calls
   hooks/                request loading/retry and timer logic
-  state/CafeContext.tsx profile selection, basket, and success notices
+  state/CafeContext.tsx login restoration, current account, basket, and success notices
   schemas/forms.ts      external Zod schemas and inferred form types
   utils/dates.ts        date display and API date conversion
   types.ts              API response types
   components/           navigation, cafe scene, and reusable form/state UI
   pages/                screen layout and user interactions
   assets.ts             replaceable artwork paths
-  styles.css            custom Tailwind theme and shared styling
+  styles.css            Tailwind theme and shared utilities composed with @apply
 public/                 supplied reference assets and existing illustrations
 ```
 
@@ -72,19 +87,26 @@ npm.cmd run build
 npm.cmd run typecheck
 ```
 
-The build and typecheck commands provide the client validation pass. Functional verification is performed manually against the running client and API.
+The build includes TypeScript checking. Check layouts and interactions manually against the running client and API at mobile and desktop widths. The server's `npm.cmd run test:auth` checks authentication/session/account isolation with model stubs; it does not access MongoDB. Earlier browser fixture checks covered the application layouts and profile overlays, but the temporary migration/comparison scripts and snapshots have been removed after that work was completed.
+
+## Tailwind styling
+
+All seven application stylesheets compose Tailwind utilities with `@apply`. The page styles reference `styles.css` with `@reference` to share the theme. Precise arbitrary values preserve the pixel outlines, backgrounds, dimensions, and original breakpoints. Existing selectors and their order preserve the cascade. The form layout also uses utilities directly in JSX.
+
+Theme declarations, custom properties, and animation keyframes remain CSS primitives supported by Tailwind. The tooltip's runtime position remains an inline style because it follows pointer coordinates. This is a Tailwind component-style migration, not a rewrite of every selector as a JSX class string. Tailwind documents this approach at <https://tailwindcss.com/docs/functions-and-directives#apply>.
 
 ## Scope and remaining work
 
 Visual reference: [cafe.pauwee.com](https://cafe.pauwee.com/). At the user's request, the supplied reference room, table, drink, furniture and character files are now used directly. Cafe Tempo retains its own task, recommendation, session, reservation, order and analytics logic. These reference assets are not claimed as original Cafe Tempo artwork.
 
-Poppins is distributed with its OFL license at `public/fonts/poppins/OFL.txt`. The room music and interface sound files were supplied for this project; confirm their source and redistribution permission with the group before making the repository public or reusing them outside the course submission.
+The interface uses VT323 with a monospace fallback. The room music and interface sound files were supplied for this project; confirm their source and redistribution permission with the group before making the repository public or reusing them outside the course submission.
 
-- Focus Passport achievements and password authentication have not been added.
+- Focus Passport achievements have not been added. Password authentication is implemented.
+- Login, sign up, profile-name editing, main task create/edit, study setup, reservations, and next-task forms use React Hook Form with external Zod schemas, inferred types, per-field errors, and submission feedback. Account and profile forms use the same straightforward `useForm`, `register`, `handleSubmit`, and `zodResolver` pattern as the existing task forms.
 - A session does not automatically mark its task completed; update the task when its work is finished.
 - The draft saves elapsed whole minutes from the server clock. A timer reaching zero opens task confirmation; it does not send background notifications.
-- This is a shared demo profile, not a secure account boundary. Do not use it for private multi-user data.
-- Add the frontend partner's confirmed name and contribution summary before submission. Backend author: Jan Matthew Ferreras. Every group member needs their own meaningful commits.
+- Authentication checks scope protected API requests to the current account. The authentication test uses model stubs; it does not verify MongoDB writes.
+- `/assets/cafe/bg.gif` is referenced by a shared paper background but is missing from `public/`; the build reports this warning. Pages with their own background overrides still display those backgrounds.
 
 Server repository: <https://github.com/ferrerasjan/tempo-server>. Client repository: <https://github.com/ferrerasjan/tempo-client>.
 
