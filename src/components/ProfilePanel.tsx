@@ -1,4 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileNameSchema, type ProfileNameValues } from "../schemas/forms";
 import { errorMessage } from "../api/http";
 import { artwork } from "../assets";
 import { useCafe } from "../state/CafeContext";
@@ -80,57 +83,53 @@ function InlineProfileName({ busy, onBusyChange }: {
 }) {
   const { user, updateProfile } = useCafe();
   const [editing, setEditing] = useState(false);
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
-  const input = useRef<HTMLInputElement>(null);
   const editButton = useRef<HTMLButtonElement>(null);
   const id = useId();
+  const { register, handleSubmit, reset, setFocus, setError, clearErrors,
+    formState: { errors, isSubmitting } } = useForm<ProfileNameValues>({
+    resolver: zodResolver(profileNameSchema),
+    mode: "onChange",
+    defaultValues: { name: "" },
+  });
+  const error = errors.name?.message;
+  const saving = busy || isSubmitting;
   useEffect(() => {
-    if (editing) { input.current?.focus(); input.current?.select(); }
-  }, [editing]);
+    if (editing) setFocus("name", { shouldSelect: true });
+  }, [editing, setFocus]);
   const finishEditing = () => {
     setEditing(false);
     window.requestAnimationFrame(() => editButton.current?.focus());
   };
   return <>
-    {editing ? <form className="profile-name-editor" noValidate onSubmit={async (event) => {
-      event.preventDefault();
+    {editing ? <form className="profile-name-editor" noValidate onSubmit={handleSubmit(async (values) => {
       if (busy) return;
-      const trimmed = name.trim();
-      if (!trimmed || trimmed.length > 100) {
-        setError("Enter a name of up to 100 characters.");
-        input.current?.focus();
-        return;
-      }
       onBusyChange(true);
-      setError("");
       try {
-        await updateProfile(trimmed);
+        await updateProfile(values.name);
         setSaved(true);
         finishEditing();
-      } catch (reason) { setError(errorMessage(reason)); }
+      } catch (reason) { setError("name", { type: "server", message: errorMessage(reason) }); }
       finally { onBusyChange(false); }
-    }}>
-      <input ref={input} aria-label="Your name" value={name} maxLength={100} autoComplete="name"
-        disabled={busy} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined}
-        onChange={(event) => { setName(event.target.value); setError(""); }}
+    })}>
+      <input {...register("name")} aria-label="Your name" maxLength={100} autoComplete="name"
+        disabled={saving} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             event.preventDefault();
             event.stopPropagation();
-            if (!busy) { setError(""); finishEditing(); }
+            if (!saving) { clearErrors(); finishEditing(); }
           }
         }} />
-      <button type="submit" className="profile-name-check" aria-label={busy ? "Saving name" : "Save name"}
-        title="Save name" disabled={busy}>
+      <button type="submit" className="profile-name-check" aria-label={saving ? "Saving name" : "Save name"}
+        title="Save name" disabled={saving}>
         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12 2h3v3h-2v2h-2v2H9v2H7v2H4v-2H2V9H0V6h3v2h2v2h1V8h2V6h2V4h2z" /></svg>
       </button>
     </form> : <div className="profile-name-row">
       <h3>{user?.displayName}</h3>
       <button ref={editButton} type="button" className="profile-name-pencil" aria-label="Edit name"
         title="Edit name" disabled={busy} onClick={() => {
-          setName(user?.displayName || ""); setError(""); setSaved(false); setEditing(true);
+          reset({ name: user?.displayName || "" }); setSaved(false); setEditing(true);
         }}>
         <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11 1h2v1h1v1h1v2h-1v1h-1V5h-1V4h-1V3h-1V2h1zM9 3h1v1h1v1h1v1h1v1l-7 7H2v-4zM3 11v2h2z" /></svg>
       </button>
