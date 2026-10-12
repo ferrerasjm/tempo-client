@@ -126,7 +126,7 @@
 .study-paper .energy-choices label { @apply [border-bottom-color:transparent]; }
 .study-paper .wizard-actions { @apply mt-[25px]; }
 .paper-shell .menu-grid { @apply w-[min(720px,_100%)]; @apply m-[0_auto]; @apply grid-cols-[repeat(3,_1fr)]; @apply gap-[15px_24px]; }
-.paper-shell > main > .counter-page { @apply relative; @apply w-[min(920px,_100%)]; @apply max-w-[920px]; @apply min-h-[0]; @apply p-[28px_32px_24px]; @apply justify-center; }
+.paper-shell > main > .counter-page { @apply relative; @apply w-[min(920px,_100%)]; @apply max-w-[920px]; @apply min-h-[0]; @apply my-auto; @apply p-[28px_32px_24px]; @apply justify-center; }
 .counter-page .menu-grid { @apply max-w-[640px]; @apply gap-[12px_18px]; }
 .paper-shell .counter-page .menu-pick { @apply min-h-[160px]; }
 .paper-shell .counter-page .drink-art { @apply w-[110px]; @apply h-[110px]; }
@@ -194,6 +194,7 @@
   .notebook-shell:has(.task-board) > main { @apply p-[24px_16px]; }
   .notebook-shell .page.task-board { @apply p-[20px_16px]; }
   .task-board > .page-heading { @apply items-start; }
+  .task-board > .page-heading .button { @apply ml-[auto]; }
   .task-board .task-row { @apply grid-cols-[minmax(0,_1fr)]; @apply gap-[14px]; @apply p-[14px]; }
   .task-board .row-actions { @apply justify-end; }
 }

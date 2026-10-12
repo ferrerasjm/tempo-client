@@ -312,7 +312,12 @@
 .orders-heading-row .page-heading { @apply min-w-[0]; }
 .orders-rewards-actions { @apply flex; @apply [flex:0_0_min(200px,_35%)]; @apply flex-col; @apply items-stretch; @apply gap-[10px]; }
 .orders-rewards-actions > .profile-credit-card { @apply grid; @apply grid-cols-[minmax(0,_1fr)_auto]; @apply items-center; @apply gap-[10px]; @apply w-[100%]; @apply m-[0]; @apply p-[8px_10px]; @apply [border:2px_solid_#b6a382]; @apply [background:#fff8e8]; @apply [box-shadow:2px_2px_0_#e5d7bc]; }
-@media (max-width: 560px) { .orders-heading-row { @apply flex-wrap; } .orders-rewards-actions { @apply [flex-basis:min(200px,_100%)]; } }
+@media (max-width: 560px) {
+  .orders-heading-row { @apply flex-wrap; }
+  .orders-rewards-actions { @apply [flex:1_1_100%]; @apply w-[100%]; @apply mb-[16px]; }
+  .orders-rewards-actions > .profile-credit-card { @apply grid-cols-[minmax(0,_1fr)_auto]; @apply p-[8px_10px]; }
+  .orders-rewards-link { @apply w-[100%]; }
+}
 .orders-rewards-link { @apply inline-flex; @apply items-center; @apply justify-center; @apply min-h-[36px]; @apply p-[6px_10px]; @apply [border:2px_solid_#b6a382]; @apply [border-radius:0]; @apply [background:#f0e2bf]; @apply [color:#35251c]; @apply [font:inherit]; @apply cursor-pointer; }
 .orders-rewards-link:hover:not(:disabled), .orders-rewards-link:focus-visible { @apply [background:#e4d2a9]; }
 .orders-rewards-link:disabled { @apply opacity-[.6]; @apply cursor-default; }
@@ -470,7 +475,7 @@
 @media (max-width: 480px) {
   .profile-panel-modal { @apply p-[16px]; }
   .profile-panel-tabs { @apply gap-[3px]; }
-  .profile-panel-tabs button { @apply p-[10px_4px]; @apply [font-size:.85rem]; }
+  .profile-panel-tabs button { @apply p-[10px_3px]; @apply [font-size:.95rem]; @apply [line-height:1.15]; }
   .profile-panel-identity { @apply gap-[12px]; }
   .profile-welcome-card { @apply p-[0]; }
   .profile-avatar-preview { @apply w-[104px]; @apply h-[104px]; }
