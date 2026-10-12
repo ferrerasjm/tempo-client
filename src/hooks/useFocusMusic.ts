@@ -84,8 +84,6 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
           .catch((reason) => {
             if (transition.current !== id) return;
             if (reason?.name === "NotAllowedError") {
-              // A refresh can lose the browser's audio permission. Retry inside
-              // the next gesture so the room still starts without a play button.
               setError("");
               retryGesture = () => {
                 clearGestureRetry();
@@ -106,8 +104,6 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
     if (!running || !source) {
       setPlaying(false);
       active.current = null;
-      // A paused room change must not leave the previous room audible while
-      // its fade is restarted. Loading/play promises can also arrive late.
       cancelFade();
       for (const item of [...tracks.current]) {
         if (item.source !== source) dispose(item);

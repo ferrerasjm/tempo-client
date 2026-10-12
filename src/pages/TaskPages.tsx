@@ -135,7 +135,6 @@ export function TaskListPage() {
     setError("");
     setBusy(task._id);
     try {
-      // Recheck before switching: the timer may have changed in another tab.
       const current = (await cafeApi.sessions(user!._id)).find((session) =>
         ["planned", "active", "paused"].includes(session.status),
       );

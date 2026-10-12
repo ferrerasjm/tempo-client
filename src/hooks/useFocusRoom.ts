@@ -141,7 +141,6 @@ export function useFocusRoom(id: string) {
             return;
           }
         } catch {
-          /* Keep the original action error. */
         }
       }
       setError(errorMessage(reason));
@@ -172,7 +171,6 @@ export function useFocusRoom(id: string) {
     setBusy(true);
     setError("");
     try {
-      // Saving first lets the existing task route award completion credits.
       const saved =
         session.status === "completed"
           ? session
@@ -184,11 +182,9 @@ export function useFocusRoom(id: string) {
       return confirmed;
     } catch (reason) {
       setError(errorMessage(reason));
-      // If the save succeeded but its response was lost, a retry must not stop twice.
       try {
         setUpdated(await cafeApi.session(id));
       } catch {
-        /* Keep the save error visible. */
       }
       return false;
     } finally {

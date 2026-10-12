@@ -7,7 +7,6 @@ export function dateTime(value: string | null) {
       }).format(new Date(value))
     : "—";
 }
-// datetime-local displays the browser's local time; the API receives an ISO UTC date.
 export function localInput(value: string | Date) {
   const date = new Date(value);
   return new Date(date.getTime() - date.getTimezoneOffset() * 60000)

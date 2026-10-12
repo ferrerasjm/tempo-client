@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  // Sign-up fields stay empty when the same form is used for login.
   name: z.string(),
   email: z
     .string()

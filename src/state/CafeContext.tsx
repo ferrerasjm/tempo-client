@@ -133,7 +133,6 @@ export function CafeProvider({ children }: { children: ReactNode }) {
     try {
       if (localStorage.getItem("tempo-token")) await cafeApi.logout();
     } finally {
-      // Leave protected routes before clearing the user and remounting the draft provider.
       beforeClear?.();
       localStorage.removeItem("tempo-token");
       setUser(null);

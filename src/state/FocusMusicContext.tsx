@@ -16,7 +16,6 @@ type MusicState = ReturnType<typeof useFocusMusic> & {
 };
 const Context = createContext<MusicState | null>(null);
 
-// Keep the audio owner mounted while moving between the session and Sip Stats.
 export function FocusMusicProvider({ children }: { children: ReactNode }) {
   const { user } = useCafe();
   const { pathname } = useLocation();

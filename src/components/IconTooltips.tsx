@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 
-// Use one tooltip layer so labels never change the controls' layout.
 export function IconTooltips() {
   const location = useLocation();
   const [target, setTarget] = useState<HTMLElement | null>(null);
@@ -58,8 +57,6 @@ export function IconTooltips() {
         data = context.getImageData(0, 0, canvas.width, canvas.height);
         pixels.set(image, { source: image.currentSrc, data });
       }
-      // Inset only the horizontal edges so nearby pointer positions do not
-      // activate the tooltip at the cup's outline or shadow.
       const horizontalInset = Math.ceil(4 / scale);
       const solid = (column: number) =>
         column >= 0 &&
