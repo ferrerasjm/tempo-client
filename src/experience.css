@@ -1,6 +1,4 @@
 @reference "./styles.css";
-/* The cafe presentation sits above the shared form and record styles.
-   Photos or videos can replace the temporary table and room backgrounds. */
 .app-shell {
   --cafe-ink: #1c211d;
   @apply min-h-[100svh];
@@ -96,7 +94,6 @@
   @apply mt-[15px];
 }
 
-/* A single sheet on a cafe tabletop, rather than a stack of cards. */
 .paper-shell {
   @apply [background:#8c705b_url('/assets/cafe/bg.gif')_center_/_cover_fixed];
 }
@@ -376,7 +373,6 @@
   }
 }
 
-/* The lobby is a place to enter, without a conventional webpage frame. */
 .app-shell .lobby {
   @apply w-[100%];
   @apply p-[0];
@@ -755,7 +751,6 @@
   }
 }
 
-/* A compact login form over the animated landing scene. */
 body:has(.welcome-shell) {
   @apply min-w-[0];
 }

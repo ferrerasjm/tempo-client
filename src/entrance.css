@@ -1,5 +1,4 @@
 @reference "./styles.css";
-/* Fill the viewport with the animated entry link. */
 .app-shell .gif-entrance {
   @apply h-[100svh];
   @apply min-h-[100svh];

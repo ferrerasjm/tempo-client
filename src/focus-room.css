@@ -1,5 +1,4 @@
 @reference "./styles.css";
-/* The room is scenery. Booking and the timer stay in the existing hooks. */
 .app-shell .session-room {
   @apply relative;
   @apply isolate;
@@ -1539,7 +1538,6 @@
   @apply min-w-[0];
   @apply w-[auto];
 }
-/* Keep the pastry plate proportional to the drink at every viewport size. */
 .session-pastry {
   @apply relative;
   @apply z-[3];
@@ -1731,7 +1729,6 @@
   @apply mt-[150px];
 }
 
-/* Full room composition, with illustrated visitors behind the foreground table. */
 .room-scenery {
   @apply absolute;
   @apply inset-[0];
@@ -1841,7 +1838,6 @@
   @apply right-[auto];
   @apply left-[0];
 }
-/* Mirror yellow and red so their laptops face their tables. */
 .cafe-visitor:first-child .visitor-character-position,
 .cafe-visitor:last-child .visitor-character-position {
   @apply [transform:scaleX(-1)];
@@ -1979,7 +1975,6 @@
   }
 }
 
-/* End-of-timer confirmation and the next drink on one simple sheet. */
 .modal.session-finish {
   @apply fixed;
   @apply inset-[0];
@@ -2169,7 +2164,6 @@
   }
 }
 
-/* One compact information menu and a separate profile on mobile. */
 .session-header {
   @apply [display:contents];
 }
@@ -2182,7 +2176,6 @@
   body:has(.session-shell) {
     @apply min-w-0;
   }
-  /* A definite room height keeps the tabletop and its controls inside the phone viewport. */
   .app-shell .session-room.scene-corner {
     @apply h-[100svh];
     @apply min-h-[100svh];
@@ -2299,7 +2292,6 @@
     @apply w-[48px];
     @apply h-[48px];
   }
-  /* Match the visible icon to the controls despite its transparent image padding. */
   .session-room .session-controls .session-explore img {
     @apply [transform:scale(1.470588)];
   }
@@ -2360,7 +2352,6 @@
     @apply h-full;
     @apply max-w-full;
   }
-  /* Seat visitors below the wall and reserve the left floor corner for each pet. */
   .room-scenery .room-characters {
     @apply top-[32%];
     @apply bottom-auto;
@@ -2394,7 +2385,6 @@
     @apply h-full;
     @apply max-w-full;
   }
-  /* This GIF has a large transparent canvas; frame the cat inside its floor slot. */
   .room-scenery-window-view .room-pet {
     @apply top-[37%];
     @apply h-[min(7svh,_52px)];

@@ -1,5 +1,4 @@
 @reference "./styles.css";
-/* Four small decisions on one sheet: drink, size, label, intention. */
 .paper-shell > main > .entry-page {
   @apply p-[0];
   @apply [background:transparent];
@@ -398,7 +397,6 @@
   }
 }
 
-/* Keep the drink chooser centered; size its backdrop to the viewport, not the form. */
 body:has(.drink-shell) {
   @apply min-w-0;
 }
@@ -489,7 +487,6 @@ body:has(.drink-shell) {
   }
 }
 
-/* Keep mobile text readable instead of scaling it down with the card. */
 @media (max-width: 639px) {
   .drink-shell .entry-paper > h1 {
     @apply [font-size:clamp(1.5rem,_6vw,_1.75rem)];

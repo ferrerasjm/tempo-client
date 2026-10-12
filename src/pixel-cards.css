@@ -1,5 +1,4 @@
 @reference "./styles.css";
-/* Shared stepped outline for the cafe's content cards. */
 :where(
   .notebook-shell .page.task-board,
   .task-board .task-row,
