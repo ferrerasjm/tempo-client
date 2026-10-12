@@ -1,3 +1,4 @@
+@reference "./styles.css";
 /* Shared stepped outline for the cafe's content cards. */
 :where(
   .notebook-shell .page.task-board, .task-board .task-row, .task-board > .empty,
@@ -33,13 +34,13 @@
     4px calc(100% - 8px), 0 calc(100% - 8px),
     0 8px, 4px 8px, 4px 4px, 8px 4px
   );
-  position: relative;
-  isolation: isolate;
-  border: 2px solid transparent;
-  border-radius: 0;
-  background: var(--card-outline);
-  clip-path: var(--card-corners);
-  box-shadow: none;
+  @apply relative;
+  @apply isolate;
+  @apply [border:2px_solid_transparent];
+  @apply [border-radius:0];
+  @apply [background:var(--card-outline)];
+  @apply [clip-path:var(--card-corners)];
+  @apply [box-shadow:none];
 }
 :is(
   .notebook-shell .page.task-board,
@@ -55,13 +56,13 @@
   .cafe-productivity-streaks > div,
   .avatar-chooser-options button
 )::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--card-paper);
-  clip-path: var(--card-corners);
-  pointer-events: none;
+  @apply [content:""];
+  @apply absolute;
+  @apply inset-[0];
+  @apply z-[-1];
+  @apply [background:var(--card-paper)];
+  @apply [clip-path:var(--card-corners)];
+  @apply pointer-events-none;
 }
 .notebook-shell .page.task-board { --card-paper: #fffdf7; --card-outline: #765c48; }
 .task-board .task-row,
@@ -75,4 +76,4 @@
 .paper-shell .menu-item.selected { --card-outline: #293a31; }
 .paper-shell .menu-item.unaffordable { --card-outline: #b85a4a; }
 .avatar-chooser-options button[aria-pressed="true"] { --card-outline: #293a31; }
-.profile-card-content { background: #fffcf5; clip-path: var(--card-corners); }
+.profile-card-content { @apply [background:#fffcf5]; @apply [clip-path:var(--card-corners)]; }

@@ -74,7 +74,7 @@ export function Layout() {
   const landing = location.pathname === "/";
   return (
     <div
-      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : paper ? "paper-shell" : "notebook-shell"}${location.pathname === "/welcome" ? " welcome-shell" : ""}${location.pathname.startsWith("/study/") ? " drink-shell" : ""}${location.pathname === "/study/label" ? " counter-shell" : ""}${location.pathname === "/study/task" ? " table-shell" : ""}`}
+      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : paper ? "paper-shell" : "notebook-shell"}${location.pathname === "/welcome" ? " welcome-shell" : ""}${location.pathname.startsWith("/study/") ? " drink-shell" : ""}${location.pathname === "/study/drink" ? " drink-selection-shell" : ""}${location.pathname === "/study/label" ? " counter-shell" : ""}${location.pathname === "/study/task" ? " table-shell" : ""}`}
     >
       <a className="skip-link" href="#main">
         Skip to content

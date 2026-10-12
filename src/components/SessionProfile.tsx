@@ -48,12 +48,13 @@ export function SessionProfile({ onNavigate, navigating = false }: {
           aria-expanded={expanded} aria-controls={dropdownId}
           onClick={() => setExpanded((value) => !value)}>
           <span className="session-avatar"><img src={artwork.profileAvatars[avatar]} alt="" width={56} height={56} /></span>
-          <span className="session-profile-name">{user.displayName}</span>
+          <span className="session-profile-name" title={user.displayName}>{user.displayName}</span>
           <svg className="profile-chevron" viewBox="0 0 12 8" aria-hidden="true">
             <path d="M0 0h2v2H0zM2 2h2v2H2zM4 4h4v2H4zM8 2h2v2H8zM10 0h2v2h-2z" />
           </svg>
         </button>
         {expanded && <div className="session-profile-dropdown" id={dropdownId}>
+          <p className="session-profile-dropdown-name">{user.displayName}</p>
           <button type="button" onClick={() => {
             setExpanded(false);
             setEditing(true);

@@ -1,45 +1,46 @@
+@reference "./styles.css";
 .app-shell .sip-stats-page {
-  width: 100%;
-  max-width: none;
-  min-height: 100svh;
-  padding: 40px 32px;
-  display: grid;
-  place-items: center;
-  background: #30251e url('/assets/menu.gif') center / cover no-repeat;
-  color: #111;
+  @apply w-[100%];
+  @apply max-w-[none];
+  @apply min-h-[100svh];
+  @apply p-[40px_32px];
+  @apply grid;
+  @apply place-items-center;
+  @apply [background:#30251e_url('/assets/menu.gif')_center_/_cover_no-repeat];
+  @apply [color:#111];
 }
 .sip-stats-layout {
-  width: min(980px, 100%);
-  display: grid;
-  grid-template-columns: minmax(0, 340px) minmax(0, 500px);
-  gap: clamp(40px, 7.3vw, 140px);
-  align-items: center;
+  @apply w-[min(980px,_100%)];
+  @apply grid;
+  @apply grid-cols-[minmax(0,_340px)_minmax(0,_500px)];
+  @apply gap-[clamp(40px,_7.3vw,_140px)];
+  @apply items-center;
 }
-.sip-timer { text-align: center; }
-.sip-timer .drink-art { width: 340px; height: 340px; object-fit: contain; margin: 0 auto; }
-.sip-timer p { margin-top: 30px; color: #fff8e8; text-shadow: 2px 3px 0 #293a31; font-size: 68px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.sip-timer { @apply text-center; }
+.sip-timer .drink-art { @apply w-[340px]; @apply h-[340px]; @apply object-contain; @apply m-[0_auto]; }
+.sip-timer p { @apply mt-[30px]; @apply [color:#fff8e8]; @apply [text-shadow:2px_3px_0_#293a31]; @apply [font-size:68px]; @apply [line-height:1.2]; @apply [font-variant-numeric:tabular-nums]; }
 .sip-stats {
-  height: 665px;
-  padding: 46px 44px;
-  border: 2px solid #111;
-  border-radius: 4px;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  @apply h-[665px];
+  @apply p-[46px_44px];
+  @apply [border:2px_solid_#111];
+  @apply [border-radius:4px];
+  @apply [background:#fff];
+  @apply flex;
+  @apply flex-col;
+  @apply min-w-[0];
 }
-.sip-stats-heading { text-align: center; margin-bottom: 26px; }
-.app-shell .sip-stats-heading h1 { display: inline-block; max-width: 100%; overflow-wrap: anywhere; font: 400 20px var(--font-sans); padding-bottom: 12px; border-bottom: 2px solid #111; }
-.sip-list { min-height: 0; flex: 1; overflow-y: auto; scrollbar-width: thin; }
-.sip-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 0; font-size: 18px; line-height: 1.35; }
-.sip-row .drink-art { width: 26px; height: 26px; object-fit: contain; }
-.sip-row strong { font-weight: 400; overflow-wrap: anywhere; }
-.sip-row > span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.sip-empty { flex: 1; color: #717681; text-align: center; font-size: 18px; font-weight: 600; font-style: italic; }
-.sip-total { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; min-height: 54px; flex-shrink: 0; margin: 24px 0 48px; padding: 10px 16px; border: 2px solid #111; border-radius: 999px; color: #717681; font-size: 15px; }
-.sip-count { display: flex; align-items: center; gap: 6px; color: #111; }
-.sip-total .drink-art { width: 28px; height: 28px; object-fit: contain; }
-.app-shell .sip-back { justify-self: start; align-self: start; padding: 8px 12px; min-height: 28px; background: #fff8e8; color: #111; font-size: 18px; text-decoration: none; text-underline-offset: 2px; }
+.sip-stats-heading { @apply text-center; @apply mb-[26px]; }
+.app-shell .sip-stats-heading h1 { @apply inline-block; @apply max-w-[100%]; @apply [overflow-wrap:anywhere]; @apply [font:400_20px_var(--font-sans)]; @apply pb-[12px]; @apply [border-bottom:2px_solid_#111]; }
+.sip-list { @apply min-h-[0]; @apply [flex:1]; @apply [overflow-y:auto]; @apply [scrollbar-width:thin]; }
+.sip-row { @apply grid; @apply grid-cols-[26px_minmax(0,_1fr)_auto]; @apply gap-[14px]; @apply items-center; @apply p-[10px_0]; @apply [font-size:18px]; @apply [line-height:1.35]; }
+.sip-row .drink-art { @apply w-[26px]; @apply h-[26px]; @apply object-contain; }
+.sip-row strong { @apply [font-weight:400]; @apply [overflow-wrap:anywhere]; }
+.sip-row > span:last-child { @apply whitespace-nowrap; @apply [font-variant-numeric:tabular-nums]; }
+.sip-empty { @apply [flex:1]; @apply [color:#717681]; @apply text-center; @apply [font-size:18px]; @apply [font-weight:600]; @apply italic; }
+.sip-total { @apply flex; @apply flex-wrap; @apply justify-center; @apply items-center; @apply gap-[12px]; @apply min-h-[54px]; @apply [flex-shrink:0]; @apply m-[24px_0_48px]; @apply p-[10px_16px]; @apply [border:2px_solid_#111]; @apply [border-radius:999px]; @apply [color:#717681]; @apply [font-size:15px]; }
+.sip-count { @apply flex; @apply items-center; @apply gap-[6px]; @apply [color:#111]; }
+.sip-total .drink-art { @apply w-[28px]; @apply h-[28px]; @apply object-contain; }
+.app-shell .sip-back { @apply [justify-self:start]; @apply [align-self:start]; @apply p-[8px_12px]; @apply min-h-[28px]; @apply [background:#fff8e8]; @apply [color:#111]; @apply [font-size:18px]; @apply [text-decoration:none]; @apply [text-underline-offset:2px]; }
 .sip-stats,
 .sip-total,
 .app-shell .sip-back {
@@ -55,32 +56,32 @@
     4px calc(100% - 8px), 0 calc(100% - 8px),
     0 8px, 4px 8px, 4px 4px, 8px 4px
   );
-  position: relative;
-  isolation: isolate;
-  border: 0;
-  border-radius: 0;
-  background: #293a31;
-  clip-path: var(--sip-pixel-corners);
+  @apply relative;
+  @apply isolate;
+  @apply [border:0];
+  @apply [border-radius:0];
+  @apply [background:#293a31];
+  @apply [clip-path:var(--sip-pixel-corners)];
 }
 .sip-stats::before,
 .sip-total::before,
 .app-shell .sip-back::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 2px;
-  background: var(--sip-paper);
-  clip-path: var(--sip-pixel-corners);
-  pointer-events: none;
+  @apply [content:""];
+  @apply absolute;
+  @apply z-[-1];
+  @apply inset-[2px];
+  @apply [background:var(--sip-paper)];
+  @apply [clip-path:var(--sip-pixel-corners)];
+  @apply pointer-events-none;
 }
 .app-shell .sip-back { --sip-paper: #fff8e8; }
-@media (max-width: 1100px) { .sip-stats-layout { transform: none; } }
+@media (max-width: 1100px) { .sip-stats-layout { @apply [transform:none]; } }
 @media (max-width: 760px) {
-  .app-shell .sip-stats-page { padding: 32px 20px; }
-  .sip-stats-layout { grid-template-columns: minmax(0, 500px); justify-content: center; gap: 30px; }
-  .sip-timer .drink-art { width: 200px; height: 200px; }
-  .sip-timer p { margin-top: 14px; font-size: 48px; }
-  .sip-stats { height: 580px; padding: 32px 24px; }
-  .sip-row { gap: 10px; font-size: 16px; }
-  .sip-total { margin-bottom: 32px; }
+  .app-shell .sip-stats-page { @apply p-[32px_20px]; }
+  .sip-stats-layout { @apply grid-cols-[minmax(0,_500px)]; @apply justify-center; @apply gap-[30px]; }
+  .sip-timer .drink-art { @apply w-[200px]; @apply h-[200px]; }
+  .sip-timer p { @apply mt-[14px]; @apply [font-size:48px]; }
+  .sip-stats { @apply h-[580px]; @apply p-[32px_24px]; }
+  .sip-row { @apply gap-[10px]; @apply [font-size:16px]; }
+  .sip-total { @apply mb-[32px]; }
 }

@@ -1,161 +1,286 @@
+@reference "./styles.css";
 /* Four small decisions on one sheet: drink, size, label, intention. */
-.paper-shell > main > .entry-page { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.paper-shell > main > .entry-page { @apply p-[0]; @apply [background:transparent]; @apply [border:0]; @apply [box-shadow:none]; }
 .entry-paper {
-  font-family: var(--font-sans);
-  position: relative;
-  width: 100%;
-  min-height: 86svh;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: #fff;
-  border: 3px solid #1c211d;
-  border-radius: 9px 3px 7px 5px;
+  @apply [font-family:var(--font-sans)];
+  @apply relative;
+  @apply w-[100%];
+  @apply min-h-[86svh];
+  @apply p-[40px];
+  @apply flex;
+  @apply flex-col;
+  @apply justify-center;
+  @apply [background:#fff];
+  @apply [border:3px_solid_#1c211d];
+  @apply [border-radius:9px_3px_7px_5px];
 }
 .entry-paper > .page-navigation {
-  position: absolute;
-  top: 40px;
-  left: 40px;
-  right: 40px;
+  @apply absolute;
+  @apply top-[40px];
+  @apply left-[40px];
+  @apply right-[40px];
 }
-.entry-paper > h1 { font-family: var(--font-sans); font-size: 1.35rem; font-weight: 500; line-height: 1.35; text-transform: lowercase; letter-spacing: 0; margin-bottom: 35px; }
-.entry-paper .button { font-family: var(--font-sans); text-transform: lowercase; letter-spacing: 0; font-size: 1rem; font-weight: 600; min-width: 106px; min-height: 53px; }
-.entry-content { width: min(630px, 100%); margin: 0 auto; }
-.entry-content .note { max-width: 430px; margin: 20px auto; font-size: .73rem; }
-.entry-back { display: block; width: fit-content; margin: 12px auto 0; text-transform: lowercase; }
-.study-drinks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 0 auto 35px; }
-.drink-choice { padding: 15px 8px; background: none; border: 2px solid transparent; border-radius: 4px; min-height: 210px; }
-.drink-choice span, .drink-choice small { display: block; font-size: .9rem; margin-top: 10px; }
-.drink-choice.chosen { border-color: #1c211d; }
-.study-drinks:has(.chosen) .drink-choice:not(.chosen) { opacity: .45; }
+.entry-paper > h1 { @apply [font-family:var(--font-sans)]; @apply [font-size:1.35rem]; @apply [font-weight:500]; @apply [line-height:1.35]; @apply lowercase; @apply [letter-spacing:0]; @apply mb-[35px]; }
+.entry-paper .button { @apply [font-family:var(--font-sans)]; @apply lowercase; @apply [letter-spacing:0]; @apply [font-size:1rem]; @apply [font-weight:600]; @apply min-w-[106px]; @apply min-h-[53px]; }
+.entry-content { @apply w-[min(630px,_100%)]; @apply m-[0_auto]; }
+.entry-content .note { @apply max-w-[430px]; @apply m-[20px_auto]; @apply [font-size:.73rem]; }
+.entry-back { @apply block; @apply w-[fit-content]; @apply m-[12px_auto_0]; @apply lowercase; }
+.study-drinks { @apply grid; @apply grid-cols-[repeat(3,_1fr)]; @apply gap-[22px]; @apply m-[0_auto_35px]; }
+.drink-choice { @apply p-[15px_8px]; @apply [background:none]; @apply [border:2px_solid_transparent]; @apply [border-radius:4px]; @apply min-h-[210px]; }
+.drink-choice span, .drink-choice small { @apply block; @apply [font-size:.9rem]; @apply mt-[10px]; }
+.drink-choice.chosen { @apply [border-color:#1c211d]; }
+.study-drinks:has(.chosen) .drink-choice:not(.chosen) { @apply opacity-[.45]; }
 
 .paper-shell.drink-shell > main > .entry-page {
-  width: min(860px, 100%);
-  max-width: 860px;
-  min-height: 0;
+  @apply w-[min(860px,_100%)];
+  @apply max-w-[860px];
+  @apply min-h-[0];
 }
 .drink-shell .entry-paper {
-  min-height: 0;
-  padding: clamp(24px, 4vw, 36px);
+  @apply min-h-[0];
+  @apply p-[clamp(24px,_4vw,_36px)];
 }
 .drink-shell .entry-paper > h1 {
-  margin-top: 24px;
-  margin-bottom: 24px;
-  text-transform: none;
+  @apply mt-[24px];
+  @apply mb-[24px];
+  @apply [text-transform:none];
 }
 .drink-shell .study-drinks {
-  gap: 16px;
-  margin-bottom: 36px;
+  @apply gap-[16px];
+  @apply mb-[36px];
 }
 .drink-shell .entry-actions {
-  position: absolute;
-  top: 8px;
-  right: 20px;
+  @apply absolute;
+  @apply top-[8px];
+  @apply right-[20px];
 }
 .drink-shell .entry-paper > .page-navigation {
-  top: 8px;
-  left: 20px;
-  right: 20px;
-  width: auto;
-  flex-wrap: nowrap;
-  margin-bottom: 0;
+  @apply top-[8px];
+  @apply left-[20px];
+  @apply right-[20px];
+  @apply w-[auto];
+  @apply flex-nowrap;
+  @apply mb-[0];
 }
 .drink-shell .entry-paper > .page-navigation > a {
-  font-size: 1.125rem;
+  @apply [font-size:1.125rem];
 }
 .drink-shell .drink-logout {
-  font-size: 1.125rem;
+  @apply [font-size:1.125rem];
 }
 .drink-shell .drink-choice {
-  min-height: 180px;
-  padding: 10px 8px;
+  @apply min-h-[180px];
+  @apply p-[10px_8px];
 }
 .drink-shell .pixel-enter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  @apply inline-flex;
+  @apply items-center;
+  @apply justify-center;
 }
 .drink-shell .detail-entry-page .entry-paper {
-  padding-top: calc(clamp(24px, 4vw, 36px) + 28px);
-  padding-bottom: calc(clamp(24px, 4vw, 36px) + 12px);
+  @apply pt-[calc(clamp(24px,_4vw,_36px)_+_28px)];
+  @apply pb-[calc(clamp(24px,_4vw,_36px)_+_12px)];
 }
 .drink-shell .detail-entry-page .entry-paper > .page-navigation {
-  top: 16px;
+  @apply top-[16px];
 }
 .table-shell .entry-content {
-  animation: account-form-in .24s ease-out;
+  @apply [animation:account-form-in_.24s_ease-out];
 }
 @media (prefers-reduced-motion: reduce) {
-  .table-shell .entry-content { animation: none; }
+  .table-shell .entry-content { @apply [animation:none]; }
 }
 .drink-shell .label-entry-page .entry-paper {
-  min-height: 660px;
-  padding-top: 100px;
-  padding-bottom: 64px;
+  @apply min-h-[660px];
+  @apply pt-[100px];
+  @apply pb-[64px];
 }
 .drink-shell .label-entry-page .drink-ticket {
-  margin-bottom: 40px;
+  @apply mb-[40px];
 }
 @media (max-width: 480px) {
   .drink-shell .label-entry-page .entry-paper {
-    min-height: 0;
-    padding-top: 88px;
-    padding-bottom: 48px;
+    @apply min-h-[0];
+    @apply pt-[88px];
+    @apply pb-[48px];
   }
 }
 
 @media (max-width: 480px) {
   .entry-paper > .page-navigation {
-    top: 24px;
-    left: 20px;
-    right: 20px;
+    @apply top-[24px];
+    @apply left-[20px];
+    @apply right-[20px];
   }
 }
-.drink-choice:hover:not(:disabled) .drink-art { transform: translateY(-5px) rotate(-3deg); }
-.entry-drink .drink-art { width: 100px; height: 100px; margin: 0 auto 20px; }
-.size-choices { margin: 0 auto 30px; padding: 0; border: 0; width: min(310px, 100%); }
-.size-choices label { display: flex; align-items: center; gap: 12px; padding: 15px; margin-bottom: 10px; border: 2px solid transparent; border-radius: 3px; cursor: pointer; }
-.size-choices .selected { border-color: #111; }
-.size-choices input { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
-.size-choices label:has(input:focus-visible) { outline: 3px solid #9a7b45; outline-offset: 3px; }
-.dotted-line { flex: 1; border-bottom: 1px dotted #a9afa5; }
-.drink-ticket { width: min(460px, 100%); padding: 30px 32px 24px; margin: 0 auto 30px; background: #e9e6de; transform: rotate(-1deg); }
-.drink-ticket .drink-art { display: block; width: 120px; height: 110px; object-fit: contain; margin: 0 auto 20px; }
-.drink-ticket .field { margin: 0 0 14px; gap: 22px; }
-.drink-ticket .field input { background: transparent; border: 0; border-bottom: 1px solid #9ca3af; border-radius: 0; outline: none; box-shadow: none; text-align: center; color: #191919; padding: 8px 0 14px; font-size: 2.75rem; font-weight: 700; font-family: var(--font-sans); }
-.drink-ticket .field > label { text-align: center; color: #253b4a; font-size: .75rem; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; }
-.drink-ticket-footer { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #253b4a; text-align: left; }
-.drink-ticket-order { flex-shrink: 0; text-align: right; font-variant-numeric: tabular-nums; }
-.task-notepad { width: min(320px, 100%); min-height: 320px; padding: 56px 30px 28px; margin: 0 auto 30px; background: #fffbc2; border-radius: 4px; box-shadow: 4px 6px 12px #00000018; transform: rotate(-1deg); }
-.task-notepad > .eyebrow { margin-bottom: 28px; color: #293a31; font-size: .875rem; letter-spacing: 0; }
-.task-notepad .field > label { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
-.task-notepad .field textarea { background: transparent; border: 0; outline: none; box-shadow: none; height: 180px; min-height: 180px; font-family: var(--font-sans); font-size: 1.875rem; font-style: normal; line-height: 1.5; text-align: center; padding: 6px 0; resize: none; }
-.task-notepad .field textarea::placeholder { color: #9ca3af; opacity: 1; }
-.task-notepad .field { margin-bottom: 0; }
+.drink-choice:hover:not(:disabled) .drink-art { @apply [transform:translateY(-5px)_rotate(-3deg)]; }
+.entry-drink .drink-art { @apply w-[100px]; @apply h-[100px]; @apply m-[0_auto_20px]; }
+.size-choices { @apply m-[0_auto_30px]; @apply p-[0]; @apply [border:0]; @apply w-[min(310px,_100%)]; }
+.size-choices label { @apply flex; @apply items-center; @apply gap-[12px]; @apply p-[15px]; @apply mb-[10px]; @apply [border:2px_solid_transparent]; @apply [border-radius:3px]; @apply cursor-pointer; }
+.size-choices .selected { @apply [border-color:#111]; }
+.size-choices input { @apply absolute; @apply w-[1px]; @apply h-[1px]; @apply [clip-path:inset(50%)]; }
+.size-choices label:has(input:focus-visible) { @apply [outline:3px_solid_#9a7b45]; @apply [outline-offset:3px]; }
+.dotted-line { @apply [flex:1]; @apply [border-bottom:1px_dotted_#a9afa5]; }
+.drink-ticket { @apply w-[min(460px,_100%)]; @apply p-[30px_32px_24px]; @apply m-[0_auto_30px]; @apply [background:#e9e6de]; @apply [transform:rotate(-1deg)]; }
+.drink-ticket .drink-art { @apply block; @apply w-[120px]; @apply h-[110px]; @apply object-contain; @apply m-[0_auto_20px]; }
+.drink-ticket .field { @apply m-[0_0_14px]; @apply gap-[22px]; }
+.drink-ticket .field input { @apply [background:transparent]; @apply [border:0]; @apply [border-bottom:1px_solid_#9ca3af]; @apply [border-radius:0]; @apply [outline:none]; @apply [box-shadow:none]; @apply text-center; @apply [color:#191919]; @apply p-[8px_0_14px]; @apply [font-size:2.75rem]; @apply [font-weight:700]; @apply [font-family:var(--font-sans)]; }
+.drink-ticket .field > label { @apply text-center; @apply [color:#253b4a]; @apply [font-size:.75rem]; @apply [font-weight:500]; @apply uppercase; @apply [letter-spacing:.12em]; }
+.drink-ticket-footer { @apply flex; @apply justify-between; @apply items-baseline; @apply gap-[12px]; @apply [font-size:.75rem]; @apply [letter-spacing:.08em]; @apply uppercase; @apply [color:#253b4a]; @apply text-left; }
+.drink-ticket-order { @apply [flex-shrink:0]; @apply text-right; @apply [font-variant-numeric:tabular-nums]; }
+.task-notepad { @apply w-[min(320px,_100%)]; @apply min-h-[320px]; @apply p-[56px_30px_28px]; @apply m-[0_auto_30px]; @apply [background:#fffbc2]; @apply [border-radius:4px]; @apply [box-shadow:4px_6px_12px_#00000018]; @apply [transform:rotate(-1deg)]; }
+.task-notepad > .eyebrow { @apply mb-[28px]; @apply [color:#293a31]; @apply [font-size:.875rem]; @apply [letter-spacing:0]; }
+.task-notepad .field > label { @apply absolute; @apply w-[1px]; @apply h-[1px]; @apply [clip-path:inset(50%)]; @apply overflow-hidden; }
+.task-notepad .field textarea { @apply [background:transparent]; @apply [border:0]; @apply [outline:none]; @apply [box-shadow:none]; @apply h-[180px]; @apply min-h-[180px]; @apply [font-family:var(--font-sans)]; @apply [font-size:1.875rem]; @apply not-italic; @apply [line-height:1.5]; @apply text-center; @apply p-[6px_0]; @apply resize-none; }
+.task-notepad .field textarea::placeholder { @apply [color:#9ca3af]; @apply opacity-[1]; }
+.task-notepad .field { @apply mb-[0]; }
 
-.tempo-missions { margin: -10px auto 30px; font-size: .8rem; }
-.counter-page .reward-credit-card { display: flex; align-items: center; gap: 12px; width: max-content; max-width: 100%; padding: 12px 18px; border: 2px solid #b6a382; background: #fff8e8; box-shadow: 2px 2px 0 #e5d7bc; font-size: 1.1rem; }
-.reward-credit-card svg { flex-shrink: 0; }
-.reward-credit-card strong { font-size: 1.3rem; }
-.tempo-missions summary { cursor: pointer; padding: 10px; }
-.tempo-missions details p { margin: 8px auto; max-width: 480px; }
+.tempo-missions { @apply m-[-10px_auto_30px]; @apply [font-size:.8rem]; }
+.counter-page .reward-credit-card { @apply flex; @apply items-center; @apply gap-[12px]; @apply w-[max-content]; @apply max-w-[100%]; @apply p-[12px_18px]; @apply [border:2px_solid_#b6a382]; @apply [background:#fff8e8]; @apply [box-shadow:2px_2px_0_#e5d7bc]; @apply [font-size:1.1rem]; }
+.reward-credit-card svg { @apply [flex-shrink:0]; }
+.reward-credit-card strong { @apply [font-size:1.3rem]; }
+.tempo-missions summary { @apply cursor-pointer; @apply p-[10px]; }
+.tempo-missions details p { @apply m-[8px_auto]; @apply max-w-[480px]; }
 
 @media (max-width: 800px) {
-  .entry-paper { min-height: calc(100svh - 135px); padding: 40px 25px 50px; }
-  .study-drinks { gap: 10px; }
-  .drink-choice { min-height: 175px; }
-  .study-drinks .drink-art { width: 115px; height: 120px; }
+  .entry-paper { @apply min-h-[calc(100svh_-_135px)]; @apply p-[40px_25px_50px]; }
+  .study-drinks { @apply gap-[10px]; }
+  .drink-choice { @apply min-h-[175px]; }
+  .study-drinks .drink-art { @apply w-[115px]; @apply h-[120px]; }
 }
 @media (max-width: 480px) {
-  .entry-paper { min-height: calc(100svh - 109px); padding: 35px 15px 50px; }
-  .entry-paper > h1 { font-size: 1.1rem; margin-bottom: 25px; }
-  .study-drinks { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-  .drink-choice { padding: 8px 4px; min-height: 155px; }
-  .drink-choice span { font-size: .75rem; }
-  .drink-ticket { padding: 28px 20px; }
-  .drink-ticket .field input { font-size: 2.25rem; }
-  .drink-ticket-footer { font-size: .65rem; gap: 8px; }
-  .study-drinks .drink-art { width: 100px; height: 105px; }
-  .task-notepad { padding-inline: 20px; }
+  .entry-paper { @apply min-h-[calc(100svh_-_109px)]; @apply p-[35px_15px_50px]; }
+  .entry-paper > h1 { @apply [font-size:1.1rem]; @apply mb-[25px]; }
+  .study-drinks { @apply grid-cols-[1fr_1fr]; @apply gap-[8px]; @apply mb-[20px]; }
+  .drink-choice { @apply p-[8px_4px]; @apply min-h-[155px]; }
+  .drink-choice span { @apply [font-size:.75rem]; }
+  .drink-ticket { @apply p-[28px_20px]; }
+  .drink-ticket .field input { @apply [font-size:2.25rem]; }
+  .drink-ticket-footer { @apply [font-size:.65rem]; @apply gap-[8px]; }
+  .study-drinks .drink-art { @apply w-[100px]; @apply h-[105px]; }
+  .task-notepad { @apply [padding-inline:20px]; }
+}
+
+/* Keep the drink chooser centered; size its backdrop to the viewport, not the form. */
+body:has(.drink-shell) {
+  @apply min-w-0;
+}
+.app-shell.drink-selection-shell {
+  @apply isolate;
+  @apply [background:#213e3f];
+}
+.drink-selection-shell::before {
+  @apply [content:""];
+  @apply fixed;
+  @apply inset-0;
+  @apply z-[-1];
+  @apply [background:url('/assets/menu.gif')_center_bottom_/_cover_no-repeat];
+  @apply pointer-events-none;
+}
+.paper-shell.drink-selection-shell > main {
+  --drink-page-gutter: max(clamp(16px, 3vw, 24px), env(safe-area-inset-left), env(safe-area-inset-right));
+  --drink-page-vertical-gutter: max(clamp(16px, 3vw, 24px), env(safe-area-inset-top), env(safe-area-inset-bottom));
+  @apply grid;
+  @apply grid-cols-[minmax(0,_1fr)];
+  @apply place-items-center;
+  @apply w-full;
+  @apply min-w-0;
+  @apply min-h-[100dvh];
+  @apply px-[var(--drink-page-gutter)];
+  @apply py-[var(--drink-page-vertical-gutter)];
+}
+.paper-shell.drink-selection-shell > main > .entry-page {
+  @apply w-full;
+  @apply min-w-0;
+  @apply max-w-[min(860px,_calc(100vw_-_2_*_var(--drink-page-gutter)))];
+  @apply [margin-inline:auto];
+  @apply [margin-block:auto];
+}
+.drink-selection-shell .entry-paper,
+.drink-selection-shell .entry-content,
+.drink-selection-shell .drink-choice {
+  @apply box-border;
+  @apply min-w-0;
+}
+.drink-selection-shell .study-drinks {
+  @apply grid-cols-[repeat(3,_minmax(0,_1fr))];
+}
+.drink-selection-shell .drink-choice span {
+  @apply [overflow-wrap:anywhere];
+}
+.drink-selection-shell .entry-actions {
+  @apply static;
+  @apply self-end;
+  @apply m-[8px_8px_0_0];
+}
+.drink-selection-shell .drink-logout {
+  @apply p-[8px];
+  @apply [line-height:1.3];
+}
+.drink-selection-shell .entry-paper {
+  @apply pb-[calc(clamp(24px,_4vw,_36px)_+_16px)];
+}
+@media (max-width: 480px) {
+  .drink-selection-shell .entry-paper {
+    @apply p-[16px];
+    @apply pb-[32px];
+  }
+  .drink-selection-shell .entry-paper > h1 {
+    @apply mt-[24px];
+    @apply mb-[16px];
+  }
+  .drink-selection-shell .study-drinks {
+    @apply grid-cols-[repeat(2,_minmax(0,_1fr))];
+    @apply gap-[10px];
+    @apply mb-[20px];
+  }
+  .drink-selection-shell .drink-choice {
+    @apply min-h-0;
+    @apply p-[8px_4px];
+  }
+  .drink-selection-shell .study-drinks .drink-art {
+    @apply w-[88px];
+    @apply h-[88px];
+  }
+}
+
+/* Keep mobile text readable instead of scaling it down with the card. */
+@media (max-width: 639px) {
+  .drink-shell .entry-paper > h1 {
+    @apply [font-size:clamp(1.5rem,_6vw,_1.75rem)];
+    @apply [line-height:1.25];
+    @apply [overflow-wrap:anywhere];
+  }
+  .drink-shell .drink-choice span,
+  .drink-shell .drink-choice small {
+    @apply [font-size:clamp(1.125rem,_4.5vw,_1.25rem)];
+    @apply [line-height:1.3];
+  }
+  .drink-shell .entry-content .note,
+  .drink-shell .entry-back,
+  .drink-shell .entry-content .field small,
+  .drink-shell .drink-ticket .field > label,
+  .drink-shell .drink-ticket-footer,
+  .drink-shell .task-notepad > .eyebrow {
+    @apply [font-size:1rem];
+    @apply [line-height:1.4];
+  }
+  .drink-shell .drink-ticket-footer {
+    @apply flex-wrap;
+    @apply [overflow-wrap:anywhere];
+  }
+  .drink-shell .size-choices label {
+    @apply [font-size:1.125rem];
+    @apply [line-height:1.4];
+  }
+  .drink-shell .pixel-enter {
+    @apply [font-size:1.25rem];
+    @apply [line-height:1.3];
+  }
+  .drink-selection-shell .study-drinks:has(.chosen) .drink-choice:not(.chosen):not(:disabled) {
+    @apply opacity-100;
+  }
+  .drink-selection-shell .study-drinks:has(.chosen) .drink-choice:not(.chosen):not(:disabled) .drink-art {
+    @apply opacity-[.6];
+  }
 }

@@ -37,20 +37,29 @@ export function ActiveFocusPage() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [infoMenuOpen, setInfoMenuOpen] = useState(false);
   const [today, setToday] = useState(() => new Date());
   const calendarCard = useRef<HTMLDivElement>(null);
+  const infoMenuButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const interval = window.setInterval(() => setToday(new Date()), 60000);
     return () => window.clearInterval(interval);
   }, []);
   useEffect(() => {
-    if (!calendarOpen) return;
+    if (!calendarOpen && !infoMenuOpen) return;
     const dismiss = (event: PointerEvent) => {
-      if (!calendarCard.current?.contains(event.target as Node)) setCalendarOpen(false);
+      if (!calendarCard.current?.contains(event.target as Node)) {
+        setCalendarOpen(false);
+        setInfoMenuOpen(false);
+      }
     };
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
-  }, [calendarOpen]);
+  }, [calendarOpen, infoMenuOpen]);
+  function closeInfoMenu() {
+    setInfoMenuOpen(false);
+    infoMenuButton.current?.focus();
+  }
   const room = useFocusRoom(id);
   const { session, area, timer } = room;
   const { play } = useSfx();
@@ -167,27 +176,41 @@ export function ActiveFocusPage() {
             />
           ) : (
             <>
-              <div className="session-top-actions">
-                <SessionProfile onNavigate={navigateFromSession} navigating={openingTasks || room.busy} />
-              </div>
+              <div className="session-header">
               <div className="session-info-container" ref={calendarCard}
-                onKeyDown={(event) => { if (event.key === "Escape") setCalendarOpen(false); }}>
-              <div className="session-info-card" aria-label="Date and credits">
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") {
+                    setCalendarOpen(false);
+                    closeInfoMenu();
+                  }
+                }}>
+              <button ref={infoMenuButton} type="button" className="session-menu-toggle"
+                aria-label="Cafe menu" aria-expanded={infoMenuOpen} aria-controls="session-info-actions"
+                onClick={() => { setCalendarOpen(false); setInfoMenuOpen(open => !open); }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M3 5h18v3H3zM3 11h18v3H3zM3 17h18v3H3z" />
+                </svg>
+              </button>
+              <div className={`session-info-card${infoMenuOpen ? " is-open" : ""}`} id="session-info-actions"
+                role="group" aria-label="Cafe information">
                 <button type="button" className="session-info-icon" aria-label="Date"
                   aria-expanded={calendarOpen} aria-controls="session-today"
-                  onClick={() => { setToday(new Date()); setCalendarOpen((open) => !open); }}
+                  onClick={() => { closeInfoMenu(); setToday(new Date()); setCalendarOpen((open) => !open); }}
                   data-tooltip="Date" data-cursor-tooltip>
                   <img src={artwork.calendar} alt="" width={48} height={48} />
+                  <span className="session-info-label">Date</span>
                 </button>
                 <button type="button" className="session-info-icon" aria-label="Credits"
-                  onClick={() => { setCalendarOpen(false); setCreditsOpen(true); }}
+                  onClick={() => { closeInfoMenu(); setCalendarOpen(false); setCreditsOpen(true); }}
                   data-tooltip="Credits" data-cursor-tooltip>
                   <img src={artwork.credits} alt="" width={48} height={48} />
+                  <span className="session-info-label">Credits</span>
                 </button>
                 <button type="button" className="session-info-icon" aria-label="About Cafe Tempo"
                   data-tooltip="About" data-cursor-tooltip
-                  onClick={() => { setCalendarOpen(false); setAboutOpen(true); }}>
+                  onClick={() => { closeInfoMenu(); setCalendarOpen(false); setAboutOpen(true); }}>
                   <img src={artwork.about} alt="" width={48} height={48} />
+                  <span className="session-info-label">About Cafe Tempo</span>
                 </button>
               </div>
               {calendarOpen && <div className="session-calendar-date" id="session-today" role="status">
@@ -196,6 +219,10 @@ export function ActiveFocusPage() {
                   {new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Taipei", weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(today)}
                 </time>
               </div>}
+              </div>
+              <div className="session-top-actions">
+                <SessionProfile onNavigate={navigateFromSession} navigating={openingTasks || room.busy} />
+              </div>
               </div>
               <Modal open={creditsOpen} title="𑣲𝄞  Tempo Credits" onClose={() => setCreditsOpen(false)} className="cafe-about cafe-credits">
                 <p>Music used in our café spaces:</p>
