@@ -33,9 +33,9 @@ export function useFocusTimer(session: FocusSession | null) {
   );
   const fullFocus = Boolean(
     session?.startedAt &&
-      (session.status === "completed"
-        ? session.completedMinutes >= session.plannedMinutes
-        : session.status === "active" && remainingSeconds === 0),
+    (session.status === "completed"
+      ? session.completedMinutes >= session.plannedMinutes
+      : session.status === "active" && remainingSeconds === 0),
   );
   const scheduledEnd = session?.startedAt
     ? new Date(session.startedAt).getTime() +

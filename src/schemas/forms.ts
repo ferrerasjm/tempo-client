@@ -3,34 +3,44 @@ import { z } from "zod";
 export const loginSchema = z.object({
   // Sign-up fields stay empty when the same form is used for login.
   name: z.string(),
-  email: z.string().trim()
+  email: z
+    .string()
+    .trim()
     .min(1, "Please enter your email address.")
     .max(254, "Email must be 254 characters or fewer.")
     .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please enter a valid email address."),
-  password: z.string()
+  password: z
+    .string()
     .min(1, "Please enter your password.")
     .max(1024, "Password must be 1024 characters or fewer."),
   confirmPassword: z.string(),
 });
 
-export const signupSchema = loginSchema.extend({
-  name: z.string().trim()
-    .min(1, "Please enter your full name.")
-    .max(100, "Name must be 100 characters or fewer."),
-  password: z.string()
-    .min(1, "Please enter your password.")
-    .min(8, "Password must contain at least 8 characters.")
-    .max(1024, "Password must be 1024 characters or fewer."),
-  confirmPassword: z.string().min(1, "Please confirm your password."),
-}).refine(values => values.password === values.confirmPassword, {
-  path: ["confirmPassword"],
-  message: "Passwords do not match.",
-});
+export const signupSchema = loginSchema
+  .extend({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Please enter your full name.")
+      .max(100, "Name must be 100 characters or fewer."),
+    password: z
+      .string()
+      .min(1, "Please enter your password.")
+      .min(8, "Password must contain at least 8 characters.")
+      .max(1024, "Password must be 1024 characters or fewer."),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match.",
+  });
 
 export type AccountValues = z.infer<typeof loginSchema>;
 
 export const profileNameSchema = z.object({
-  name: z.string().trim()
+  name: z
+    .string()
+    .trim()
     .min(1, "Enter a name of up to 100 characters.")
     .max(100, "Enter a name of up to 100 characters."),
 });

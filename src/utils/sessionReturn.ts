@@ -15,7 +15,7 @@ export function sessionReturn(sessions: FocusSession[], now = Date.now()) {
     const started = session.breakStartedAt || session.endedAt;
     return Boolean(
       started &&
-        new Date(started).getTime() + session.breakMinutes * 60000 > now,
+      new Date(started).getTime() + session.breakMinutes * 60000 > now,
     );
   });
   if (activeBreak) return { session: activeBreak, label: "Return to Break" };

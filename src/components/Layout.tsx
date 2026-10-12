@@ -131,9 +131,7 @@ export function Layout() {
               Focus History
             </NavLink>
             <NavLink
-              onClick={(event) =>
-                void navigateFromExplore(event, "/analytics")
-              }
+              onClick={(event) => void navigateFromExplore(event, "/analytics")}
               to="/analytics"
               aria-disabled={pausingForNavigation}
             >
@@ -150,8 +148,9 @@ export function Layout() {
               await leave(() => {
                 flushSync(() => navigate("/welcome", { replace: true }));
               });
+            } catch (reason) {
+              notify(errorMessage(reason));
             }
-            catch (reason) { notify(errorMessage(reason)); }
           }}
         >
           Log Out
@@ -164,9 +163,9 @@ export function Layout() {
       )}
       <main id="main">
         <FocusMusicProvider>
-        <SessionNavigationProvider>
-          <Outlet />
-        </SessionNavigationProvider>
+          <SessionNavigationProvider>
+            <Outlet />
+          </SessionNavigationProvider>
         </FocusMusicProvider>
       </main>
       <IconTooltips />

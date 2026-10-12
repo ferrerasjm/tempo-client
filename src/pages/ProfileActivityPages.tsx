@@ -11,7 +11,9 @@ import type { Statistics } from "../types";
 import { MenuArtwork } from "../components/MenuArtwork";
 import { displayAreaName } from "../assets";
 
-export function FocusHistoryPage({ embedded = false }: {
+export function FocusHistoryPage({
+  embedded = false,
+}: {
   embedded?: boolean;
 } = {}) {
   const { user } = useCafe();
@@ -33,16 +35,24 @@ export function FocusHistoryPage({ embedded = false }: {
     currentPage * pageSize,
   );
   return (
-    <section className={embedded ? "focus-history-page profile-embedded-page" : "page focus-history-page"}>
+    <section
+      className={
+        embedded
+          ? "focus-history-page profile-embedded-page"
+          : "page focus-history-page"
+      }
+    >
       {!embedded && <PageNavigation to="/tasks" label="Back to Task Board" />}
       <PageHeading
         eyebrow="Your Time, Well Spent"
         title="Focus History"
         description="Every little session counts. Here’s a look at yours."
-        action={!embedded &&
-          <Link className="button" to="/focus">
-            Start A Session
-          </Link>
+        action={
+          !embedded && (
+            <Link className="button" to="/focus">
+              Start A Session
+            </Link>
+          )
         }
       />
       <LoadState {...state} retry={state.reload}>
@@ -58,7 +68,11 @@ export function FocusHistoryPage({ embedded = false }: {
               {visibleSessions.map((session) => {
                 return (
                   <article className="record-row" key={session._id}>
-                    {embedded && <div className="focus-history-art" aria-hidden="true"><MenuArtwork name={session.drinkName || "Cafe Latte"} /></div>}
+                    {embedded && (
+                      <div className="focus-history-art" aria-hidden="true">
+                        <MenuArtwork name={session.drinkName || "Cafe Latte"} />
+                      </div>
+                    )}
                     <div className="focus-history-details">
                       <h2>
                         {session.taskTitle ||
@@ -68,12 +82,15 @@ export function FocusHistoryPage({ embedded = false }: {
                           "Focus Session"}
                       </h2>
                       <p>
-                        {
-                          displayAreaName(state.data!.areas.find(
+                        {displayAreaName(
+                          state.data!.areas.find(
                             (area) => area._id === session.area,
-                          )?.name || "Cafe Session")
-                        }{" "}
-                        · {session.startedAt ? dateTime(session.startedAt) : "Not Started Yet"}
+                          )?.name || "Cafe Session",
+                        )}{" "}
+                        ·{" "}
+                        {session.startedAt
+                          ? dateTime(session.startedAt)
+                          : "Not Started Yet"}
                       </p>
                       <div className="metadata">
                         <Status value={session.status} />
@@ -111,23 +128,34 @@ export function FocusHistoryPage({ embedded = false }: {
   );
 }
 
-export function AnalyticsPage({ embedded = false }: {
+export function AnalyticsPage({
+  embedded = false,
+}: {
   embedded?: boolean;
 } = {}) {
   const { user } = useCafe();
   const state = useApi(() => cafeApi.statistics(user!._id), [user!._id]);
   const statistics = state.data;
-  if (embedded) return <section className="cafe-productivity" aria-label="Productivity Stats">
-    <header className="cafe-productivity-heading">
-      <h3>Productivity Stats</h3>
-      <p>Your focus progress, all in one place.</p>
-    </header>
-    <LoadState {...state} retry={state.reload}>
-      {statistics && <ProductivityOverview statistics={statistics} />}
-    </LoadState>
-  </section>;
+  if (embedded)
+    return (
+      <section className="cafe-productivity" aria-label="Productivity Stats">
+        <header className="cafe-productivity-heading">
+          <h3>Productivity Stats</h3>
+          <p>Your focus progress, all in one place.</p>
+        </header>
+        <LoadState {...state} retry={state.reload}>
+          {statistics && <ProductivityOverview statistics={statistics} />}
+        </LoadState>
+      </section>
+    );
   return (
-    <section className={embedded ? "analytics-page profile-embedded-page" : "page analytics-page"}>
+    <section
+      className={
+        embedded
+          ? "analytics-page profile-embedded-page"
+          : "page analytics-page"
+      }
+    >
       {!embedded && <PageNavigation to="/tasks" label="Back to Task Board" />}
       <PageHeading
         eyebrow="Your Productivity Notebook"
@@ -217,42 +245,92 @@ export function AnalyticsPage({ embedded = false }: {
   );
 }
 
-function ProductivityOverview({ statistics }: {
-  statistics: Statistics;
-}) {
+function ProductivityOverview({ statistics }: { statistics: Statistics }) {
   const days = (count: number) => `${count} ${count === 1 ? "day" : "days"}`;
-  return <>
-    <section className="cafe-productivity-section" aria-label="Focus overview">
-      <h4>Focus Overview</h4>
-      <dl className="cafe-productivity-totals">
-        <div><dt>Total Focus Time</dt><dd>{statistics.totalFocusMinutes} <small>min</small></dd></div>
-        <div><dt>Sessions Completed</dt><dd>{statistics.completedSessions}</dd></div>
-        <div><dt>Tasks Completed</dt><dd>{statistics.completedTasks}</dd></div>
-        <div><dt>Average Session</dt><dd>{statistics.averageSessionMinutes} <small>min</small></dd></div>
-      </dl>
-      {statistics.completedSessions === 0 && <p className="cafe-productivity-empty" role="status">
-        Complete a focus session to start tracking your progress.
-      </p>}
-    </section>
-    <section className="cafe-productivity-section" aria-label="Focus streaks">
-      <h4>Focus Streaks</h4>
-      <dl className="cafe-productivity-streaks">
-        <div><dt>Current Streak</dt><dd>{days(statistics.currentStreak)}</dd></div>
-        <div><dt>Longest Streak</dt><dd>{days(statistics.longestStreak)}</dd></div>
-      </dl>
-    </section>
-    <section className="cafe-productivity-section" aria-label="Cafe habits">
-      <h4>Cafe Habits</h4>
-      <dl className="cafe-productivity-habits">
-        <div><dt>Most Productive Day</dt><dd>{statistics.mostProductiveDay
-          ? <>{statistics.mostProductiveDay.date}<span>{statistics.mostProductiveDay.totalMinutes} min of focus</span></>
-          : "No completed sessions yet"}</dd></div>
-        <div><dt>Favorite Corner</dt><dd>{displayAreaName(statistics.favoriteCafeArea?.name || "") || "Still finding your corner"}</dd></div>
-        <div><dt>Most Ordered Drink</dt><dd>{statistics.mostOrderedDrink?.name || "No drinks ordered yet"}</dd></div>
-      </dl>
-    </section>
-    <footer className="cafe-productivity-footer">
-      <p>Focus days and streaks follow Philippine time.</p>
-    </footer>
-  </>;
+  return (
+    <>
+      <section
+        className="cafe-productivity-section"
+        aria-label="Focus overview"
+      >
+        <h4>Focus Overview</h4>
+        <dl className="cafe-productivity-totals">
+          <div>
+            <dt>Total Focus Time</dt>
+            <dd>
+              {statistics.totalFocusMinutes} <small>min</small>
+            </dd>
+          </div>
+          <div>
+            <dt>Sessions Completed</dt>
+            <dd>{statistics.completedSessions}</dd>
+          </div>
+          <div>
+            <dt>Tasks Completed</dt>
+            <dd>{statistics.completedTasks}</dd>
+          </div>
+          <div>
+            <dt>Average Session</dt>
+            <dd>
+              {statistics.averageSessionMinutes} <small>min</small>
+            </dd>
+          </div>
+        </dl>
+        {statistics.completedSessions === 0 && (
+          <p className="cafe-productivity-empty" role="status">
+            Complete a focus session to start tracking your progress.
+          </p>
+        )}
+      </section>
+      <section className="cafe-productivity-section" aria-label="Focus streaks">
+        <h4>Focus Streaks</h4>
+        <dl className="cafe-productivity-streaks">
+          <div>
+            <dt>Current Streak</dt>
+            <dd>{days(statistics.currentStreak)}</dd>
+          </div>
+          <div>
+            <dt>Longest Streak</dt>
+            <dd>{days(statistics.longestStreak)}</dd>
+          </div>
+        </dl>
+      </section>
+      <section className="cafe-productivity-section" aria-label="Cafe habits">
+        <h4>Cafe Habits</h4>
+        <dl className="cafe-productivity-habits">
+          <div>
+            <dt>Most Productive Day</dt>
+            <dd>
+              {statistics.mostProductiveDay ? (
+                <>
+                  {statistics.mostProductiveDay.date}
+                  <span>
+                    {statistics.mostProductiveDay.totalMinutes} min of focus
+                  </span>
+                </>
+              ) : (
+                "No completed sessions yet"
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt>Favorite Corner</dt>
+            <dd>
+              {displayAreaName(statistics.favoriteCafeArea?.name || "") ||
+                "Still finding your corner"}
+            </dd>
+          </div>
+          <div>
+            <dt>Most Ordered Drink</dt>
+            <dd>
+              {statistics.mostOrderedDrink?.name || "No drinks ordered yet"}
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <footer className="cafe-productivity-footer">
+        <p>Focus days and streaks follow Philippine time.</p>
+      </footer>
+    </>
+  );
 }

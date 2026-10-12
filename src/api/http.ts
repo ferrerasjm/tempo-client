@@ -10,15 +10,22 @@ http.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
-http.interceptors.response.use((response) => response, (error) => {
-  const currentToken = localStorage.getItem("tempo-token");
-  if (error.response?.status === 401 && !["/auth/login", "/auth/signup"].includes(error.config?.url) &&
-      currentToken && error.config?.headers?.Authorization === `Bearer ${currentToken}`) {
-    localStorage.removeItem("tempo-token");
-    window.dispatchEvent(new Event("tempo-login-expired"));
-  }
-  return Promise.reject(error);
-});
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const currentToken = localStorage.getItem("tempo-token");
+    if (
+      error.response?.status === 401 &&
+      !["/auth/login", "/auth/signup"].includes(error.config?.url) &&
+      currentToken &&
+      error.config?.headers?.Authorization === `Bearer ${currentToken}`
+    ) {
+      localStorage.removeItem("tempo-token");
+      window.dispatchEvent(new Event("tempo-login-expired"));
+    }
+    return Promise.reject(error);
+  },
+);
 
 export function errorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {

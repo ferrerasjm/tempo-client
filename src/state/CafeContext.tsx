@@ -16,7 +16,12 @@ interface CafeState {
   retry: () => void;
   login: (email: string, password: string) => Promise<void>;
   updateProfile: (displayName: string) => Promise<void>;
-  signup: (name: string, email: string, password: string, confirmPassword: string) => Promise<void>;
+  signup: (
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => Promise<void>;
   leave: (beforeClear?: () => void) => Promise<void>;
   basket: Selection[];
   setQuantity: (id: string, quantity: number) => void;
@@ -67,15 +72,25 @@ export function CafeProvider({ children }: { children: ReactNode }) {
       return;
     }
     setLoading(true);
-    cafeApi.me().then((profile) => {
-      if (current && restoringToken === localStorage.getItem("tempo-token")) setUser(profile);
-    }).catch((reason) => {
-      if (current && restoringToken === localStorage.getItem("tempo-token")) {
-        setUser(null);
-        if (localStorage.getItem("tempo-token")) setError(errorMessage(reason));
-      }
-    }).finally(() => { if (current) setLoading(false); });
-    return () => { current = false; };
+    cafeApi
+      .me()
+      .then((profile) => {
+        if (current && restoringToken === localStorage.getItem("tempo-token"))
+          setUser(profile);
+      })
+      .catch((reason) => {
+        if (current && restoringToken === localStorage.getItem("tempo-token")) {
+          setUser(null);
+          if (localStorage.getItem("tempo-token"))
+            setError(errorMessage(reason));
+        }
+      })
+      .finally(() => {
+        if (current) setLoading(false);
+      });
+    return () => {
+      current = false;
+    };
   }, [version]);
   useEffect(() => {
     const expire = () => {
@@ -99,7 +114,12 @@ export function CafeProvider({ children }: { children: ReactNode }) {
     const result = await cafeApi.login(email, password);
     acceptLogin(result);
   }
-  async function signup(name: string, email: string, password: string, confirmPassword: string) {
+  async function signup(
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) {
     await cafeApi.signup(name, email, password, confirmPassword);
   }
   function acceptLogin(result: { token: string; user: User }) {
@@ -141,7 +161,9 @@ export function CafeProvider({ children }: { children: ReactNode }) {
         login,
         updateProfile: async (displayName) => {
           const profile = await cafeApi.updateProfile(displayName);
-          setUser((current) => current?._id === profile._id ? profile : current);
+          setUser((current) =>
+            current?._id === profile._id ? profile : current,
+          );
         },
         signup,
         leave,

@@ -95,8 +95,9 @@ export function IconTooltips() {
       }
       if (element !== dismissed.current) {
         setPointer(
-          event instanceof PointerEvent && element.hasAttribute("data-tooltip") &&
-          !element.hasAttribute("data-tooltip-anchor")
+          event instanceof PointerEvent &&
+            element.hasAttribute("data-tooltip") &&
+            !element.hasAttribute("data-tooltip-anchor")
             ? { x: event.clientX, y: event.clientY }
             : null,
         );
@@ -110,9 +111,11 @@ export function IconTooltips() {
         element !== dismissed.current
       ) {
         setTarget(overDrink(element, event) ? element : null);
-        setPointer(element.hasAttribute("data-tooltip-anchor")
-          ? null
-          : { x: event.clientX, y: event.clientY });
+        setPointer(
+          element.hasAttribute("data-tooltip-anchor")
+            ? null
+            : { x: event.clientX, y: event.clientY },
+        );
       } else {
         setTarget((current) =>
           current?.hasAttribute("data-tooltip") ? null : current,

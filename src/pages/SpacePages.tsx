@@ -237,7 +237,10 @@ export function ReservationsPage() {
           <article className="record-row" key={item._id}>
             <div>
               <h2>
-                {displayAreaName(state.data!.areas.find((area) => area._id === item.area)?.name || "Cafe area")}
+                {displayAreaName(
+                  state.data!.areas.find((area) => area._id === item.area)
+                    ?.name || "Cafe area",
+                )}
               </h2>
               <p>
                 {dateTime(item.startsAt)} — {dateTime(item.endsAt)}

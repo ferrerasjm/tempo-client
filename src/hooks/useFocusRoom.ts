@@ -29,8 +29,11 @@ export function useFocusRoom(id: string) {
   }, [id]);
   const [updated, setUpdated] = useState<FocusSession | null>(null);
   const viewKey = `tempo-focus-view-${id}`;
-  const [viewedAreaId, setViewedAreaId] = useState(() => sessionStorage.getItem(viewKey) || "");
-  const viewIndex = state.data?.areas.findIndex((area) => area._id === viewedAreaId) ?? -1;
+  const [viewedAreaId, setViewedAreaId] = useState(
+    () => sessionStorage.getItem(viewKey) || "",
+  );
+  const viewIndex =
+    state.data?.areas.findIndex((area) => area._id === viewedAreaId) ?? -1;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [pollError, setPollError] = useState("");

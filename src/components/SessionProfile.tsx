@@ -7,7 +7,10 @@ import { useCafe } from "../state/CafeContext";
 import { Modal } from "./Modal";
 import { ProfilePanel, type AvatarColor } from "./ProfilePanel";
 
-export function SessionProfile({ onNavigate, navigating = false }: {
+export function SessionProfile({
+  onNavigate,
+  navigating = false,
+}: {
   onNavigate: (to: string) => Promise<void>;
   navigating?: boolean;
 }) {
@@ -35,48 +38,106 @@ export function SessionProfile({ onNavigate, navigating = false }: {
   if (!user) return null;
   return (
     <>
-      <div className="session-profile" ref={root}
+      <div
+        className="session-profile"
+        ref={root}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             setExpanded(false);
             root.current?.querySelector("button")?.focus();
           }
-        }}>
-        <button type="button" className="session-profile-toggle"
+        }}
+      >
+        <button
+          type="button"
+          className="session-profile-toggle"
           aria-label="Profile options"
-          data-tooltip={expanded ? undefined : "Profile"} data-cursor-tooltip={expanded ? undefined : true}
-          aria-expanded={expanded} aria-controls={dropdownId}
-          onClick={() => setExpanded((value) => !value)}>
-          <span className="session-avatar"><img src={artwork.profileAvatars[avatar]} alt="" width={56} height={56} /></span>
-          <span className="session-profile-name" title={user.displayName}>{user.displayName}</span>
-          <svg className="profile-chevron" viewBox="0 0 12 8" aria-hidden="true">
+          data-tooltip={expanded ? undefined : "Profile"}
+          data-cursor-tooltip={expanded ? undefined : true}
+          aria-expanded={expanded}
+          aria-controls={dropdownId}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          <span className="session-avatar">
+            <img
+              src={artwork.profileAvatars[avatar]}
+              alt=""
+              width={56}
+              height={56}
+            />
+          </span>
+          <span className="session-profile-name" title={user.displayName}>
+            {user.displayName}
+          </span>
+          <svg
+            className="profile-chevron"
+            viewBox="0 0 12 8"
+            aria-hidden="true"
+          >
             <path d="M0 0h2v2H0zM2 2h2v2H2zM4 4h4v2H4zM8 2h2v2H8zM10 0h2v2h-2z" />
           </svg>
         </button>
-        {expanded && <div className="session-profile-dropdown" id={dropdownId}>
-          <p className="session-profile-dropdown-name">{user.displayName}</p>
-          <button type="button" onClick={() => {
-            setExpanded(false);
-            setEditing(true);
-          }}>My Cafe</button>
-          <button type="button" disabled={navigating || loggingOut}
-            onClick={async () => {
-              setLoggingOut(true);
-              try {
-                await leave(() => flushSync(() => navigate("/welcome", { replace: true })));
-              } catch (reason) { notify(errorMessage(reason)); }
-              finally { setLoggingOut(false); }
-            }}>Logout</button>
-        </div>}
+        {expanded && (
+          <div className="session-profile-dropdown" id={dropdownId}>
+            <p className="session-profile-dropdown-name">{user.displayName}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setExpanded(false);
+                setEditing(true);
+              }}
+            >
+              My Cafe
+            </button>
+            <button
+              type="button"
+              disabled={navigating || loggingOut}
+              onClick={async () => {
+                setLoggingOut(true);
+                try {
+                  await leave(() =>
+                    flushSync(() => navigate("/welcome", { replace: true })),
+                  );
+                } catch (reason) {
+                  notify(errorMessage(reason));
+                } finally {
+                  setLoggingOut(false);
+                }
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
-      <Modal open={editing} title={<span className="my-cafe-title"><img src={artwork.cafeLogo} alt="" width={40} height={40} /><span>My Cafe</span></span>} busy={busy} onClose={() => setEditing(false)} className="profile-panel-modal">
-        {editing && <ProfilePanel avatar={avatar} busy={busy} onBusyChange={setBusy} onAvatarChange={(color) => {
-          localStorage.setItem(`tempo-avatar-${user._id}`, color);
-          setAvatar(color);
-        }} onNavigate={async (to) => {
-          await onNavigate(to);
-          setEditing(false);
-        }} navigating={navigating} />}
+      <Modal
+        open={editing}
+        title={
+          <span className="my-cafe-title">
+            <img src={artwork.cafeLogo} alt="" width={40} height={40} />
+            <span>My Cafe</span>
+          </span>
+        }
+        busy={busy}
+        onClose={() => setEditing(false)}
+        className="profile-panel-modal"
+      >
+        {editing && (
+          <ProfilePanel
+            avatar={avatar}
+            busy={busy}
+            onBusyChange={setBusy}
+            onAvatarChange={(color) => {
+              localStorage.setItem(`tempo-avatar-${user._id}`, color);
+              setAvatar(color);
+            }}
+            onNavigate={async (to) => {
+              await onNavigate(to);
+              setEditing(false);
+            }}
+            navigating={navigating}
+          />
+        )}
       </Modal>
     </>
   );

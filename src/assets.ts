@@ -5,7 +5,7 @@ export const artwork = {
     "Quiet Corner": "/assets/cafe/corner-bg.png",
     "Garden Patio": "/assets/cafe/garden-bg.png",
     "Window View": "/assets/cafe/window-bg.png",
-    "Library": "/assets/cafe/library-bg.png",
+    Library: "/assets/cafe/library-bg.png",
   } as Record<string, string>,
   furniture: "/assets/cafe/table-and-chair.png",
   characters: {
@@ -20,7 +20,7 @@ export const artwork = {
   taskNotebook: "/assets/cafe/to-do nb.png",
   roomPets: {
     "Garden Patio": "/assets/cafe/float.gif",
-    "Library": "/assets/cafe/walk.gif",
+    Library: "/assets/cafe/walk.gif",
     "Library Table": "/assets/cafe/walk.gif",
     "Midnight Cafe": "/assets/cafe/sleep.gif",
     "Quiet Corner": "/assets/cafe/tap.gif",
@@ -59,12 +59,14 @@ export const artwork = {
     "Quiet Corner": "/assets/audio/quiet-corner.mp3",
     "Garden Patio": "/assets/audio/garden-patio.mp3",
     "Window View": "/assets/audio/window.mp3",
-    "Library": "/assets/audio/library.mp3",
+    Library: "/assets/audio/library.mp3",
   } as Record<string, string>,
 };
 
 export function spaceArtwork(name: string) {
-  return artwork.spaces[displayAreaName(name)] || artwork.spaces["Quiet Corner"];
+  return (
+    artwork.spaces[displayAreaName(name)] || artwork.spaces["Quiet Corner"]
+  );
 }
 
 export function spaceMusic(name: string) {

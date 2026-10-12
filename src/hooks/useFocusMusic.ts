@@ -23,7 +23,9 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
   const source = spaceMusic(areaName);
   const available = Boolean(source);
   const running = enabled && source !== pausedSource;
-  useEffect(() => { setPausedSource(""); }, [source]);
+  useEffect(() => {
+    setPausedSource("");
+  }, [source]);
 
   function dispose(item: PlayingTrack | null) {
     if (!item) return;
@@ -67,22 +69,32 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
       window.removeEventListener("keydown", retryGesture, true);
       retryGesture = null;
     }
-    function playTrack(item: PlayingTrack, onStarted: () => void, onFailed: () => void) {
+    function playTrack(
+      item: PlayingTrack,
+      onStarted: () => void,
+      onFailed: () => void,
+    ) {
       const tryPlay = () => {
-        item.audio.play().then(() => {
-          clearGestureRetry();
-          if (transition.current === id) onStarted();
-        }).catch((reason) => {
-          if (transition.current !== id) return;
-          if (reason?.name === "NotAllowedError") {
-            // A refresh can lose the browser's audio permission. Retry inside
-            // the next gesture so the room still starts without a play button.
-            setError("");
-            retryGesture = () => { clearGestureRetry(); tryPlay(); };
-            window.addEventListener("pointerdown", retryGesture, true);
-            window.addEventListener("keydown", retryGesture, true);
-          } else onFailed();
-        });
+        item.audio
+          .play()
+          .then(() => {
+            clearGestureRetry();
+            if (transition.current === id) onStarted();
+          })
+          .catch((reason) => {
+            if (transition.current !== id) return;
+            if (reason?.name === "NotAllowedError") {
+              // A refresh can lose the browser's audio permission. Retry inside
+              // the next gesture so the room still starts without a play button.
+              setError("");
+              retryGesture = () => {
+                clearGestureRetry();
+                tryPlay();
+              };
+              window.addEventListener("pointerdown", retryGesture, true);
+              window.addEventListener("keydown", retryGesture, true);
+            } else onFailed();
+          });
       };
       tryPlay();
     }
@@ -107,14 +119,18 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
       setPlaying(!current.audio.paused);
       if (current.audio.paused) {
         current.audio.volume = 0;
-        playTrack(current, () => {
+        playTrack(
+          current,
+          () => {
             setError("");
             setPlaying(true);
             fade([], current);
-          }, () => {
+          },
+          () => {
             setPlaying(false);
             setError("Room music is unavailable.");
-          });
+          },
+        );
       }
       return clearGestureRetry;
     }
@@ -135,7 +151,9 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
         setError(`The music for ${areaName} could not be loaded.`);
       }
     });
-    playTrack(incoming, () => {
+    playTrack(
+      incoming,
+      () => {
         pending.current = null;
         tracks.current.add(incoming);
         active.current = incoming;
@@ -144,14 +162,16 @@ export function useFocusMusic(enabled: boolean, areaName = "") {
           [...tracks.current].filter((item) => item !== incoming),
           incoming,
         );
-      }, () => {
+      },
+      () => {
         dispose(incoming);
         pending.current = null;
         active.current = null;
         setPlaying(false);
         fade([...tracks.current], null);
         setError("Room music is unavailable.");
-      });
+      },
+    );
     return clearGestureRetry;
   }, [running, source, areaName, attempt]);
 

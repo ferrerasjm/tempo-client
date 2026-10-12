@@ -44,12 +44,16 @@ function EntryPaper({
   };
   const [to, label] = parents[pathname] || ["/welcome", "Back to Welcome"];
   return (
-    <section className={`page narrow centered entry-page${pathname !== "/study/drink" ? " detail-entry-page" : ""}${pathname === "/study/label" ? " label-entry-page" : ""}`}>
+    <section
+      className={`page narrow centered entry-page${pathname !== "/study/drink" ? " detail-entry-page" : ""}${pathname === "/study/label" ? " label-entry-page" : ""}`}
+    >
       <div className="entry-paper">
         {pathname === "/study/drink" ? (
           action && <div className="entry-actions">{action}</div>
         ) : (
-          <PageNavigation to={to} label={label}>{action}</PageNavigation>
+          <PageNavigation to={to} label={label}>
+            {action}
+          </PageNavigation>
         )}
         {title && <h1>{title}</h1>}
         <div className="entry-content">{children}</div>
@@ -74,8 +78,13 @@ function EntryLogout({ disabled = false }: { disabled?: boolean }) {
     }
   }
   return (
-    <button className="text-link drink-logout" type="button" onClick={logOut}
-      disabled={loggingOut || disabled} aria-busy={loggingOut}>
+    <button
+      className="text-link drink-logout"
+      type="button"
+      onClick={logOut}
+      disabled={loggingOut || disabled}
+      aria-busy={loggingOut}
+    >
       Log out
     </button>
   );
@@ -349,47 +358,60 @@ export function StudyTaskPage() {
     formState: { errors, isSubmitting },
   } = form;
   return (
-    <EntryPaper title="One thing at a time." action={<EntryLogout disabled={isSubmitting} />}>
-        <form onSubmit={form.handleSubmit(entry.prepare)} noValidate>
-          <p className="eyebrow">What are you working on?</p>
-          {(state.error || tasks.error) && (
-            <div>
-              <Feedback error={state.error || tasks.error} />
-              <button className="text-link" type="button" onClick={() => {
+    <EntryPaper
+      title="One thing at a time."
+      action={<EntryLogout disabled={isSubmitting} />}
+    >
+      <form onSubmit={form.handleSubmit(entry.prepare)} noValidate>
+        <p className="eyebrow">What are you working on?</p>
+        {(state.error || tasks.error) && (
+          <div>
+            <Feedback error={state.error || tasks.error} />
+            <button
+              className="text-link"
+              type="button"
+              onClick={() => {
                 if (state.error) state.reload();
                 if (tasks.error) tasks.reload();
-              }}>Try again</button>
-            </div>
-          )}
-          <div className="task-notepad">
-            <p className="eyebrow">I WILL...</p>
-            <Field label="Task to accomplish" error={errors.title?.message}>
-              <textarea
-                rows={4}
-                placeholder={"build a cool\nnew thing..."}
-                {...register("title")}
-                disabled={isSubmitting || (Boolean(entry.draft.taskId) && (state.loading || tasks.loading))}
-                autoFocus
-              />
-            </Field>
+              }}
+            >
+              Try again
+            </button>
           </div>
-          <p className="note">{entry.minutes} minutes of focus.</p>
-          <Feedback error={entry.error} />
-          <button
-            className="pixel-enter"
-            disabled={
-              isSubmitting ||
-              tasks.loading ||
-              Boolean(tasks.error) ||
-              (Boolean(entry.draft.taskId) &&
-                (!state.data ||
-                  state.data.user !== user!._id ||
-                  state.data.status === "completed"))
-            }
-          >
-            {isSubmitting ? "Preparing…" : "Start"}
-          </button>
-        </form>
+        )}
+        <div className="task-notepad">
+          <p className="eyebrow">I WILL...</p>
+          <Field label="Task to accomplish" error={errors.title?.message}>
+            <textarea
+              rows={4}
+              placeholder={"build a cool\nnew thing..."}
+              {...register("title")}
+              disabled={
+                isSubmitting ||
+                (Boolean(entry.draft.taskId) &&
+                  (state.loading || tasks.loading))
+              }
+              autoFocus
+            />
+          </Field>
+        </div>
+        <p className="note">{entry.minutes} minutes of focus.</p>
+        <Feedback error={entry.error} />
+        <button
+          className="pixel-enter"
+          disabled={
+            isSubmitting ||
+            tasks.loading ||
+            Boolean(tasks.error) ||
+            (Boolean(entry.draft.taskId) &&
+              (!state.data ||
+                state.data.user !== user!._id ||
+                state.data.status === "completed"))
+          }
+        >
+          {isSubmitting ? "Preparing…" : "Start"}
+        </button>
+      </form>
     </EntryPaper>
   );
 }

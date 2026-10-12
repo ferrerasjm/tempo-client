@@ -80,10 +80,7 @@ export default function App() {
           />
           <Route path="reservations" element={<ReservationsPage />} />
         </Route>
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

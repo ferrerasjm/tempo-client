@@ -190,7 +190,11 @@ export function CheckoutPage() {
   if (!basket.length && !placed.current) return <Navigate to="/menu" replace />;
   return (
     <section className="page narrow checkout-page">
-      <PageNavigation to="/menu" label="Back to Reward Shop" backClassName="text-link checkout-back" />
+      <PageNavigation
+        to="/menu"
+        label="Back to Reward Shop"
+        backClassName="text-link checkout-back"
+      />
       <PageHeading
         eyebrow="Before we make your order"
         title="A little treat, sorted."
@@ -258,7 +262,12 @@ export function CheckoutPage() {
   );
 }
 
-export function OrdersPage({ embedded = false, onBusyChange, onNavigate, navigating = false }: {
+export function OrdersPage({
+  embedded = false,
+  onBusyChange,
+  onNavigate,
+  navigating = false,
+}: {
   embedded?: boolean;
   onBusyChange?: (busy: boolean) => void;
   onNavigate?: (to: string) => Promise<void>;
@@ -269,7 +278,10 @@ export function OrdersPage({ embedded = false, onBusyChange, onNavigate, navigat
   const location = useLocation();
   const confirm = useConfirmation();
   const state = useApi(() => cafeApi.orders(user!._id), [user!._id]);
-  const rewards = useApi(() => embedded ? cafeApi.rewards(user!._id) : Promise.resolve(null), [user!._id, embedded]);
+  const rewards = useApi(
+    () => (embedded ? cafeApi.rewards(user!._id) : Promise.resolve(null)),
+    [user!._id, embedded],
+  );
   const sessions = useApi(() => cafeApi.sessions(user!._id), [user!._id]);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
@@ -277,9 +289,7 @@ export function OrdersPage({ embedded = false, onBusyChange, onNavigate, navigat
   const [pageSize, setPageSize] = useState(10);
   const orders = state.data || [];
   const fromFocus = location.state?.from === "focus";
-  const session = fromFocus
-    ? sessionReturn(sessions.data || [])
-    : null;
+  const session = fromFocus ? sessionReturn(sessions.data || []) : null;
   const pageCount = Math.max(1, Math.ceil(orders.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const visibleOrders = orders.slice(
@@ -317,52 +327,97 @@ export function OrdersPage({ embedded = false, onBusyChange, onNavigate, navigat
     }
   }
   return (
-    <section className={embedded ? "orders-page profile-embedded-page" : "page orders-page"}>
-      {!embedded && <PageNavigation
-        to={session ? `/focus/${session.session._id}` : "/menu"}
-        label={session ? "Back to Session" : "Back to Reward Shop"}
-      />}
+    <section
+      className={
+        embedded ? "orders-page profile-embedded-page" : "page orders-page"
+      }
+    >
+      {!embedded && (
+        <PageNavigation
+          to={session ? `/focus/${session.session._id}` : "/menu"}
+          label={session ? "Back to Session" : "Back to Reward Shop"}
+        />
+      )}
       <div className={embedded ? "orders-heading-row" : undefined}>
         <PageHeading
           eyebrow="Reward Shop"
           title={embedded ? "My Orders" : "Your Orders"}
           description="Review your Tempo Credit purchases from the Reward Shop."
         />
-        {embedded && <div className="orders-rewards-actions">
-          <dl className="profile-credit-card" aria-busy={rewards.loading}>
-            <dt><TempoCoin />Tempo Credits</dt>
-            <dd>{rewards.loading ? <span role="status">Loading…</span>
-              : rewards.error ? <span className="profile-credit-error"><span role="alert">Balance unavailable.</span><button type="button" onClick={rewards.reload}>Retry</button></span>
-              : <strong>{(rewards.data?.balance ?? 0).toLocaleString()}</strong>}</dd>
-          </dl>
-          <button type="button" className="orders-rewards-link" disabled={Boolean(busy) || navigating}
-            onClick={() => {
-              if (onNavigate) void onNavigate("/menu").catch((reason) => setError(errorMessage(reason)));
-              else navigate("/menu");
-            }}>Explore Rewards</button>
-        </div>}
+        {embedded && (
+          <div className="orders-rewards-actions">
+            <dl className="profile-credit-card" aria-busy={rewards.loading}>
+              <dt>
+                <TempoCoin />
+                Tempo Credits
+              </dt>
+              <dd>
+                {rewards.loading ? (
+                  <span role="status">Loading…</span>
+                ) : rewards.error ? (
+                  <span className="profile-credit-error">
+                    <span role="alert">Balance unavailable.</span>
+                    <button type="button" onClick={rewards.reload}>
+                      Retry
+                    </button>
+                  </span>
+                ) : (
+                  <strong>
+                    {(rewards.data?.balance ?? 0).toLocaleString()}
+                  </strong>
+                )}
+              </dd>
+            </dl>
+            <button
+              type="button"
+              className="orders-rewards-link"
+              disabled={Boolean(busy) || navigating}
+              onClick={() => {
+                if (onNavigate)
+                  void onNavigate("/menu").catch((reason) =>
+                    setError(errorMessage(reason)),
+                  );
+                else navigate("/menu");
+              }}
+            >
+              Explore Rewards
+            </button>
+          </div>
+        )}
       </div>
       <Feedback error={error} />
       <LoadState {...state} retry={state.reload}>
         {!orders.length ? (
-          embedded ? <div className="cafe-orders-empty">
-            <div className="cafe-orders-empty-art" aria-hidden="true">
-              <MenuArtwork name="Cafe Latte" />
-              <span className="cafe-orders-heart">♥</span>
-              <MenuArtwork name="Fruit Tart" snack />
+          embedded ? (
+            <div className="cafe-orders-empty">
+              <div className="cafe-orders-empty-art" aria-hidden="true">
+                <MenuArtwork name="Cafe Latte" />
+                <span className="cafe-orders-heart">♥</span>
+                <MenuArtwork name="Fruit Tart" snack />
+              </div>
+              <h2>No Purchases Yet</h2>
+              <p>
+                Your little cafe treats will appear here after your first order.
+              </p>
             </div>
-            <h2>No Purchases Yet</h2>
-            <p>Your little cafe treats will appear here after your first order.</p>
-          </div> : <EmptyState title="No purchases yet." />
+          ) : (
+            <EmptyState title="No purchases yet." />
+          )
         ) : (
           <>
             <div className="record-list">
               {visibleOrders.map((order) => (
                 <article className="record-row" key={order._id}>
-                  {embedded && <div className="cafe-order-art" aria-hidden="true">
-                    <MenuArtwork name={order.items[0]?.name || "Cafe Latte"}
-                      snack={/tart|cinnamon|donut|muffin|croissant/i.test(order.items[0]?.name || "")} />
-                  </div>}
+                  {embedded && (
+                    <div className="cafe-order-art" aria-hidden="true">
+                      <MenuArtwork
+                        name={order.items[0]?.name || "Cafe Latte"}
+                        snack={/tart|cinnamon|donut|muffin|croissant/i.test(
+                          order.items[0]?.name || "",
+                        )}
+                      />
+                    </div>
+                  )}
                   <div className="cafe-order-details">
                     <h2>
                       {order.items
