@@ -4,6 +4,7 @@ import { cafeApi } from "../services/cafeApi";
 import { useApi } from "../hooks/useApi";
 import { useCafe } from "../state/CafeContext";
 import { errorMessage } from "../api/http";
+import { REWARDS_UPDATED_EVENT } from "../utils/rewardsEvents";
 import { dateTime } from "../utils/dates";
 import {
   EmptyState,
@@ -305,6 +306,7 @@ export function OrdersPage({ embedded = false, onBusyChange, onNavigate, navigat
     try {
       await cafeApi.cancelOrder(id);
       notify("Order cancelled. Unused Tempo Credits are refunded.");
+      window.dispatchEvent(new Event(REWARDS_UPDATED_EVENT));
       state.reload();
       rewards.reload();
     } catch (reason) {

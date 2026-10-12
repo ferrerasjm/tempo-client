@@ -200,10 +200,13 @@
 }
 
 @media (max-width: 800px) {
-  .paper-shell > main { @apply p-[110px_25px_25px]; }
+  .paper-shell > main { @apply p-[110px_25px]; }
   .paper-shell > main > .page, .study-paper { @apply min-h-[calc(100svh_-_135px)]; @apply p-[45px_25px]; }
   .paper-shell > main > .welcome-page { @apply p-[40px_25px]; }
-  .paper-shell > main > .counter-page { @apply min-h-[0]; @apply p-[24px]; }
+  .paper-shell > main > .counter-page { @apply min-h-[0]; @apply p-[16px]; }
+  .paper-shell:has(.counter-page) > main { @apply p-[60px_25px]; }
+  .paper-shell:has(.checkout-page) > main { @apply p-[60px_25px]; }
+  .paper-shell > main > .checkout-page { @apply min-h-[0]; @apply p-[20px]; }
   .paper-shell .page-heading { @apply items-center; }
   .welcome-page > .page-heading { @apply mt-[36px]; }
   .study-paper .step-caption { @apply bottom-[12px]; }
@@ -212,10 +215,13 @@
 @media (max-width: 480px) {
   .app-shell .site-header { @apply p-[0_14px]; @apply h-[107px]; }
   .app-shell .hanging-sign { @apply w-[105px]; }
-  .paper-shell > main { @apply p-[95px_14px_14px]; }
+  .paper-shell > main { @apply p-[95px_14px]; }
   .paper-shell > main > .page, .study-paper { @apply min-h-[calc(100svh_-_109px)]; @apply p-[35px_15px_45px]; }
   .paper-shell > main > .welcome-page { @apply p-[30px_20px_40px]; }
-  .paper-shell > main > .counter-page { @apply min-h-[0]; @apply p-[20px_16px]; }
+  .paper-shell > main > .counter-page { @apply min-h-[0]; @apply p-[12px]; @apply [transform:none]; }
+  .paper-shell:has(.counter-page) > main { @apply p-[48px_14px]; }
+  .paper-shell:has(.checkout-page) > main { @apply p-[48px_14px]; }
+  .paper-shell > main > .checkout-page { @apply min-h-[0]; @apply p-[18px]; }
   .study-paper .intention-note { @apply min-h-[200px]; @apply p-[25px_12px]; }
   .study-paper .page-heading { @apply mb-[25px]; }
   .study-paper .page-heading h1 { @apply [font-size:1.1rem]; }
@@ -249,8 +255,9 @@ body:has(.welcome-shell) {
   @apply fixed;
   @apply inset-[0];
   @apply z-[-1];
-  @apply [background:url('/assets/landing.gif')_center_bottom_/_cover];
-  @apply [transform:scale(1.04)];
+  @apply [background:#213e3f_url('/assets/welcome.gif')_center_center_/_cover_no-repeat];
+  @apply [background-size:cover];
+  @apply [transform:none];
   @apply [transform-origin:center_bottom];
   @apply pointer-events-none;
 }
@@ -330,6 +337,27 @@ body:has(.welcome-shell) {
 .welcome-shell .profile-choice-action { @apply [flex-shrink:0]; @apply gap-[6px]; @apply [font-size:1.0625rem]; }
 
 @media (max-width: 639px) {
+  .welcome-shell::before {
+    @apply [background-image:url('/assets/landing.gif')];
+    @apply [background-position:40%_center];
+    @apply [background-size:cover];
+    @apply [background-repeat:no-repeat];
+  }
+  .welcome-shell::after {
+    @apply [content:""];
+    @apply fixed;
+    @apply bottom-[0];
+    @apply left-[0];
+    @apply z-[0];
+    @apply w-[100%];
+    @apply h-[8px];
+    @apply [background:#213e3f];
+    @apply pointer-events-none;
+  }
+  .welcome-shell > main {
+    @apply relative;
+    @apply z-[1];
+  }
   .welcome-shell .welcome-page > .page-navigation {
     @apply mb-[16px];
     @apply [font-size:1rem];

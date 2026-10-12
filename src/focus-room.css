@@ -569,7 +569,7 @@
 .table-desk-items {
   @apply absolute;
   @apply z-[3];
-  @apply top-[calc(60%_-_20px)];
+  @apply top-[calc(60%_-_60px)];
   @apply left-[50%];
   @apply [transform:translateX(-50%)];
   @apply w-[min(580px,_calc(100%_-_24px))];
@@ -580,7 +580,7 @@
 }
 .table-sip-stats {
   @apply relative;
-  @apply left-[40px];
+  @apply left-[110px];
   @apply w-[clamp(108px,_15vw,_190px)];
   @apply h-[clamp(108px,_15vw,_175px)];
   @apply block;
@@ -613,7 +613,7 @@
 .session-room .session-drink { @apply relative; @apply w-[100%]; @apply h-[100%]; }
 .table-task-notebook {
   @apply relative;
-  @apply left-[clamp(-110px,_-6vw,_-32px)];
+  @apply left-[clamp(-180px,_calc(-6vw_-_70px),_-102px)];
   @apply block;
   @apply pointer-events-auto;
   @apply w-[clamp(150px,_23vw,_290px)];
@@ -854,6 +854,39 @@
     @apply [background:#fff8e8];
     @apply [color:#293a31];
   }
+  .session-room.scene-focus .table-treats {
+    @apply w-[min(205px,_52vw)];
+    @apply h-[40%];
+    @apply max-h-[205px];
+  }
+  .session-room.scene-focus .table-treats.has-pastry {
+    @apply w-[min(270px,_70vw)];
+    @apply h-[40%];
+    @apply max-h-[205px];
+    @apply justify-center;
+    @apply gap-[2px];
+  }
+  .session-room.scene-focus .table-treats.has-pastry.glass-drink {
+    @apply w-[min(270px,_70vw)];
+  }
+  .session-room.scene-focus .table-treats.has-pastry .session-pastry,
+  .session-room.scene-focus .table-treats.has-pastry.glass-drink .session-pastry {
+    @apply w-[40%];
+    @apply [transform:translateX(-4px)];
+  }
+  .session-room.scene-focus .table-desk-items {
+    @apply w-[calc(100%_-_32px)];
+    @apply bottom-[calc(116px_+_env(safe-area-inset-bottom,_0px))];
+    @apply gap-[8px];
+  }
+  .session-room.scene-focus .table-task-notebook {
+    @apply w-[clamp(102px,_30vw,_135px)];
+    @apply h-[clamp(102px,_18svh,_135px)];
+  }
+  .session-room.scene-focus .table-sip-stats {
+    @apply w-[clamp(92px,_27vw,_125px)];
+    @apply h-[clamp(92px,_18svh,_125px)];
+  }
   .session-room .session-controls {
     @apply absolute;
     @apply z-[4];
@@ -1001,5 +1034,39 @@
   .session-header .session-info-icon:focus-visible {
     @apply [transform:none];
     @apply [background:#e5ebde];
+  }
+  .session-room.scene-focus .table-treats {
+    @apply w-[min(235px,_60vw)];
+    @apply h-[44%];
+    @apply max-h-[235px];
+  }
+  .session-room.scene-focus .table-treats.has-pastry {
+    @apply w-[min(260px,_70vw)];
+    @apply h-[44%];
+    @apply max-h-[235px];
+    @apply justify-center;
+    @apply gap-[2px];
+  }
+  .session-room.scene-focus .table-treats.has-pastry.glass-drink {
+    @apply w-[min(260px,_70vw)];
+  }
+  .session-room.scene-focus .table-treats.has-pastry .session-pastry,
+  .session-room.scene-focus .table-treats.has-pastry.glass-drink .session-pastry {
+    @apply w-[40%];
+    @apply [transform:translateX(-4px)];
+  }
+  .session-room .table-desk-items {
+    @apply bottom-[calc(104px_+_env(safe-area-inset-bottom,_0px))];
+    @apply w-[calc(100%_-_24px)];
+    @apply gap-[6px];
+  }
+  .session-room .table-task-notebook {
+    @apply w-[clamp(108px,_31vw,_140px)];
+    @apply h-[clamp(108px,_20svh,_140px)];
+  }
+  .session-room .table-sip-stats {
+    @apply left-[8px];
+    @apply w-[clamp(98px,_29vw,_128px)];
+    @apply h-[clamp(98px,_20svh,_128px)];
   }
 }

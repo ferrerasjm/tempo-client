@@ -48,6 +48,12 @@ img,svg{@apply block;@apply max-w-[100%]}
 .text-link:hover{@apply [color:#293a31];@apply [transform:translateX(3px)];@apply [text-decoration-thickness:2px]}
 .danger{@apply [color:#944b3a]}
 .note{@apply [font-size:.8rem];@apply m-[18px_0];@apply [color:#687168]}
+.error-page{@apply flex;@apply flex-col;@apply justify-center;@apply items-center;@apply m-0;@apply w-[100%];@apply max-w-none;@apply box-border;@apply p-[35px_16px_70px];@apply text-center}
+.error-page-content{@apply w-[100%];@apply max-w-[620px];@apply m-[0_auto]}
+#main:has(.error-page){@apply flex;@apply items-center;@apply justify-center;@apply min-h-[calc(100svh_-_80px)]}
+.error-page h1{@apply mt-[10px]}
+.error-page>p:not(.eyebrow),.error-page-content>p:not(.eyebrow){@apply max-w-[520px];@apply m-[14px_auto_0];@apply [line-height:1.6];@apply [overflow-wrap:anywhere]}
+.error-page-actions{@apply flex;@apply items-center;@apply justify-center;@apply gap-[18px];@apply mt-[24px];@apply flex-wrap;@apply w-[100%]}
 
 .entrance{@apply text-center;@apply p-[25px_20px_45px];@apply min-h-[calc(100svh_-_80px)]}
 .entrance h1{@apply [font-size:clamp(3rem,5vw,4.2rem)];@apply [line-height:1]}
@@ -227,6 +233,13 @@ img,svg{@apply block;@apply max-w-[100%]}
 .receipt-items{@apply p-[15px_0];@apply [border-bottom:1px_dashed_#aab49e];@apply m-[15px_0]}
 .receipt-items>div{@apply flex;@apply justify-between;@apply gap-[20px];@apply p-[10px_0];@apply [font-size:.85rem]}
 .receipt-items strong{@apply [font-weight:400];@apply whitespace-nowrap}
+.checkout-page .page-heading h1{@apply [font-size:clamp(1.7rem,_4vw,_2.4rem)]}
+.checkout-page .page-heading .lede{@apply [font-size:1rem];@apply [line-height:1.5]}
+.checkout-page .receipt-items>div{@apply [font-size:1rem];@apply [line-height:1.4]}
+.checkout-page .summary-list>div{@apply [font-size:1rem];@apply [line-height:1.4]}
+.checkout-page .summary-list .total{@apply [font-size:1.3rem]}
+.checkout-page .receipt>.note{@apply [font-size:.95rem];@apply [line-height:1.65]}
+.checkout-page .receipt>.button{@apply [font-size:1rem]}
 
 .metrics{@apply grid;@apply grid-cols-[repeat(4,1fr)];@apply m-[30px_0];@apply [border-block:1px_solid_#ccd2c4];@apply p-[25px_0]}
 .metrics>div{@apply p-[0_22px];@apply [border-right:1px_solid_#ccd2c4]}
@@ -267,6 +280,15 @@ to{opacity:1}
 .page-heading{@apply gap-[18px]}
 .entrance{@apply pt-[30px]}
 .entrance h1{@apply [font-size:3.25rem]}
+.error-page{@apply w-[100%];@apply min-h-0;@apply p-[32px_16px_48px]}
+.error-page-content{@apply w-[100%];@apply max-w-[282px];@apply m-[0_auto]}
+#main:has(.error-page){@apply min-h-[calc(100svh_-_70px)]}
+.error-page h1{@apply w-full;@apply max-w-[620px];@apply [font-size:clamp(1.7rem,_7vw,_2.2rem)];@apply [line-height:1.15]}
+.error-page>p:not(.eyebrow),.error-page-content>p:not(.eyebrow){@apply [font-size:.78rem];@apply [line-height:1.7];@apply whitespace-nowrap}
+.error-page-actions{@apply w-[100%];@apply max-w-[266px];@apply m-[26px_auto_0];@apply flex-col;@apply gap-[12px]}
+.error-page-actions .button,
+.error-page-actions .text-link{@apply w-full;@apply text-center}
+.error-page-actions .button{@apply min-h-[40px];@apply p-[8px_14px];@apply [font-size:.78rem]}
 .storefront{@apply m-[24px_auto_18px]}
 .paper-form,.receipt,.setup-paper{@apply p-[22px_18px]}
 .form-grid{@apply gap-[12px]}
@@ -302,15 +324,17 @@ to{opacity:1}
 @media(prefers-reduced-motion:reduce){html{@apply scroll-auto}
 *,*::before,*::after{@apply [animation:none]!;@apply [transition:none]!}
 }
-.modal.confirmation-modal{@apply w-[min(460px,90vw)];@apply p-[28px];@apply [border:1px_solid_#d4d8d2];@apply [border-radius:12px];@apply [background:#fff];@apply [color:#202921];@apply [box-shadow:0_18px_60px_#0003]}
+.modal.confirmation-modal{@apply w-[min(460px,90vw)];@apply p-[28px];@apply [border:1.5px_solid_#39473a];@apply [border-radius:10px_5px_9px_4px];@apply [background:#fff8e8];@apply [color:#35251c]}
 .confirmation-modal .modal-heading{@apply mb-[16px];@apply gap-[16px]}
-.confirmation-modal .modal-heading h2{@apply [font-size:1.25rem];@apply [font-weight:600];@apply [line-height:1.35]}
-.confirmation-modal .icon-button{@apply w-[36px];@apply h-[36px];@apply min-w-[36px];@apply min-h-[36px];@apply [font-size:1.2rem];@apply [background:transparent];@apply [border-color:#d4d8d2]}
-.confirmation-message{@apply m-[0];@apply [color:#526054];@apply [line-height:1.65];@apply [overflow-wrap:anywhere]}
+.confirmation-modal .modal-heading h2{@apply [font-size:1.25rem];@apply [font-weight:600];@apply [line-height:1.35];@apply [color:#35251c]}
+.confirmation-modal .icon-button{@apply w-[36px];@apply h-[36px];@apply min-w-[36px];@apply min-h-[36px];@apply [font-size:1.2rem];@apply [background:#fffdf7];@apply [border-color:#a9b29f]}
+.confirmation-message{@apply m-[0];@apply [color:#35251c];@apply [line-height:1.65];@apply [overflow-wrap:anywhere]}
 .confirmation-actions{@apply flex;@apply justify-end;@apply flex-wrap;@apply gap-[12px];@apply mt-[28px]}
 .confirmation-actions .button{@apply min-h-[44px];@apply p-[10px_18px];@apply [border-radius:6px];@apply [font-size:.95rem]}
-.confirmation-actions .button.secondary{@apply [background:#fff];@apply [color:#293a31];@apply [border:1px_solid_#bcc5bb]}
-.confirmation-actions .button.secondary:hover:not(:disabled){@apply [background:#eef1eb];@apply [color:#293a31];@apply [border-color:#85967c]}
+.confirmation-actions .button.secondary{@apply [background:#fffdf7];@apply [color:#293a31];@apply [border:1px_solid_#a9b29f]}
+.confirmation-actions .button.secondary:hover:not(:disabled){@apply [background:#f0e6d0];@apply [color:#293a31];@apply [border-color:#765c48]}
+.confirmation-actions .button:not(.secondary):not(.confirmation-danger){@apply [background:#293a31];@apply [color:#fff8e8];@apply [border-color:#293a31]}
+.confirmation-actions .button:not(.secondary):not(.confirmation-danger):hover:not(:disabled){@apply [background:#1e2b22];@apply [border-color:#1e2b22]}
 .confirmation-actions .button.confirmation-danger{@apply [background:#a3322c];@apply [color:#fff];@apply [border-color:#a3322c]}
 .confirmation-actions .button.confirmation-danger:hover{@apply [background:#872722]}
 @media(max-width:480px){.modal.confirmation-modal{@apply p-[22px]}.confirmation-actions .button{@apply [flex:1]}}

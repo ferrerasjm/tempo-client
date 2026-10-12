@@ -6,6 +6,7 @@ import { errorMessage } from "../api/http";
 import { useCafe } from "../state/CafeContext";
 import { useConfirmation } from "../state/ConfirmationContext";
 import type { FocusSession, RewardItem } from "../types";
+import { REWARDS_UPDATED_EVENT } from "../utils/rewardsEvents";
 
 export function useFocusRoom(id: string) {
   const { notify } = useCafe();
@@ -49,6 +50,23 @@ export function useFocusRoom(id: string) {
   const session = updated || state.data?.session || null;
   const timer = useFocusTimer(session);
   const autoResumeAttempt = useRef("");
+  useEffect(() => {
+    let current = true;
+    async function refreshRewards() {
+      if (!session?.user) return;
+      try {
+        const rewards = await cafeApi.rewards(session.user);
+        if (current) state.update((saved) => saved && { ...saved, rewards });
+      } catch (reason) {
+        console.error("Could not refresh rewards after order update.", reason);
+      }
+    }
+    window.addEventListener(REWARDS_UPDATED_EVENT, refreshRewards);
+    return () => {
+      current = false;
+      window.removeEventListener(REWARDS_UPDATED_EVENT, refreshRewards);
+    };
+  }, [session?.user, state.update]);
   const area =
     viewIndex >= 0
       ? state.data?.areas[viewIndex]

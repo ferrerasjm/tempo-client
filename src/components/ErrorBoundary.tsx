@@ -21,14 +21,14 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <main className="page narrow" role="alert">
+      <main className="page narrow error-page" role="alert">
         <p className="eyebrow">Something went wrong</p>
         <h1>This corner needs a quick reset.</h1>
         <p>
           Reload the page to try again. Your saved cafe data will remain on the
           server.
         </p>
-        <div className="button-row">
+        <div className="error-page-actions">
           <button
             className="button"
             type="button"

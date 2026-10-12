@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { Layout, ProfileGate } from "./components/Layout";
 import { LandingPage, WelcomePage } from "./pages/EntrancePages";
 import { TaskFormPage, TaskListPage } from "./pages/TaskPages";
@@ -17,6 +17,38 @@ import {
   StudyLabelPage,
   StudyTaskPage,
 } from "./pages/StudyEntryPages";
+
+function NotFoundPage() {
+  const navigate = useNavigate();
+
+  return (
+    <main className="error-page" role="alert">
+      <div className="error-page-content">
+        <p className="eyebrow">Page not found</p>
+        <h1>That corner isn’t here.</h1>
+        <p>The page may have moved or the link may be out of date.</p>
+        <div className="error-page-actions">
+          <a className="button" href="/">
+            Return to Cafe Entrance
+          </a>
+          <button
+            className="text-link"
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/", { replace: true });
+              }
+            }}
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    </main>
+  );
+}
 
 export default function App() {
   return (
@@ -50,12 +82,7 @@ export default function App() {
         </Route>
         <Route
           path="*"
-          element={
-            <section className="page narrow">
-              <h1>That corner isn’t here.</h1>
-              <p>The page may have moved.</p>
-            </section>
-          }
+          element={<NotFoundPage />}
         />
       </Route>
     </Routes>

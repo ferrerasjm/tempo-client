@@ -1,11 +1,12 @@
 @reference "./styles.css";
 /* Fill the viewport with the animated entry link. */
 .app-shell .gif-entrance {
-  @apply h-[100dvh];
-  @apply min-h-[100dvh];
+  @apply h-[100svh];
+  @apply min-h-[100svh];
   @apply p-[0];
   @apply gap-[0];
   @apply overflow-hidden;
+  @apply [background:#213e3f];
 }
 .entrance-art {
   @apply relative;
@@ -23,6 +24,11 @@
   @apply h-[100%];
   @apply object-cover;
   @apply [image-rendering:pixelated];
+}
+@media (max-width: 639px) {
+  .entrance-art img {
+    @apply [object-position:40%_center];
+  }
 }
 
 .pixel-auth-switch {

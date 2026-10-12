@@ -34,6 +34,8 @@ export function useApi<T>(
     data,
     loading,
     error,
+    update: (updater: (current: T | null) => T | null) =>
+      setData((current) => updater(current)),
     reload: () => setVersion((value) => value + 1),
   };
 }
