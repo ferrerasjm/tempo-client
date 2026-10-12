@@ -17,7 +17,7 @@ export function Modal({
   children,
 }: {
   open: boolean;
-  title: string;
+  title: ReactNode;
   onClose: () => void;
   busy?: boolean;
   className?: string;
@@ -46,10 +46,12 @@ export function Modal({
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       onCancel={(event) => {
+        event.stopPropagation();
         event.preventDefault();
         if (!busy) onClose();
       }}
       onClick={(event) => {
+        event.stopPropagation();
         const bounds = event.currentTarget.getBoundingClientRect();
         if (
           !busy &&

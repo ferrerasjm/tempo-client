@@ -17,6 +17,14 @@ import type {
 } from "../types";
 
 export const cafeApi = {
+  signup: async (displayName: string, email: string, password: string, confirmPassword: string) =>
+    (await http.post<{ message: string }>("/auth/signup", { displayName, email, password, confirmPassword })).data,
+  login: async (email: string, password: string) =>
+    (await http.post<{ token: string; user: User }>("/auth/login", { email, password })).data,
+  me: async () => (await http.get<User>("/auth/me")).data,
+  updateProfile: async (displayName: string) =>
+    (await http.patch<User>("/users/me", { displayName })).data,
+  logout: async () => { await http.post("/auth/logout"); },
   rewards: async (user: string) =>
     (await http.get<TempoRewards>("/rewards", { params: { user } })).data,
   users: async () => (await http.get<User[]>("/users")).data,

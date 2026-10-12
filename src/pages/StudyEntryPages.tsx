@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import {
   Link,
   Navigate,
@@ -24,12 +25,15 @@ import { EmptyState, Feedback, Field, LoadState } from "../components/ui";
 import { MenuArtwork } from "../components/MenuArtwork";
 import { useSfx } from "../hooks/useSfx";
 import { PageNavigation } from "../state/SessionNavigation";
+import { errorMessage } from "../api/http";
 
 function EntryPaper({
   title,
+  action,
   children,
 }: {
   title?: string;
+  action?: ReactNode;
   children: ReactNode;
 }) {
   const { pathname } = useLocation();
@@ -40,13 +44,40 @@ function EntryPaper({
   };
   const [to, label] = parents[pathname] || ["/welcome", "Back to Welcome"];
   return (
-    <section className="page narrow centered entry-page">
+    <section className={`page narrow centered entry-page${pathname !== "/study/drink" ? " detail-entry-page" : ""}${pathname === "/study/label" ? " label-entry-page" : ""}`}>
       <div className="entry-paper">
-        <PageNavigation to={to} label={label} />
+        {pathname === "/study/drink" ? (
+          action && <div className="entry-actions">{action}</div>
+        ) : (
+          <PageNavigation to={to} label={label}>{action}</PageNavigation>
+        )}
         {title && <h1>{title}</h1>}
         <div className="entry-content">{children}</div>
       </div>
     </section>
+  );
+}
+
+function EntryLogout({ disabled = false }: { disabled?: boolean }) {
+  const { leave, notify } = useCafe();
+  const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
+  async function logOut() {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await leave(() => {
+        flushSync(() => navigate("/welcome", { replace: true }));
+      });
+    } catch (reason) {
+      notify(errorMessage(reason));
+    }
+  }
+  return (
+    <button className="text-link drink-logout" type="button" onClick={logOut}
+      disabled={loggingOut || disabled} aria-busy={loggingOut}>
+      Log out
+    </button>
   );
 }
 
@@ -85,7 +116,7 @@ export function StudyDrinkPage() {
   if (state.data?.unfinished)
     return <Navigate to={"/focus/" + state.data.unfinished._id} replace />;
   return (
-    <EntryPaper title="What would you like to drink?">
+    <EntryPaper title="What would you like to drink?" action={<EntryLogout />}>
       <LoadState {...state} retry={state.reload}>
         {!state.data?.drinks.length ? (
           <EmptyState title="The drinks aren’t ready yet." />
@@ -115,12 +146,12 @@ export function StudyDrinkPage() {
               ))}
             </div>
             {chosen ? (
-              <Link className="button entry-next" to="/study/size">
+              <Link className="pixel-enter entry-next" to="/study/size">
                 Next
               </Link>
             ) : (
-              <button className="button" disabled>
-                Choose A Drink First
+              <button className="pixel-enter" disabled>
+                Choose First
               </button>
             )}
           </>
@@ -151,7 +182,7 @@ export function StudySizePage() {
   const { play } = useSfx();
   if (!draft.drink) return <Navigate to="/study/drink" replace />;
   return (
-    <EntryPaper title="Find your rhythm.">
+    <EntryPaper title="Find your rhythm." action={<EntryLogout />}>
       <LoadState {...state} retry={state.reload}>
         {state.data ? (
           <>
@@ -181,7 +212,7 @@ export function StudySizePage() {
                 </label>
               ))}
             </fieldset>
-            <Link className="button entry-next" to="/study/label">
+            <Link className="pixel-enter entry-next" to="/study/label">
               Next
             </Link>
           </>
@@ -210,7 +241,7 @@ export function StudyLabelPage() {
   });
   if (!draft.drink) return <Navigate to="/study/drink" replace />;
   return (
-    <EntryPaper>
+    <EntryPaper action={<EntryLogout />}>
       <LoadState {...state} retry={state.reload}>
         {state.data ? (
           <form
@@ -241,7 +272,7 @@ export function StudyLabelPage() {
                 </span>
               </div>
             </div>
-            <button className="button entry-next">Next</button>
+            <button className="pixel-enter entry-next">Next</button>
           </form>
         ) : (
           <EmptyState
@@ -318,12 +349,18 @@ export function StudyTaskPage() {
     formState: { errors, isSubmitting },
   } = form;
   return (
-    <EntryPaper title="One thing at a time.">
-      <LoadState {...state} retry={state.reload}>
+    <EntryPaper title="One thing at a time." action={<EntryLogout disabled={isSubmitting} />}>
         <form onSubmit={form.handleSubmit(entry.prepare)} noValidate>
-          <LoadState {...tasks} retry={tasks.reload}>
-            <p className="eyebrow">What are you working on?</p>
-          </LoadState>
+          <p className="eyebrow">What are you working on?</p>
+          {(state.error || tasks.error) && (
+            <div>
+              <Feedback error={state.error || tasks.error} />
+              <button className="text-link" type="button" onClick={() => {
+                if (state.error) state.reload();
+                if (tasks.error) tasks.reload();
+              }}>Try again</button>
+            </div>
+          )}
           <div className="task-notepad">
             <p className="eyebrow">I WILL...</p>
             <Field label="Task to accomplish" error={errors.title?.message}>
@@ -331,6 +368,7 @@ export function StudyTaskPage() {
                 rows={4}
                 placeholder={"build a cool\nnew thing..."}
                 {...register("title")}
+                disabled={isSubmitting || (Boolean(entry.draft.taskId) && (state.loading || tasks.loading))}
                 autoFocus
               />
             </Field>
@@ -338,7 +376,7 @@ export function StudyTaskPage() {
           <p className="note">{entry.minutes} minutes of focus.</p>
           <Feedback error={entry.error} />
           <button
-            className="button"
+            className="pixel-enter"
             disabled={
               isSubmitting ||
               tasks.loading ||
@@ -352,7 +390,6 @@ export function StudyTaskPage() {
             {isSubmitting ? "Preparing…" : "Start"}
           </button>
         </form>
-      </LoadState>
     </EntryPaper>
   );
 }

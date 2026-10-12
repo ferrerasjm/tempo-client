@@ -1,0 +1,78 @@
+/* Shared stepped outline for the cafe's content cards. */
+:where(
+  .notebook-shell .page.task-board, .task-board .task-row, .task-board > .empty,
+  .paper-shell > main > .page, .paper-shell .menu-item, .profile-welcome-card,
+  .orders-rewards-actions > .profile-credit-card, .counter-page .reward-credit-card,
+  .profile-embedded-page .record-row, .cafe-orders-empty,
+  .cafe-productivity-totals > div, .cafe-productivity-streaks > div,
+  .avatar-chooser-options button
+) { --card-paper: #fff; --card-outline: #b6a382; }
+:is(
+  .notebook-shell .page.task-board,
+  .task-board .task-row,
+  .task-board > .empty,
+  .paper-shell > main > .page,
+  .paper-shell .menu-item,
+  .profile-welcome-card,
+  .orders-rewards-actions > .profile-credit-card,
+  .counter-page .reward-credit-card,
+  .profile-embedded-page .record-row,
+  .cafe-orders-empty,
+  .cafe-productivity-totals > div,
+  .cafe-productivity-streaks > div,
+  .avatar-chooser-options button
+) {
+  --card-corners: polygon(
+    8px 0, calc(100% - 8px) 0,
+    calc(100% - 8px) 4px, calc(100% - 4px) 4px,
+    calc(100% - 4px) 8px, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px),
+    calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px),
+    calc(100% - 8px) 100%, 8px 100%,
+    8px calc(100% - 4px), 4px calc(100% - 4px),
+    4px calc(100% - 8px), 0 calc(100% - 8px),
+    0 8px, 4px 8px, 4px 4px, 8px 4px
+  );
+  position: relative;
+  isolation: isolate;
+  border: 2px solid transparent;
+  border-radius: 0;
+  background: var(--card-outline);
+  clip-path: var(--card-corners);
+  box-shadow: none;
+}
+:is(
+  .notebook-shell .page.task-board,
+  .task-board .task-row,
+  .task-board > .empty,
+  .paper-shell > main > .page,
+  .paper-shell .menu-item,
+  .orders-rewards-actions > .profile-credit-card,
+  .counter-page .reward-credit-card,
+  .profile-embedded-page .record-row,
+  .cafe-orders-empty,
+  .cafe-productivity-totals > div,
+  .cafe-productivity-streaks > div,
+  .avatar-chooser-options button
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--card-paper);
+  clip-path: var(--card-corners);
+  pointer-events: none;
+}
+.notebook-shell .page.task-board { --card-paper: #fffdf7; --card-outline: #765c48; }
+.task-board .task-row,
+.task-board > .empty,
+.orders-rewards-actions > .profile-credit-card,
+.counter-page .reward-credit-card { --card-paper: #fff8e8; }
+.profile-welcome-card,
+.profile-embedded-page .record-row,
+.cafe-orders-empty { --card-paper: #fffcf5; }
+.paper-shell > main > .page { --card-outline: #293a31; }
+.paper-shell .menu-item.selected { --card-outline: #293a31; }
+.paper-shell .menu-item.unaffordable { --card-outline: #b85a4a; }
+.avatar-chooser-options button[aria-pressed="true"] { --card-outline: #293a31; }
+.profile-card-content { background: #fffcf5; clip-path: var(--card-corners); }

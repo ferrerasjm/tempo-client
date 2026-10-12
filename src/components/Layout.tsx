@@ -1,6 +1,6 @@
-import { startTransition, useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
+import { flushSync } from "react-dom";
 import {
-  Link,
   NavLink,
   Navigate,
   Outlet,
@@ -8,23 +8,19 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useCafe } from "../state/CafeContext";
-import { artwork } from "../assets";
 import { LoadState } from "./ui";
 import { Modal } from "./Modal";
 import { useApi } from "../hooks/useApi";
 import { cafeApi } from "../services/cafeApi";
-import { useStudyDraft } from "../state/StudyDraftContext";
-import { clearPendingRequest } from "../utils/pendingRequests";
 import { errorMessage } from "../api/http";
 import { IconTooltips } from "./IconTooltips";
 import { SessionNavigationProvider } from "../state/SessionNavigation";
 import { sessionReturn } from "../utils/sessionReturn";
+import { FocusMusicProvider } from "../state/FocusMusicContext";
 
 export function Layout() {
-  const { user, notice, notify, exploreOpen, closeExplore } = useCafe();
-  const { reset } = useStudyDraft();
+  const { user, leave, notice, notify, exploreOpen, closeExplore } = useCafe();
   const navigate = useNavigate();
-  const [restarting, setRestarting] = useState(false);
   const [pausingForNavigation, setPausingForNavigation] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
@@ -65,32 +61,6 @@ export function Layout() {
       setPausingForNavigation(false);
     }
   }
-  async function startOver() {
-    if (restarting) return;
-    if (!user) {
-      navigate("/");
-      return;
-    }
-    setRestarting(true);
-    try {
-      const sessions = await cafeApi.sessions(user._id);
-      for (const session of sessions.filter((item) =>
-        ["planned", "active", "paused"].includes(item.status),
-      )) {
-        await cafeApi.sessionAction(session._id, "stop");
-      }
-      clearPendingRequest(user._id + "-prepare-task");
-      clearPendingRequest(user._id + "-prepare-session");
-      startTransition(() => {
-        reset();
-        navigate("/");
-      });
-    } catch (reason) {
-      notify("Could not start over. " + errorMessage(reason));
-    } finally {
-      setRestarting(false);
-    }
-  }
   useEffect(() => {
     setMenuOpen(false);
     closeExplore();
@@ -104,39 +74,11 @@ export function Layout() {
   const landing = location.pathname === "/";
   return (
     <div
-      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : paper ? "paper-shell" : "notebook-shell"}`}
+      className={`app-shell ${landing ? "landing-shell" : session ? "session-shell" : paper ? "paper-shell" : "notebook-shell"}${location.pathname === "/welcome" ? " welcome-shell" : ""}${location.pathname.startsWith("/study/") ? " drink-shell" : ""}${location.pathname === "/study/label" ? " counter-shell" : ""}${location.pathname === "/study/task" ? " table-shell" : ""}`}
     >
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      {session && (
-        <header className="site-header">
-          <Link
-            className="wordmark hanging-sign"
-            aria-label="Cafe Tempo home"
-            data-tooltip="start over?"
-            to="/"
-            aria-disabled={restarting}
-            aria-busy={restarting}
-            onClick={(event) => {
-              event.preventDefault();
-              void startOver();
-            }}
-          >
-            <img src={artwork.homeSign} alt="" />
-          </Link>
-          {user && (
-            <Link
-              className="menu-toggle hanging-sign"
-              aria-label="Sip Stats"
-              data-tooltip="sip stats"
-              to="/sip-stats"
-            >
-              <img src={artwork.sipStatsSign} alt="" />
-            </Link>
-          )}
-        </header>
-      )}
       <Modal
         open={menuOpen || exploreOpen}
         title="Explore the Cafe"
@@ -164,13 +106,6 @@ export function Layout() {
                 {unfinished ? "Return To Focus" : "Choose A Drink"}
               </NavLink>
             )}
-            <NavLink
-              onClick={(event) => void navigateFromExplore(event, "/tasks")}
-              to="/tasks"
-              aria-disabled={pausingForNavigation}
-            >
-              Task Board
-            </NavLink>
             <NavLink
               onClick={(event) => void navigateFromExplore(event, "/menu")}
               to="/menu"
@@ -206,13 +141,21 @@ export function Layout() {
             </NavLink>
           </div>
         </nav>
-        <Link
+        <button
           className="text-link profile-link"
-          onClick={closeMenu}
-          to="/welcome"
+          type="button"
+          onClick={async () => {
+            closeMenu();
+            try {
+              await leave(() => {
+                flushSync(() => navigate("/welcome", { replace: true }));
+              });
+            }
+            catch (reason) { notify(errorMessage(reason)); }
+          }}
         >
-          Change Profile
-        </Link>
+          Log Out
+        </button>
       </Modal>
       {notice && (
         <div className="toast" role="status">
@@ -220,9 +163,11 @@ export function Layout() {
         </div>
       )}
       <main id="main">
+        <FocusMusicProvider>
         <SessionNavigationProvider>
           <Outlet />
         </SessionNavigationProvider>
+        </FocusMusicProvider>
       </main>
       <IconTooltips />
     </div>

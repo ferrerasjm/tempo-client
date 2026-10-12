@@ -180,13 +180,9 @@ export function TaskListPage() {
         to={backToSession ? `/focus/${backToSession._id}` : "/welcome"}
         label={backToSession ? "Back to Session" : "Back to Welcome"}
         className="task-board-navigation"
-      >
-        <Link className="task-history-button" to="/history">
-          View Focus History
-        </Link>
-      </PageNavigation>
+      />
       <PageHeading
-        eyebrow="Your task board"
+        eyebrow="Your Task Board"
         title="Your Tasks"
         description="Keep your work in one place. Pick up an unfinished task or plan something new."
         action={

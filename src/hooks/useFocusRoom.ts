@@ -27,7 +27,9 @@ export function useFocusRoom(id: string) {
     };
   }, [id]);
   const [updated, setUpdated] = useState<FocusSession | null>(null);
-  const [viewIndex, setViewIndex] = useState(-1);
+  const viewKey = `tempo-focus-view-${id}`;
+  const [viewedAreaId, setViewedAreaId] = useState(() => sessionStorage.getItem(viewKey) || "");
+  const viewIndex = state.data?.areas.findIndex((area) => area._id === viewedAreaId) ?? -1;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [pollError, setPollError] = useState("");
@@ -36,6 +38,14 @@ export function useFocusRoom(id: string) {
     setError("");
     setPollError("");
   }, [id]);
+  useEffect(() => {
+    setViewedAreaId(sessionStorage.getItem(viewKey) || "");
+  }, [viewKey]);
+  function rememberView(areaId: string) {
+    if (areaId) sessionStorage.setItem(viewKey, areaId);
+    else sessionStorage.removeItem(viewKey);
+    setViewedAreaId(areaId);
+  }
   const session = updated || state.data?.session || null;
   const timer = useFocusTimer(session);
   const autoResumeAttempt = useRef("");
@@ -166,8 +176,11 @@ export function useFocusRoom(id: string) {
   }
   async function browse(index: number) {
     if (busy) return;
+    const areaCount = state.data?.areas.length || 0;
+    if (index < -1) index = areaCount - 1;
+    else if (index >= areaCount) index = -1;
     if (index === -1) {
-      setViewIndex(index);
+      rememberView("");
       return;
     }
     const target = state.data?.areas[index];
@@ -176,14 +189,14 @@ export function useFocusRoom(id: string) {
       target._id === session.area ||
       ["completed", "cancelled"].includes(session.status)
     ) {
-      setViewIndex(index);
+      rememberView(target._id);
       return;
     }
     setBusy(true);
     setError("");
     try {
       setUpdated(await cafeApi.sessionAction(id, "move", target._id));
-      setViewIndex(index);
+      rememberView(target._id);
     } catch (reason) {
       setError(errorMessage(reason));
     } finally {

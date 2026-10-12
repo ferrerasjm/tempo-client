@@ -1,4 +1,5 @@
 import type { Area } from "../types";
+import { displayAreaName } from "../assets";
 import { SpaceIllustration } from "./SpaceIllustration";
 
 export function SpaceBrowser({
@@ -20,7 +21,7 @@ export function SpaceBrowser({
     <div className="space-browser">
       <div className="space-stage" key={area._id}>
         <SpaceIllustration name={area.name} />
-        <h2>{area.name}</h2>
+        <h2>{displayAreaName(area.name)}</h2>
         <p>{area.theme}</p>
       </div>
       <div className="space-switcher">

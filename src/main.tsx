@@ -12,6 +12,7 @@ import "./entrance.css";
 import "./study.css";
 import "./focus-room.css";
 import "./sip-stats.css";
+import "./pixel-cards.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

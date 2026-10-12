@@ -15,6 +15,7 @@ import {
   Status,
 } from "../components/ui";
 import { SpaceBrowser } from "../components/SpaceBrowser";
+import { displayAreaName } from "../assets";
 import { SpaceIllustration } from "../components/SpaceIllustration";
 import { useConfirmation } from "../state/ConfirmationContext";
 import { PageNavigation } from "../state/SessionNavigation";
@@ -77,7 +78,7 @@ export function AreaPage() {
           <>
             <PageHeading
               eyebrow="Your cafe corner"
-              title={state.data.name}
+              title={displayAreaName(state.data.name)}
               description={state.data.theme}
             />
             <SpaceIllustration name={state.data.name} />
@@ -109,7 +110,7 @@ export function AreaPage() {
                     <p className="note">
                       Review times: Philippine time (UTC+8).
                     </p>
-                    <h3>{state.data.name}</h3>
+                    <h3>{displayAreaName(state.data.name)}</h3>
                     <dl className="summary-list">
                       <div>
                         <dt>Starts</dt>
@@ -236,8 +237,7 @@ export function ReservationsPage() {
           <article className="record-row" key={item._id}>
             <div>
               <h2>
-                {state.data!.areas.find((area) => area._id === item.area)
-                  ?.name || "Cafe area"}
+                {displayAreaName(state.data!.areas.find((area) => area._id === item.area)?.name || "Cafe area")}
               </h2>
               <p>
                 {dateTime(item.startsAt)} — {dateTime(item.endsAt)}

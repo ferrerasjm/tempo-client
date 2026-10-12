@@ -6,17 +6,18 @@ import {
   type ReactNode,
 } from "react";
 import { cafeApi } from "../services/cafeApi";
-import { useApi } from "../hooks/useApi";
+import { errorMessage } from "../api/http";
 import type { Selection, User } from "../types";
 
 interface CafeState {
   user: User | null;
-  users: User[];
   loading: boolean;
   error: string;
   retry: () => void;
-  enter: (id: string) => void;
-  leave: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  updateProfile: (displayName: string) => Promise<void>;
+  signup: (name: string, email: string, password: string, confirmPassword: string) => Promise<void>;
+  leave: (beforeClear?: () => void) => Promise<void>;
   basket: Selection[];
   setQuantity: (id: string, quantity: number) => void;
   selectOnly: (id: string) => void;
@@ -48,13 +49,43 @@ function savedBasket(): Selection[] {
 }
 
 export function CafeProvider({ children }: { children: ReactNode }) {
-  const profiles = useApi(cafeApi.users);
-  const [userId, setUserId] = useState(
-    () => localStorage.getItem("tempo-profile") || "",
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [version, setVersion] = useState(0);
   const [basket, setBasket] = useState<Selection[]>(savedBasket);
   const [notice, setNotice] = useState("");
   const [exploreOpen, setExploreOpen] = useState(false);
+  useEffect(() => {
+    let current = true;
+    localStorage.removeItem("tempo-profile");
+    setError("");
+    const restoringToken = localStorage.getItem("tempo-token");
+    if (!restoringToken) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    cafeApi.me().then((profile) => {
+      if (current && restoringToken === localStorage.getItem("tempo-token")) setUser(profile);
+    }).catch((reason) => {
+      if (current && restoringToken === localStorage.getItem("tempo-token")) {
+        setUser(null);
+        if (localStorage.getItem("tempo-token")) setError(errorMessage(reason));
+      }
+    }).finally(() => { if (current) setLoading(false); });
+    return () => { current = false; };
+  }, [version]);
+  useEffect(() => {
+    const expire = () => {
+      setUser(null);
+      setBasket([]);
+      setError("");
+    };
+    window.addEventListener("tempo-login-expired", expire);
+    return () => window.removeEventListener("tempo-login-expired", expire);
+  }, []);
   useEffect(() => {
     sessionStorage.setItem("tempo-basket", JSON.stringify(basket));
   }, [basket]);
@@ -64,15 +95,32 @@ export function CafeProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timeout);
   }, [notice]);
 
-  function enter(id: string) {
-    if (id !== userId) setBasket([]);
-    localStorage.setItem("tempo-profile", id);
-    setUserId(id);
+  async function login(email: string, password: string) {
+    const result = await cafeApi.login(email, password);
+    acceptLogin(result);
   }
-  function leave() {
-    localStorage.removeItem("tempo-profile");
-    setUserId("");
-    setBasket([]);
+  async function signup(name: string, email: string, password: string, confirmPassword: string) {
+    await cafeApi.signup(name, email, password, confirmPassword);
+  }
+  function acceptLogin(result: { token: string; user: User }) {
+    if (result.user._id !== user?._id) setBasket([]);
+    localStorage.setItem("tempo-token", result.token);
+    setUser(result.user);
+    setError("");
+    setLoading(false);
+  }
+  async function leave(beforeClear?: () => void) {
+    try {
+      if (localStorage.getItem("tempo-token")) await cafeApi.logout();
+    } finally {
+      // Leave protected routes before clearing the user and remounting the draft provider.
+      beforeClear?.();
+      localStorage.removeItem("tempo-token");
+      setUser(null);
+      setBasket([]);
+      setError("");
+      setLoading(false);
+    }
   }
   function setQuantity(menuItem: string, quantity: number) {
     setBasket((current) => {
@@ -86,12 +134,16 @@ export function CafeProvider({ children }: { children: ReactNode }) {
   return (
     <CafeContext.Provider
       value={{
-        user: profiles.data?.find((profile) => profile._id === userId) || null,
-        users: profiles.data || [],
-        loading: profiles.loading,
-        error: profiles.error,
-        retry: profiles.reload,
-        enter,
+        user,
+        loading,
+        error,
+        retry: () => setVersion((value) => value + 1),
+        login,
+        updateProfile: async (displayName) => {
+          const profile = await cafeApi.updateProfile(displayName);
+          setUser((current) => current?._id === profile._id ? profile : current);
+        },
+        signup,
         leave,
         basket,
         setQuantity,

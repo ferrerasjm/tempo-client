@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { artwork, spaceArtwork } from "../assets";
+import { artwork, displayAreaName, spaceArtwork } from "../assets";
 
 const characterActions = [
   "working on a little idea",
@@ -76,8 +76,11 @@ export function CafeRoomScene({ areaName }: { areaName: string }) {
   }, [areaName]);
 
   return (
-    <div className="room-scenery">
+    <div className={`room-scenery room-scenery-${displayAreaName(areaName).toLowerCase().replace(/\s+/g, "-")}`}>
       <img className="room-backdrop" src={spaceArtwork(areaName)} alt="" />
+      {artwork.roomPets[areaName] && <span className="room-pet" aria-hidden="true">
+        <img src={artwork.roomPets[areaName]} alt="" />
+      </span>}
       <div className="room-characters" aria-label="Decorative cafe characters">
         <CafeVisitor
           key={`${areaName}-yellow`}

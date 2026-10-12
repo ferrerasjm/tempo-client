@@ -1,26 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useLocation, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
+import { errorMessage } from "../api/http";
 import { cafeApi } from "../services/cafeApi";
 import { useApi } from "../hooks/useApi";
 import { useFocusRoom } from "../hooks/useFocusRoom";
-import { useFocusMusic } from "../hooks/useFocusMusic";
+import { useSessionMusic } from "../state/FocusMusicContext";
 import { useFocusTimer } from "../hooks/useFocusTimer";
 import { useCafe } from "../state/CafeContext";
-import { dateTime, timerText } from "../utils/dates";
+import { timerText } from "../utils/dates";
 import {
   EmptyState,
   Feedback,
   LoadState,
-  PageHeading,
-  Status,
 } from "../components/ui";
 import { MenuArtwork } from "../components/MenuArtwork";
 import { CafeRoomScene } from "../components/CafeRoomScene";
 import { SessionFinish } from "../components/SessionFinish";
-import { Pagination } from "../components/Pagination";
 import { useConfirmation } from "../state/ConfirmationContext";
 import { useSfx } from "../hooks/useSfx";
 import { BackLink, PageNavigation } from "../state/SessionNavigation";
+import { artwork, displayAreaName } from "../assets";
+import { SessionProfile } from "../components/SessionProfile";
+import { Modal } from "../components/Modal";
 
 export function StartFocusPage() {
   const location = useLocation();
@@ -30,7 +31,26 @@ export function StartFocusPage() {
 export function ActiveFocusPage() {
   const confirm = useConfirmation();
   const { id = "" } = useParams();
-  const { user, openExplore } = useCafe();
+  const { user, notify } = useCafe();
+  const navigate = useNavigate();
+  const [openingTasks, setOpeningTasks] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [today, setToday] = useState(() => new Date());
+  const calendarCard = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const interval = window.setInterval(() => setToday(new Date()), 60000);
+    return () => window.clearInterval(interval);
+  }, []);
+  useEffect(() => {
+    if (!calendarOpen) return;
+    const dismiss = (event: PointerEvent) => {
+      if (!calendarCard.current?.contains(event.target as Node)) setCalendarOpen(false);
+    };
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, [calendarOpen]);
   const room = useFocusRoom(id);
   const { session, area, timer } = room;
   const { play } = useSfx();
@@ -69,10 +89,11 @@ export function ActiveFocusPage() {
     timer.rewardBreakRemainingSeconds,
   ]);
   const corner = room.viewIndex >= 0;
-  const music = useFocusMusic(
-    Boolean(corner && running && timer.remainingSeconds > 0),
-    corner ? area?.name : "",
-  );
+  const music = useSessionMusic();
+  const { updatePlayback } = music;
+  useEffect(() => {
+    if (session && area) updatePlayback(session, corner ? area.name : "");
+  }, [session, area?.name, corner, updatePlayback]);
   const playbackLabel = running
     ? "Pause timer"
     : paused
@@ -103,6 +124,19 @@ export function ActiveFocusPage() {
           ? "Focus Timer Has Ended"
           : "Start a focus session first.";
   const tallDrink = /matcha|macchiato/i.test(session?.drinkName || "");
+  async function navigateFromSession(to: string) {
+    if (!session || !area || openingTasks || room.busy) return;
+    setOpeningTasks(true);
+    try {
+      if (running) {
+        const saved = await cafeApi.sessionAction(id, "pause", session.area);
+        updatePlayback(saved, corner ? area.name : "");
+      }
+      navigate(to, { state: { returnTo: `/focus/${id}`, from: "focus" } });
+    } catch (reason) {
+      notify("Could not pause your focus timer. " + errorMessage(reason));
+    } finally { setOpeningTasks(false); }
+  }
   async function usePastry() {
     if (!pastry || !running || room.busy || timer.remainingSeconds === 0)
       return;
@@ -133,21 +167,80 @@ export function ActiveFocusPage() {
             />
           ) : (
             <>
+              <div className="session-top-actions">
+                <SessionProfile onNavigate={navigateFromSession} navigating={openingTasks || room.busy} />
+              </div>
+              <div className="session-info-container" ref={calendarCard}
+                onKeyDown={(event) => { if (event.key === "Escape") setCalendarOpen(false); }}>
+              <div className="session-info-card" aria-label="Date and credits">
+                <button type="button" className="session-info-icon" aria-label="Date"
+                  aria-expanded={calendarOpen} aria-controls="session-today"
+                  onClick={() => { setToday(new Date()); setCalendarOpen((open) => !open); }}
+                  data-tooltip="Date" data-cursor-tooltip>
+                  <img src={artwork.calendar} alt="" width={48} height={48} />
+                </button>
+                <button type="button" className="session-info-icon" aria-label="Credits"
+                  onClick={() => { setCalendarOpen(false); setCreditsOpen(true); }}
+                  data-tooltip="Credits" data-cursor-tooltip>
+                  <img src={artwork.credits} alt="" width={48} height={48} />
+                </button>
+                <button type="button" className="session-info-icon" aria-label="About Cafe Tempo"
+                  data-tooltip="About" data-cursor-tooltip
+                  onClick={() => { setCalendarOpen(false); setAboutOpen(true); }}>
+                  <img src={artwork.about} alt="" width={48} height={48} />
+                </button>
+              </div>
+              {calendarOpen && <div className="session-calendar-date" id="session-today" role="status">
+                <span>Today</span>
+                <time dateTime={new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit" }).format(today)}>
+                  {new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Taipei", weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(today)}
+                </time>
+              </div>}
+              </div>
+              <Modal open={creditsOpen} title="𑣲𝄞  Tempo Credits" onClose={() => setCreditsOpen(false)} className="cafe-about cafe-credits">
+                <p>Music used in our café spaces:</p>
+                <ul className="cafe-music-credits">
+                  {[
+                    ["Garden Patio", "https://www.youtube.com/watch?v=MeCWuFZMQzA"],
+                    ["Library", "https://www.youtube.com/watch?v=hCtwi8XkB4o"],
+                    ["Midnight Cafe", "https://www.youtube.com/watch?v=cjZxPhryD3E"],
+                    ["Quiet Corner", "https://www.youtube.com/watch?v=7PvYu-1iEbY"],
+                    ["Window View", "https://www.youtube.com/watch?v=-B0_METsdCQ"],
+                  ].map(([space, source]) => (
+                    <li key={space}>
+                      <a href={source} target="_blank" rel="noopener noreferrer">
+                        <svg className="credits-youtube-icon" viewBox="0 0 24 24" aria-hidden="true">
+                          <rect x="1" y="4" width="22" height="16" rx="4" fill="#c4302b" />
+                          <path d="m10 8 6 4-6 4z" fill="#fff" />
+                        </svg>
+                        <span>{space}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Modal>
+              <Modal open={aboutOpen} title={<span className="cafe-about-title"><img src={artwork.cafeLogo} alt="" width={48} height={48} /><span>About Cafe Tempo</span></span>} onClose={() => setAboutOpen(false)}
+                className="cafe-about">
+                <p>Cafe Tempo is a cozy space to focus, one task at a time. Choose a drink,
+                  settle into your favorite café spot, and build a steady rhythm with focus timers,
+                  small rewards, and a record of your progress.</p>
+                <p className="cafe-about-credit">created by: jm &amp; sab</p>
+              </Modal>
+              <div className="session-location">
               <p className="space-badge">
                 {rewardBreak
                   ? "pastry break"
                   : corner
-                    ? area.name.toLowerCase()
+                    ? displayAreaName(area.name).toLowerCase()
                     : breakVisible
                       ? breakSeconds > 0
                         ? "break"
                         : "break complete"
                       : completed
                         ? "session complete"
-                        : paused
-                          ? "paused"
-                          : "focus"}
+                        : "focus"}
               </p>
+              </div>
               {planned || running || paused || completed ? (
                 <>
                   {!corner && (
@@ -162,17 +255,9 @@ export function ActiveFocusPage() {
                           breakVisible ? breakSeconds : timer.remainingSeconds,
                         )}
                       </p>
-                      <h1>
-                        {session.sessionLabel
-                          ? session.sessionLabel + " will "
-                          : ""}
-                        {session.taskTitle || room.state.data.task.title}
-                      </h1>
                     </div>
                   )}
-                  {corner && (
-                    <h1 className="sr-only">Focus session in {area.name}</h1>
-                  )}
+                  <h1 className="sr-only">Focus session in {area.name}</h1>
                   <div className="focus-table">
                     {corner && <CafeRoomScene areaName={area.name} />}
                     <div className="tabletop">
@@ -203,6 +288,22 @@ export function ActiveFocusPage() {
                             <MenuArtwork name={pastry.name} snack />
                           </button>
                         )}
+                      </div>
+                      <div className="table-desk-items">
+                        <Link className="table-task-notebook" to="/tasks"
+                          state={{ returnTo: `/focus/${id}` }} aria-label="Task Board"
+                          aria-disabled={openingTasks || room.busy}
+                          data-tooltip="To-Do List" data-cursor-tooltip data-tooltip-anchor
+                          onClick={(event) => {
+                            event.preventDefault();
+                            void navigateFromSession("/tasks");
+                          }}>
+                          <img src={artwork.taskNotebook} alt="" />
+                        </Link>
+                        <Link className="table-sip-stats" to="/sip-stats" state={{ returnTo: `/focus/${id}` }}
+                          aria-label="Sip Stats" data-tooltip="Sip Stats" data-cursor-tooltip data-tooltip-anchor>
+                          <img src={artwork.sipStats} alt="" />
+                        </Link>
                       </div>
                       {corner && (
                         <p
@@ -247,6 +348,12 @@ export function ActiveFocusPage() {
                                 )}
                               </svg>
                             </button>
+                            <button type="button" className="session-explore" aria-label="Explore the Reward Shop"
+                              data-tooltip="Explore" data-cursor-tooltip
+                              disabled={openingTasks || room.busy}
+                              onClick={() => void navigateFromSession("/menu")}>
+                              <img src={artwork.explore} alt="" width={64} height={64} />
+                            </button>
                             <button
                               className="timer-control stop-control"
                               aria-label="Stop session"
@@ -264,19 +371,9 @@ export function ActiveFocusPage() {
                                 />
                               </svg>
                             </button>
-                            <button
-                              className="timer-control"
-                              aria-label="Explore the Cafe"
-                              data-tooltip="Explore The Cafe"
-                              disabled={room.busy}
-                              onClick={openExplore}
-                            >
-                              <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z" />
-                              </svg>
-                            </button>
                           </div>
                           {corner && (
+                            <div className="room-music-controls">
                             <label className="room-volume">
                               <span className="sr-only">Music volume</span>
                               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -297,6 +394,7 @@ export function ActiveFocusPage() {
                                 <path d="M3 9h4l5-4v14l-5-4H3zM16 8q5 4 0 8M19 4q9 8 0 16" />
                               </svg>
                             </label>
+                            </div>
                           )}
                         </>
                       ) : null}
@@ -330,7 +428,7 @@ export function ActiveFocusPage() {
                       className="icon-button"
                       aria-label="Previous cafe space"
                       data-tooltip="Previous Space"
-                      disabled={room.viewIndex === -1 || room.busy}
+                      disabled={room.busy}
                       onClick={() => room.browse(room.viewIndex - 1)}
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -341,10 +439,7 @@ export function ActiveFocusPage() {
                       className="icon-button"
                       aria-label="Next cafe space"
                       data-tooltip="Next Space"
-                      disabled={
-                        room.viewIndex === room.state.data.areas.length - 1 ||
-                        room.busy
-                      }
+                      disabled={room.busy}
                       onClick={() => room.browse(room.viewIndex + 1)}
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -352,7 +447,7 @@ export function ActiveFocusPage() {
                       </svg>
                     </button>
                   </nav>
-                  <SessionFinish key={id} room={room} onExplore={openExplore} />
+                  <SessionFinish key={id} room={room} onExplore={() => void navigateFromSession("/menu")} />
                 </>
               ) : (
                 <EmptyState
@@ -368,111 +463,13 @@ export function ActiveFocusPage() {
   );
 }
 
-export function FocusHistoryPage() {
-  const { user } = useCafe();
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const state = useApi(async () => {
-    const [sessions, tasks, areas] = await Promise.all([
-      cafeApi.sessions(user!._id),
-      cafeApi.tasks(user!._id),
-      cafeApi.areas(),
-    ]);
-    return { sessions, tasks, areas };
-  }, [user!._id]);
-  const sessions = state.data?.sessions || [];
-  const pageCount = Math.max(1, Math.ceil(sessions.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const visibleSessions = sessions.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
-  return (
-    <section className="page focus-history-page">
-      <PageNavigation to="/tasks" label="Back to Task Board" />
-      <PageHeading
-        eyebrow="Your time, well spent"
-        title="A little history of focus."
-        action={
-          <Link className="button" to="/focus">
-            Start A Session
-          </Link>
-        }
-      />
-      <LoadState {...state} retry={state.reload}>
-        {!sessions.length ? (
-          <EmptyState
-            title="Your first session is waiting."
-            to="/focus"
-            label="Start Focusing"
-          />
-        ) : (
-          <>
-            <div className="record-list">
-              {visibleSessions.map((session) => {
-                const unfinished = ["planned", "active", "paused"].includes(
-                  session.status,
-                );
-                return (
-                  <article className="record-row" key={session._id}>
-                    <div>
-                      <h2>
-                        {session.taskTitle ||
-                          state.data!.tasks.find(
-                            (task) => task._id === session.task,
-                          )?.title ||
-                          "Task"}
-                      </h2>
-                      <p>
-                        {
-                          state.data!.areas.find(
-                            (area) => area._id === session.area,
-                          )?.name
-                        }{" "}
-                        · {dateTime(session.startedAt)}
-                      </p>
-                      <div className="metadata">
-                        <Status value={session.status} />
-                        <span>
-                          {session.completedMinutes} / {session.plannedMinutes}{" "}
-                          min
-                        </span>
-                        {session.focusScore !== null && (
-                          <span>Focus score {session.focusScore}%</span>
-                        )}
-                      </div>
-                    </div>
-                    {unfinished && (
-                      <Link className="text-link" to={`/focus/${session._id}`}>
-                        Return to Timer
-                      </Link>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
-            {sessions.length > 5 && (
-              <Pagination
-                currentPage={currentPage}
-                pageCount={pageCount}
-                pageSize={pageSize}
-                label="Focus history pages"
-                itemLabel="Sessions per page"
-                onPageChange={setPage}
-                onPageSizeChange={(size) => {
-                  setPageSize(size);
-                  setPage(1);
-                }}
-              />
-            )}
-          </>
-        )}
-      </LoadState>
-    </section>
-  );
-}
+export { FocusHistoryPage, AnalyticsPage } from "./ProfileActivityPages";
 
 export function SipStatsPage() {
+  const location = useLocation();
+  const fromSession = typeof location.state?.returnTo === "string" &&
+    /^\/focus\/[a-f\d]{24}$/i.test(location.state.returnTo)
+    ? location.state.returnTo : "";
   const { user } = useCafe();
   const userId = user?._id || "";
   const stats = useApi(async () => {
@@ -505,7 +502,7 @@ export function SipStatsPage() {
     <section className="page sip-stats-page">
       <BackLink
         className="text-link sip-back"
-        fallbackTo={backSession ? `/focus/${backSession._id}` : "/study/drink"}
+        fallbackTo={fromSession || (backSession ? `/focus/${backSession._id}` : "/study/drink")}
         fallbackLabel="Back to Session"
       />
       <LoadState {...stats} retry={stats.reload}>
@@ -580,101 +577,6 @@ export function SipStatsPage() {
               </div>
             </div>
           </div>
-        )}
-      </LoadState>
-    </section>
-  );
-}
-
-export function AnalyticsPage() {
-  const { user } = useCafe();
-  const state = useApi(() => cafeApi.statistics(user!._id), [user!._id]);
-  const statistics = state.data;
-  return (
-    <section className="page analytics-page">
-      <PageNavigation to="/tasks" label="Back to Task Board" />
-      <PageHeading
-        eyebrow="Your Productivity Notebook"
-        title="Productivity Stats"
-        description="A summary of the focus time and tasks you’ve completed."
-        action={
-          <Link className="text-link" to="/history">
-            View Session History
-          </Link>
-        }
-      />
-      <LoadState {...state} retry={state.reload}>
-        {statistics && (
-          <>
-            {statistics.completedSessions === 0 && (
-              <p className="note">
-                Your notebook is ready. Complete a focus session to start
-                filling it.
-              </p>
-            )}
-            <dl className="metrics">
-              <div>
-                <dt>Focus Minutes</dt>
-                <dd>{statistics.totalFocusMinutes}</dd>
-              </div>
-              <div>
-                <dt>Sessions Completed</dt>
-                <dd>{statistics.completedSessions}</dd>
-              </div>
-              <div>
-                <dt>Tasks Completed</dt>
-                <dd>{statistics.completedTasks}</dd>
-              </div>
-              <div>
-                <dt>Average Session</dt>
-                <dd>
-                  {statistics.averageSessionMinutes}
-                  <small> min</small>
-                </dd>
-              </div>
-            </dl>
-            <div className="notebook">
-              <h2>Your Cafe Habits</h2>
-              <dl className="summary-list">
-                <div>
-                  <dt>Current Focus Streak</dt>
-                  <dd>
-                    {statistics.currentStreak}{" "}
-                    {statistics.currentStreak === 1 ? "day" : "days"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Longest Focus Streak</dt>
-                  <dd>{statistics.longestStreak} days</dd>
-                </div>
-                <div>
-                  <dt>Most Productive Day</dt>
-                  <dd>
-                    {statistics.mostProductiveDay
-                      ? `${statistics.mostProductiveDay.date} · ${statistics.mostProductiveDay.totalMinutes} min`
-                      : "No completed sessions yet"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Favorite Corner</dt>
-                  <dd>
-                    {statistics.favoriteCafeArea?.name ||
-                      "Still finding your corner"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Most Ordered Drink</dt>
-                  <dd>
-                    {statistics.mostOrderedDrink?.name ||
-                      "No drinks ordered yet"}
-                  </dd>
-                </div>
-              </dl>
-              <p className="note">
-                Focus days and streaks follow Philippine time.
-              </p>
-            </div>
-          </>
         )}
       </LoadState>
     </section>

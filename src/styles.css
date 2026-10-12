@@ -1,11 +1,7 @@
 @import "tailwindcss";
-@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/poppins/Poppins-Regular.ttf') format('truetype')}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/poppins/Poppins-Medium.ttf') format('truetype')}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/poppins/Poppins-SemiBold.ttf') format('truetype')}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/poppins/Poppins-Bold.ttf') format('truetype')}
 @theme {
  --color-ink:#293a31; --color-cream:#f1f0e9; --color-sage:#85967c; --color-coffee:#765c48; --color-gold:#b3904d;
- --font-sans:"Poppins",Arial,sans-serif;
+ --font-sans:"VT323",monospace;
 }
 
 :root{font-family:var(--font-sans);color:#293a31;background:#f1f0e9;line-height:1.6;font-synthesis:none;cursor:url('/assets/cursors/mouse-small.png') 2 2,default}

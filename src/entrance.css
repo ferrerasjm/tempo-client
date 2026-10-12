@@ -1,33 +1,211 @@
-/* The supplied GIF is the entry link. Keep its full composition visible. */
+/* Fill the viewport with the animated entry link. */
 .app-shell .gif-entrance {
-  min-height: 100svh;
-  padding: 36px 32px;
-  gap: 18px;
+  height: 100dvh;
+  min-height: 100dvh;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
 }
 .entrance-art {
   position: relative;
   display: block;
-  width: min(1220px, 100%);
-  border: 3px solid #1b211d;
-  border-radius: 4px;
+  width: 100%;
+  height: 100%;
   background: #213e3f;
   cursor: pointer;
 }
+.entrance-art:focus-visible {
+  outline-offset: -4px;
+}
 .entrance-art img {
   width: 100%;
-  height: auto;
-  max-height: calc(100svh - 115px);
-  object-fit: contain;
-  border-radius: 1px;
+  height: 100%;
+  object-fit: cover;
   image-rendering: pixelated;
 }
-.app-shell .gif-entrance .entrance-caption {
-  margin-top: 4px;
-  color: #1f2521;
-  font: 400 clamp(1.45rem, 3vw, 2rem) var(--font-sans);
-  letter-spacing: .02em;
-  line-height: 1;
+
+.pixel-auth-switch {
+  --pixel-pill: polygon(12px 0, calc(100% - 12px) 0,
+    calc(100% - 12px) 4px, calc(100% - 8px) 4px,
+    calc(100% - 8px) 8px, calc(100% - 4px) 8px,
+    calc(100% - 4px) 12px, 100% 12px, 100% calc(100% - 12px),
+    calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) calc(100% - 8px),
+    calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) calc(100% - 4px),
+    calc(100% - 12px) calc(100% - 4px), calc(100% - 12px) 100%,
+    12px 100%, 12px calc(100% - 4px), 8px calc(100% - 4px),
+    8px calc(100% - 8px), 4px calc(100% - 8px),
+    4px calc(100% - 12px), 0 calc(100% - 12px),
+    0 12px, 4px 12px, 4px 8px, 8px 8px, 8px 4px, 12px 4px);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-self: center;
+  width: min(320px, 100%);
+  margin: 0 0 28px;
+  padding: 6px;
+  filter: drop-shadow(3px 5px 0 #293a31);
 }
-@media (max-width: 480px) {
-  .app-shell .gif-entrance { padding: 20px 16px; gap: 15px; }
+.pixel-auth-switch::before,
+.pixel-auth-switch::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  clip-path: var(--pixel-pill);
+}
+.pixel-auth-switch::before {
+  inset: 0;
+  z-index: -2;
+  background: #293a31;
+}
+.pixel-auth-switch::after {
+  inset: 2px;
+  z-index: -1;
+  background: #fffdf7;
+}
+.pixel-auth-switch button {
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #293a31;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  clip-path: var(--pixel-pill);
+}
+.pixel-auth-switch button.is-selected {
+  background: #293a31;
+}
+.pixel-auth-switch button.is-selected::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: #d5d5ad;
+  clip-path: var(--pixel-pill);
+}
+.pixel-auth-switch button:hover:not(:disabled):not(.is-selected) {
+  background: #e5ebde;
+}
+.pixel-auth-switch button:focus-visible {
+  outline-offset: -4px;
+}
+.welcome-login {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  animation: account-form-in .24s ease-out;
+}
+@keyframes account-form-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-login { animation: none; }
+}
+.welcome-login .account-success {
+  color: #42633a;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+.welcome-login .field {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.welcome-login .field input {
+  min-height: 48px;
+  border: 2px solid #85967c;
+  border-radius: 0;
+  font-size: 1.25rem;
+}
+.welcome-login .account-field-error,
+.welcome-login .login-message {
+  color: #b42318;
+}
+.welcome-login .account-field-error {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  text-align: left;
+}
+.welcome-login .field input[aria-invalid="true"] {
+  border-color: #b42318;
+}
+.password-input {
+  position: relative;
+}
+.welcome-login .password-input input {
+  padding-right: 52px;
+}
+.password-toggle {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #687b60;
+}
+.password-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+.password-toggle:hover:not(:disabled) {
+  color: #293a31;
+  background: #e5ebde;
+}
+.password-toggle:focus-visible {
+  outline-offset: -4px;
+}
+.pixel-enter {
+  position: relative;
+  align-self: center;
+  min-width: 160px;
+  min-height: 48px;
+  margin: 8px 6px 6px;
+  padding: 8px 28px;
+  border: 0;
+  border-radius: 0;
+  background: #d5d5ad;
+  color: #293a31;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: .08em;
+  box-shadow: 0 -4px 0 #293a31, 0 4px 0 #293a31,
+    -4px 0 0 #293a31, 4px 0 0 #293a31, 0 8px 0 #293a31;
+  transition: background-color .15s, transform .15s, box-shadow .15s;
+}
+.pixel-enter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 4px 0 #ffffff40, inset 0 -4px 0 #00000020;
+}
+.pixel-enter:hover:not(:disabled) {
+  background: #c5c598;
+}
+.pixel-enter:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 -4px 0 #293a31, 0 4px 0 #293a31,
+    -4px 0 0 #293a31, 4px 0 0 #293a31;
+}
+.welcome-login .login-message {
+  text-align: center;
+  font-size: 1.125rem;
 }
